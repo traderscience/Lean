@@ -56,6 +56,69 @@ namespace QuantConnect
         public static Symbol Create(string ticker, SecurityType securityType, string market, string alias = null, Type baseDataType = null)
         {
             SecurityIdentifier sid;
+            
+            string symbol = ticker;
+
+            // When the default Base security type is passed,
+            // ticker symbols can include a Security Type using ';' as a delimiter, eg "ES;future,NQ;future"
+            // to properly parse the symbol.
+            // IQFeed Forex symbols end with ".FXCM"
+            // Future symbols are prefixed by '@' or '+', and continuous futures include '#', eg. '@ES#C'
+            
+            if (securityType == SecurityType.Base)
+            {
+                var symParts = ticker.Split(';');
+
+                // check if this is a Forex symbol
+                if (symParts[0].EndsWith(".FXCM"))
+                {
+                    ticker = symParts[0] = symParts[0].Replace(".FXCM", string.Empty);
+                    market = Market.FXCM;
+                    securityType = SecurityType.Forex;
+                }
+                else
+                if (symParts[0].StartsWith("@") && symParts[0].Contains("#"))
+                {
+                    var tickerParts = symParts[0].Substring(1).Split('#');
+                    ticker = tickerParts[0];
+                    securityType = SecurityType.Future;
+                    market = Market.USA;
+                }
+                else
+                if (symParts.Length > 1)
+                {
+                    // symbol includes security type specifier eg USDCAD;forex
+                    symbol = symParts[0];
+                    switch (symParts[1].ToLower(tsUtil.Culture))
+                    {
+                        case "equity":
+                            securityType = SecurityType.Equity;
+                            break;
+                        case "forex":
+                            securityType = SecurityType.Forex;
+                            market = Market.FXCM;
+                            break;
+                        case "future":
+                            securityType = SecurityType.Future;
+                            break;
+                        case "option":
+                            securityType = SecurityType.Option;
+                            break;
+                        case "index":
+                            securityType = SecurityType.Index;
+                            break;
+                        case "cfd":
+                            securityType = SecurityType.Cfd;
+                            break;
+                        default:
+                            securityType = SecurityType.Equity;
+                            break;
+                    }
+                    ticker = symbol;
+                }
+                else
+                    securityType = SecurityType.Equity;
+            }
 
             switch (securityType)
             {

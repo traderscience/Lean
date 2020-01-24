@@ -285,7 +285,8 @@ namespace QuantConnect.Lean.Engine.DataFeeds
             switch (_config.Symbol.ID.SecurityType)
             {
                 case SecurityType.Future:
-                    _delistingDate = _config.Symbol.ID.Date;
+                    // Don't set a delisting date for canonical future symbols
+                    _delistingDate = _config.Symbol.IsCanonical() ? DateTime.MaxValue : _config.Symbol.ID.Date;
                     break;
                 case SecurityType.Option:
                     _delistingDate = OptionSymbol.GetLastDayOfTrading(_config.Symbol);

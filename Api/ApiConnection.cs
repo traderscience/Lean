@@ -46,12 +46,7 @@ namespace QuantConnect.Api
         {
             _token = token;
             _userId = userId.ToStringInvariant();
-            var restOptions = new RestClientOptions()
-            {
-                BaseUrl = new Uri("https://www.quantconnect.com/api/v2/"),
-                MaxTimeout = 30000
-            };
-            Client = new RestClient(restOptions);
+            Client = new RestClient("https://www.quantconnect.com/api/v2/");
         }
 
         /// <summary>

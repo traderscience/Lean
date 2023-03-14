@@ -49,7 +49,7 @@ namespace QuantConnect.Api
             var restOptions = new RestClientOptions()
             {
                 BaseUrl = new Uri("https://www.quantconnect.com/api/v2/"),
-                Timeout = 30000
+                MaxTimeout = 30000
             };
             Client = new RestClient(restOptions);
         }

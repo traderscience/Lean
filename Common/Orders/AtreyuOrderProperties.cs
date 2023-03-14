@@ -33,6 +33,37 @@ namespace QuantConnect.Orders
         public bool PostOnly { get; set; }
 
         /// <summary>
+        /// Market Price for security (submitted by client)
+        /// </summary>
+        public decimal MarketPrice { get; set; }
+
+        /// <summary>
+        /// Parameter list for Broker Algo order
+        /// </summary>
+        public string AlgoJsonParameters { get; set; }
+
+        /// <summary>
+        /// IgnoreMissingPrices
+        /// </summary>
+        public bool IgnoreMissingPrices { get; set; }
+
+        /// <summary>
+        /// Parent order (if any)
+        /// </summary>
+        public long ParentOrder { get; set; }
+        /// <summary>
+        /// One Cancels All order group
+        /// </summary>
+        public string OcaGroup { get; set; }
+        /// <summary>
+        /// Order Intent
+        /// </summary>
+        public OrderIntent Intent { get; set; }
+        /// <summary>
+        /// Returns a new instance clone of this object
+        /// </summary>
+
+        /// <summary>
         /// Creates a new instance and sets <see cref="TimeInForce"/> to Day
         /// </summary>
         public AtreyuOrderProperties()

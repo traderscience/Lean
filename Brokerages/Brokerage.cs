@@ -32,6 +32,10 @@ namespace QuantConnect.Brokerages
     /// </summary>
     public abstract class Brokerage : IBrokerage
     {
+        public string BrokerId {get; private set;}
+
+        public string AccountId { get; private set; }
+
         // 7:45 AM (New York time zone)
         private static readonly TimeSpan LiveBrokerageCashSyncTime = new TimeSpan(7, 45, 0);
 
@@ -69,6 +73,11 @@ namespace QuantConnect.Brokerages
         public event EventHandler<AccountEvent> AccountChanged;
 
         /// <summary>
+        /// Event that fires when brokerage changes an account holding
+        /// </summary>
+        public event EventHandler<HoldingEvent> HoldingChanged;
+
+        /// <summary>
         /// Event that fires when an error is encountered in the brokerage
         /// </summary>
         public event EventHandler<BrokerageMessageEvent> Message;
@@ -89,6 +98,19 @@ namespace QuantConnect.Brokerages
         /// <param name="name">The name of the brokerage</param>
         protected Brokerage(string name)
         {
+            Name = name;
+        }
+
+        /// <summary>
+        /// Creates a new Brokerage instance with the specified name
+        /// </summary>
+        /// <param name="brokerId"></param>
+        /// <param name="accountId"></param>
+        /// <param name="name">The name of the brokerage</param>
+        protected Brokerage(string brokerId, string accountId, string name)
+        {
+            BrokerId = brokerId;
+            AccountId = accountId;
             Name = name;
         }
 
@@ -171,6 +193,25 @@ namespace QuantConnect.Brokerages
                 Log.Error(err);
             }
         }
+
+        /// <summary>
+        /// OnHoldingEvent - generated when brokerage updates an account holding (may be due to an external client)
+        /// TraderScience extension
+        /// </summary>
+        /// <param name="holding"></param>
+        protected virtual void OnHoldingEvent(HoldingEvent e)
+        {
+            try
+            {
+                Log.Debug("Brokerage.OnHoldingEvent()");
+                HoldingChanged?.Invoke(this, e);
+            }
+            catch (Exception err)
+            {
+                Log.Error(err);
+            }
+        }
+
 
         /// <summary>
         /// Event invocator for the OptionPositionAssigned event
@@ -338,6 +379,7 @@ namespace QuantConnect.Brokerages
         /// <returns>The current holdings from the account</returns>
         public abstract List<Holding> GetAccountHoldings();
 
+
         /// <summary>
         /// Gets the current cash balance for each currency held in the brokerage account
         /// </summary>
@@ -363,6 +405,28 @@ namespace QuantConnect.Brokerages
         {
             return Enumerable.Empty<BaseData>();
         }
+
+        #region TraderScience extensions
+        /// <summary>
+        /// Get a list of all closed or cancelled orders in the specified data range
+        /// </summary>
+        /// <param name="firstDate"></param>
+        /// <param name="lastDate"></param>
+        /// <returns></returns>
+        public virtual List<OrderEvent> GetOrderHistory(DateTime? firstDate = null, DateTime? lastDate = null)
+        {
+            return new List<OrderEvent>();
+        }
+
+        /// <summary>
+        /// Get closed trades
+        /// </summary>
+        /// <returns></returns>
+        public virtual List<QuantConnect.Statistics.Trade> GetClosedTrades(DateTime? firstDate = null, DateTime? lastDate = null)
+        {
+            return new List<Statistics.Trade>();
+        }
+        #endregion
 
         #region IBrokerageCashSynchronizer implementation
 

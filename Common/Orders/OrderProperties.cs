@@ -34,21 +34,44 @@ namespace QuantConnect.Orders
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public Exchange Exchange { get; set; }
 
+        public long ParentOrder { get; set; }
+        public string OcaGroup { get; set; }
+        public OrderIntent Intent { get; set; }
+
+        /// <summary>
+        /// MarketPrice
+        /// </summary>
+        public decimal MarketPrice { get; set; }
+
+        /// <summary>
+        /// Parameters for Broker Algo Order
+        /// </summary>
+        public string AlgoJsonParameters { get; set; }
+
+        /// <summary>
+        /// IgnoreMissingPrices - allows orders to be submitted blind
+        /// </summary>
+        public bool IgnoreMissingPrices { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="OrderProperties"/> class
         /// </summary>
         public OrderProperties()
         {
             TimeInForce = TimeInForce.GoodTilCanceled;
+            MarketPrice = 0.0m;
+            IgnoreMissingPrices = false;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OrderProperties"/> class, with exchange param
         ///<param name="exchange">Exchange name for market</param>
         /// </summary>
-        public OrderProperties(Exchange exchange) : this()
+        public OrderProperties(Exchange exchange, decimal marketPrice=0.0m, bool ignoreMissingPrices=false) : this()
         {
             Exchange = exchange;
+            MarketPrice = marketPrice;
+            IgnoreMissingPrices = ignoreMissingPrices;
         }
 
         /// <summary>

@@ -32,24 +32,27 @@
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <ItemGroup>
+    <Compile Remove="ToolBox\AlphaVantageDownloader\AlphaVantageDataDownloaderTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="QuantConnect.pythonnet" Version="2.0.18" />
-    <PackageReference Include="Accord" Version="3.6.0" />
-    <PackageReference Include="Accord.Math" Version="3.6.0" />
+    <PackageReference Include="Accord" Version="3.8.0" />
+    <PackageReference Include="Accord.Math" Version="3.8.0" />
     <PackageReference Include="Common.Logging" Version="3.4.1" />
     <PackageReference Include="Common.Logging.Core" Version="3.4.1" />
-    <PackageReference Include="Deedle" Version="2.1.0" />
+    <PackageReference Include="Deedle" Version="2.5.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
     <PackageReference Include="Microsoft.TestPlatform.ObjectModel" Version="16.9.4" />
-    <PackageReference Include="Moq" Version="4.16.1" />
-    <PackageReference Include="NetMQ" Version="4.0.1.6" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-    <PackageReference Include="NodaTime" Version="3.0.5" />
+    <PackageReference Include="Moq" Version="4.18.2" />
+    <PackageReference Include="NetMQ" Version="4.0.1.10" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="NodaTime" Version="3.1.6" />
     <PackageReference Include="NUnit" Version="3.13.3" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.2.1">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="protobuf-net" Version="3.1.33" />
-    <PackageReference Include="RestSharp" Version="106.12.0" />
+    <PackageReference Include="protobuf-net" Version="3.2.12" />
+    <PackageReference Include="RestSharp" Version="109.0.1" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Common\Properties\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
@@ -475,5 +478,8 @@
     <Content Include="TestData\test_forex_fills_mch_quantity.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ToolBox\AlphaVantageDownloader\" />
   </ItemGroup>
 </Project>

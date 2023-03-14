@@ -25,6 +25,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using QuantConnect.Securities;
+using System.Net;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace QuantConnect.ToolBox.AlphaVantageDownloader
 {
@@ -34,16 +37,35 @@ namespace QuantConnect.ToolBox.AlphaVantageDownloader
     public class AlphaVantageDataDownloader : IDataDownloader, IDisposable
     {
         private readonly MarketHoursDatabase _marketHoursDatabase;
-        private readonly IRestClient _avClient;
+        private readonly RestClient _avClient;
+        private readonly string _tier = "free";
         private readonly RateGate _rateGate;
         private bool _disposed;
+        private static Uri _baseUrl = new Uri("https://www.alphavantage.co/");
+        private string _apiKey;
+        private static RestClientOptions restOptions = new RestClientOptions()
+        {
+            BaseUrl = _baseUrl,
+            MaxTimeout = 30000
+        };
 
         /// <summary>
         /// Construct AlphaVantageDataDownloader with default RestClient
         /// </summary>
         /// <param name="apiKey">API key</param>
-        public AlphaVantageDataDownloader(string apiKey) : this(new RestClient(), apiKey)
+        public AlphaVantageDataDownloader(string apiKey, string tier="free") : 
+                this(
+                    new RestClient(new RestClientOptions()
+                    { 
+                        BaseUrl = new Uri("https://www.alphavantage.co"), 
+                        MaxTimeout = 15000,
+                    })
+                    { 
+                        //Authenticator = new AlphaVantageAuthenticator(apiKey)
+                    }, 
+                apiKey) 
         {
+            _tier = tier;
         }
 
         /// <summary>
@@ -51,14 +73,21 @@ namespace QuantConnect.ToolBox.AlphaVantageDownloader
         /// </summary>
         /// <param name="restClient">The <see cref="RestClient"/> to use</param>
         /// <param name="apiKey">API key</param>
-        public AlphaVantageDataDownloader(IRestClient restClient, string apiKey)
+        public AlphaVantageDataDownloader(RestClient restClient, string apiKey, string tier="free")
         {
             _avClient = restClient;
+            _apiKey = apiKey;
             _marketHoursDatabase = MarketHoursDatabase.FromDataFolder();
-            _avClient.BaseUrl = new Uri("https://www.alphavantage.co/");
-            _avClient.Authenticator = new AlphaVantageAuthenticator(apiKey);
-
-            _rateGate = new RateGate(5, TimeSpan.FromMinutes(1)); // Free API is limited to 5 requests/minute
+            _tier = tier;
+            switch (tier.ToLowerInvariant())
+            {
+                case "free":
+                    _rateGate = new RateGate(5, TimeSpan.FromMinutes(1)); // Free API is limited to 5 requests/minute
+                    break;
+                default:
+                    _rateGate = new RateGate(100, TimeSpan.FromMinutes(1)); // Free API is limited to 5 requests/minute
+                    break;
+            }
         }
 
         /// <summary>
@@ -79,9 +108,10 @@ namespace QuantConnect.ToolBox.AlphaVantageDownloader
                 return Enumerable.Empty<BaseData>();
             }
 
-            var request = new RestRequest("query", DataFormat.Json);
+            var request = new RestRequest("query", Method.Get); // ("query", DataFormat.Json);
             request.AddParameter("symbol", symbol.Value);
-            request.AddParameter("datatype", "csv");
+            request.AddParameter("apikey", _apiKey);
+            request.AddParameter("datatype", "csv"); // datatype=json returns strangely formatted json
 
             IEnumerable<TimeSeries> data = null;
             switch (resolution)
@@ -171,24 +201,47 @@ namespace QuantConnect.ToolBox.AlphaVantageDownloader
             }
 
             _rateGate.WaitToProceed();
-            //var url = _avClient.BuildUri(request);
+            var url = _avClient.BuildUri(request);
             Log.Trace("Downloading /{0}?{1}", request.Resource, string.Join("&", request.Parameters));
-            var response = _avClient.Get(request);
-
-            if (response.ContentType != "application/x-download")
+            try
             {
-                throw new FormatException($"Unexpected content received from API.\n{response.Content}");
-            }
-
-            using (var reader = new StringReader(response.Content))
-            {
-                using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+                var response = _avClient.ExecuteAsync(request).GetAwaiter().GetResult();
+                if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return csv.GetRecords<TimeSeries>()
-                              .OrderBy(t => t.Time)
-                              .ToList(); // Execute query before readers are disposed.
+                    Log.Error($"AlphaVantage: request failed: [{(int)response.StatusCode}] {response.StatusDescription}, Content: {response.Content}, ErrorMessage: {response.ErrorMessage}");
+                    return new List<TimeSeries>();
                 }
+                // Check access to this endpoint
+                if (response.Content.Contains("premium endpoint"))
+                {
+                    Log.Error($"AlphaVantage: request failed: [{(int)response.StatusCode}] {response.StatusDescription}, Content: {response.Content}, ErrorMessage: {response.ErrorMessage}");
+                    return new List<TimeSeries>();
+                }
+                using (var reader = new StringReader(response.Content))
+                {
+                    using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+                    {
+                        return csv.GetRecords<TimeSeries>()
+                                  .OrderBy(t => t.Time)
+                                  .ToList(); // Execute query before readers are disposed.
+                    }
+                }
+                // Json alternate processing
+                /*
+                var seriesResponse = JObject.Parse(response.Content);
+                var properties = seriesResponse.Properties().ToArray();
+                if (properties.Length > 1)
+                {
+                    string name = properties[1].Name;
+                    var json = seriesResponse[name].To.Children().ToList<TimeSeries>();
+                }
+                */
             }
+            catch (Exception ex)
+            {
+                Log.Error($"AlphaVantage:GetTimeSeries: exception {ex.ToString()}");
+            }
+            return new List<TimeSeries>();
         }
 
         /// <summary>

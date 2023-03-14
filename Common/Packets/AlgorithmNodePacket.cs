@@ -163,5 +163,26 @@ namespace QuantConnect.Packets
         {
             return Invariant($"{UserId}-{ProjectId}-{AlgorithmId}");
         }
+
+        // TraderScience Extensions
+
+        /// <summary>
+        /// Algorithm Type (Class) Name
+        /// </summary>
+        [JsonProperty(PropertyName = "sAlgorithmTypeName")]
+        public string AlgorithmTypeName = "";
+
+
+        /// <summary>
+        /// Application Data Folder
+        /// </summary>
+        public string AppDataFolder;
+
+        /// <summary>
+        /// Configuration values used to set runtime environment for running algorithms
+        /// </summary>
+        [JsonProperty(PropertyName = "sConfiguration")]
+        public Dictionary<string, string> Config;
+
     }
 }

@@ -136,6 +136,14 @@ namespace QuantConnect.Orders
         }
 
         /// <summary>
+        /// OrderIntent
+        /// </summary>
+        public OrderIntent Intent
+        {
+            get { return _submitRequest.OrderProperties.Intent; }
+        }
+
+        /// <summary>
         /// Gets the <see cref="SubmitOrderRequest"/> that initiated this order
         /// </summary>
         public SubmitOrderRequest SubmitRequest
@@ -248,6 +256,10 @@ namespace QuantConnect.Orders
                     if (_submitRequest.OrderType == OrderType.LimitIfTouched)
                     {
                         return AccessOrder<LimitIfTouchedOrder>(this, field, o => o.LimitPrice, r => r.LimitPrice);
+                    }
+                    if (_submitRequest.OrderType == OrderType.Algo)
+                    {
+                        return AccessOrder<AlgoOrder>(this, field, o => o.LimitPrice, r => r.LimitPrice);
                     }
                     break;
 

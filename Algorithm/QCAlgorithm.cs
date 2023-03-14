@@ -168,6 +168,8 @@ namespace QuantConnect.Algorithm
             MarketHoursDatabase = MarketHoursDatabase.FromDataFolder();
             SymbolPropertiesDatabase = SymbolPropertiesDatabase.FromDataFolder();
 
+            // RJE DataFeedProviderType = LeanData.GetDataFeedProviderName();
+
             // universe selection
             UniverseManager = new UniverseManager();
             Universe = new UniverseDefinitions(this);
@@ -1024,6 +1026,16 @@ namespace QuantConnect.Algorithm
         {
 
         }
+
+        /// <summary>
+        /// Triggered when the brokerage updates a holding
+        /// </summary>
+        /// <param name="holdingEvent"></param>
+        public virtual void OnHoldingEvent(HoldingEvent holdingEvent)
+        {
+
+        }
+
 
         /// <summary>
         /// Option assignment event handler. On an option assignment event for short legs the resulting information is passed to this method.
@@ -2201,6 +2213,27 @@ namespace QuantConnect.Algorithm
             return AddSecurity<CryptoFuture>(SecurityType.CryptoFuture, ticker, resolution, market, fillDataForward, leverage, false);
         }
 
+      /// <summary>
+        /// AddMarketStats - IQFeed market statistics
+        /// </summary>
+        /// <param name="ticker"></param>
+        /// <param name="resolution"></param>
+        /// <param name="market"></param>
+        /// <param name="isTradable"></param>
+        /// <param name="fillDataForward"></param>
+        /// <param name="leverage"></param>
+        /// <param name="extendedMarketHours"></param>
+        /// <param name="mappingMode"></param>
+        /// <param name="normalizationMode"></param>
+        /// <returns></returns>
+        public Equity AddMarketStats(string ticker, Resolution? resolution = null, string market = Market.USA, bool isTradable = false, 
+                                        bool fillDataForward = true, decimal leverage = Security.NullLeverage, bool extendedMarketHours = false, 
+                                        DataMappingMode? mappingMode = null, DataNormalizationMode? normalizationMode = null)
+        {
+            return AddSecurity<Equity>(SecurityType.MarketStats, ticker, resolution, market, fillDataForward, leverage, extendedMarketHours,  mappingMode, normalizationMode, isTradable);
+        }
+
+
         /// <summary>
         /// Removes the security with the specified symbol. This will cancel all
         /// open orders and then liquidate any existing holdings
@@ -2638,7 +2671,7 @@ namespace QuantConnect.Algorithm
         /// </summary>
         [DocumentationAttribute(AddingData)]
         private T AddSecurity<T>(SecurityType securityType, string ticker, Resolution? resolution, string market, bool fillDataForward, decimal leverage, bool extendedMarketHours,
-            DataMappingMode? mappingMode = null, DataNormalizationMode? normalizationMode = null)
+            DataMappingMode? mappingMode = null, DataNormalizationMode? normalizationMode = null, bool isTradable = true)
             where T : Security
         {
             if (market == null)
@@ -2661,7 +2694,7 @@ namespace QuantConnect.Algorithm
                 dataNormalizationMode: normalizationMode ?? UniverseSettings.DataNormalizationMode,
                 dataMappingMode: mappingMode ?? UniverseSettings.DataMappingMode);
             var security = Securities.CreateSecurity(symbol, configs, leverage);
-
+            security.IsTradable = isTradable;
             return (T) AddToUserDefinedUniverse(security, configs);
         }
 

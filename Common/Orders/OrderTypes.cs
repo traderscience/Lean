@@ -73,7 +73,11 @@ namespace QuantConnect.Orders
         /// <summary>
         ///  Combo Leg Limit Order Type - (10)
         /// </summary>
-        ComboLegLimit
+        ComboLegLimit,
+        /// <summary>
+        /// IB Algo Order type - (11)
+        /// </summary>
+        Algo
     }
 
     /// <summary>

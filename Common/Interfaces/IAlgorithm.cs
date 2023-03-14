@@ -513,6 +513,12 @@ namespace QuantConnect.Interfaces
         void OnOrderEvent(OrderEvent newEvent);
 
         /// <summary>
+        /// Generated when brokerage changes a holding
+        /// </summary>
+        /// <param name="holdingEvent"></param>
+        void OnHoldingEvent(HoldingEvent holdingEvent);
+
+        /// <summary>
         /// Will submit an order request to the algorithm
         /// </summary>
         /// <param name="request">The request to submit</param>

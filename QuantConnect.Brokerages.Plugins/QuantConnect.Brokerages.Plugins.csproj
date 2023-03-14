@@ -1,0 +1,376 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\BinanceBaseRestApiClient.cs" Link="Binance\BinanceBaseRestApiClient.cs" />
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\BinanceBrokerage.cs" Link="Binance\BinanceBrokerage.cs" />
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\BinanceBrokerage.Messaging.cs" Link="Binance\BinanceBrokerage.Messaging.cs" />
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\BinanceBrokerage.Utility.cs" Link="Binance\BinanceBrokerage.Utility.cs" />
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\BinanceBrokerageFactory.cs" Link="Binance\BinanceBrokerageFactory.cs" />
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\BinanceCoinFuturesBrokerage.cs" Link="Binance\BinanceCoinFuturesBrokerage.cs" />
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\BinanceCoinFuturesBrokerageFactory.cs" Link="Binance\BinanceCoinFuturesBrokerageFactory.cs" />
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\BinanceCoinFuturesRestApiClient.cs" Link="Binance\BinanceCoinFuturesRestApiClient.cs" />
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\BinanceCrossMarginRestApiClient.cs" Link="Binance\BinanceCrossMarginRestApiClient.cs" />
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\BinanceFuturesBrokerage.cs" Link="Binance\BinanceFuturesBrokerage.cs" />
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\BinanceFuturesBrokerageFactory.cs" Link="Binance\BinanceFuturesBrokerageFactory.cs" />
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\BinanceFuturesRestApiClient.cs" Link="Binance\BinanceFuturesRestApiClient.cs" />
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\BinanceOrderSubmitEventArgs.cs" Link="Binance\BinanceOrderSubmitEventArgs.cs" />
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\BinanceSpotRestApiClient.cs" Link="Binance\BinanceSpotRestApiClient.cs" />
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\BinanceUSBrokerage.cs" Link="Binance\BinanceUSBrokerage.cs" />
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\BinanceUSBrokerageFactory.cs" Link="Binance\BinanceUSBrokerageFactory.cs" />
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\BinanceWebSocketWrapper.cs" Link="Binance\BinanceWebSocketWrapper.cs" />
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\Converters\FuturesAccountConverter.cs" Link="Binance\Converters\FuturesAccountConverter.cs" />
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\Converters\MarginAccountConverter.cs" Link="Binance\Converters\MarginAccountConverter.cs" />
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\Converters\SpotAccountConverter.cs" Link="Binance\Converters\SpotAccountConverter.cs" />
+    <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage\BitfinexBrokerage.cs" Link="Bitfinex\BitfinexBrokerage.cs" />
+    <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage\BitfinexBrokerage.DataQueueHandler.cs" Link="Bitfinex\BitfinexBrokerage.DataQueueHandler.cs" />
+    <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage\BitfinexBrokerage.Messaging.cs" Link="Bitfinex\BitfinexBrokerage.Messaging.cs" />
+    <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage\BitfinexBrokerage.Utility.cs" Link="Bitfinex\BitfinexBrokerage.Utility.cs" />
+    <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage\BitfinexBrokerageFactory.cs" Link="Bitfinex\BitfinexBrokerageFactory.cs" />
+    <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage\BitfinexWebSocketChannels.cs" Link="Bitfinex\BitfinexWebSocketChannels.cs" />
+    <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage\BitfinexWebSocketWrapper.cs" Link="Bitfinex\BitfinexWebSocketWrapper.cs" />
+    <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage\Converters\OrderConverter.cs" Link="Bitfinex\Converters\OrderConverter.cs" />
+    <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage\Converters\PositionConverter.cs" Link="Bitfinex\Converters\PositionConverter.cs" />
+    <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage\Converters\TickerConverter.cs" Link="Bitfinex\Converters\TickerConverter.cs" />
+    <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage\Converters\TradeExecutionUpdateConverter.cs" Link="Bitfinex\Converters\TradeExecutionUpdateConverter.cs" />
+    <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage\Converters\WalletConverter.cs" Link="Bitfinex\Converters\WalletConverter.cs" />
+    <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage\Messages\Messages.cs" Link="Bitfinex\Messages\Messages.cs" />
+    <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage\Messages\Order.cs" Link="Bitfinex\Messages\Order.cs" />
+    <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage\Messages\OrderFlags.cs" Link="Bitfinex\Messages\OrderFlags.cs" />
+    <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage\Messages\Position.cs" Link="Bitfinex\Messages\Position.cs" />
+    <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage\Messages\Ticker.cs" Link="Bitfinex\Messages\Ticker.cs" />
+    <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage\Messages\TradeExecutionUpdate.cs" Link="Bitfinex\Messages\TradeExecutionUpdate.cs" />
+    <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage\Messages\Wallet.cs" Link="Bitfinex\Messages\Wallet.cs" />
+    <Compile Include="..\Lean.Brokerages.CoinbasePro\QuantConnect.GDAXBrokerage\AuthenticationToken.cs" Link="Coinbase\AuthenticationToken.cs" />
+    <Compile Include="..\Lean.Brokerages.CoinbasePro\QuantConnect.GDAXBrokerage\GDAXBrokerage.cs" Link="Coinbase\GDAXBrokerage.cs" />
+    <Compile Include="..\Lean.Brokerages.CoinbasePro\QuantConnect.GDAXBrokerage\GDAXBrokerage.Messaging.cs" Link="Coinbase\GDAXBrokerage.Messaging.cs" />
+    <Compile Include="..\Lean.Brokerages.CoinbasePro\QuantConnect.GDAXBrokerage\GDAXBrokerage.Utility.cs" Link="Coinbase\GDAXBrokerage.Utility.cs" />
+    <Compile Include="..\Lean.Brokerages.CoinbasePro\QuantConnect.GDAXBrokerage\GDAXBrokerageFactory.cs" Link="Coinbase\GDAXBrokerageFactory.cs" />
+    <Compile Include="..\Lean.Brokerages.CoinbasePro\QuantConnect.GDAXBrokerage\GDAXDataQueueHandler.cs" Link="Coinbase\GDAXDataQueueHandler.cs" />
+    <Compile Include="..\Lean.Brokerages.CoinbasePro\QuantConnect.GDAXBrokerage\GDAXFill.cs" Link="Coinbase\GDAXFill.cs" />
+    <Compile Include="..\Lean.Brokerages.CoinbasePro\QuantConnect.GDAXBrokerage\Messages.cs" Link="Coinbase\Messages.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\AccountDownloadEndEventArgs.cs" Link="InteractiveBrokers\Client\AccountDownloadEndEventArgs.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\AccountSummaryEventArgs.cs" Link="InteractiveBrokers\Client\AccountSummaryEventArgs.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\ActionSide.cs" Link="InteractiveBrokers\Client\ActionSide.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\AgentDescription.cs" Link="InteractiveBrokers\Client\AgentDescription.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\BarSize.cs" Link="InteractiveBrokers\Client\BarSize.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\CommissionReportEventArgs.cs" Link="InteractiveBrokers\Client\CommissionReportEventArgs.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\ContractDetailsEventArgs.cs" Link="InteractiveBrokers\Client\ContractDetailsEventArgs.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\CurrentTimeUtcEventArgs.cs" Link="InteractiveBrokers\Client\CurrentTimeUtcEventArgs.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\ErrorEventArgs.cs" Link="InteractiveBrokers\Client\ErrorEventArgs.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\ExecutionDetailsEventArgs.cs" Link="InteractiveBrokers\Client\ExecutionDetailsEventArgs.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\FamilyCodesEventArgs.cs" Link="InteractiveBrokers\Client\FamilyCodesEventArgs.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\HistoricalDataEndEventArgs.cs" Link="InteractiveBrokers\Client\HistoricalDataEndEventArgs.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\HistoricalDataEventArgs.cs" Link="InteractiveBrokers\Client\HistoricalDataEventArgs.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\InteractiveBrokersClient.cs" Link="InteractiveBrokers\Client\InteractiveBrokersClient.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\ManagedAccountsEventArgs.cs" Link="InteractiveBrokers\Client\ManagedAccountsEventArgs.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\NextValidIdEventArgs.cs" Link="InteractiveBrokers\Client\NextValidIdEventArgs.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\OpenOrderEventArgs.cs" Link="InteractiveBrokers\Client\OpenOrderEventArgs.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\OrderStatus.cs" Link="InteractiveBrokers\Client\OrderStatus.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\OrderStatusEventArgs.cs" Link="InteractiveBrokers\Client\OrderStatusEventArgs.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\OrderType.cs" Link="InteractiveBrokers\Client\OrderType.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\ReceiveFaEventArgs.cs" Link="InteractiveBrokers\Client\ReceiveFaEventArgs.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\RequestEndEventArgs.cs" Link="InteractiveBrokers\Client\RequestEndEventArgs.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\RightType.cs" Link="InteractiveBrokers\Client\RightType.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\SecurityType.cs" Link="InteractiveBrokers\Client\SecurityType.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\TickEventArgs.cs" Link="InteractiveBrokers\Client\TickEventArgs.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\TickPriceEventArgs.cs" Link="InteractiveBrokers\Client\TickPriceEventArgs.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\TickSizeEventArgs.cs" Link="InteractiveBrokers\Client\TickSizeEventArgs.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\TimeInForce.cs" Link="InteractiveBrokers\Client\TimeInForce.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\UpdateAccountValueEventArgs.cs" Link="InteractiveBrokers\Client\UpdateAccountValueEventArgs.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\UpdatePortfolioEventArgs.cs" Link="InteractiveBrokers\Client\UpdatePortfolioEventArgs.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\ComboOrdersFillTimeoutMonitor.cs" Link="InteractiveBrokers\Brokerage\ComboOrdersFillTimeoutMonitor.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\FinancialAdvisor\AccountAlias.cs" Link="InteractiveBrokers\Brokerage\FinancialAdvisor\AccountAlias.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\FinancialAdvisor\Allocation.cs" Link="InteractiveBrokers\Brokerage\FinancialAdvisor\Allocation.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\FinancialAdvisor\AllocationProfile.cs" Link="InteractiveBrokers\Brokerage\FinancialAdvisor\AllocationProfile.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\FinancialAdvisor\FinancialAdvisorConfiguration.cs" Link="InteractiveBrokers\Brokerage\FinancialAdvisor\FinancialAdvisorConfiguration.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\FinancialAdvisor\Group.cs" Link="InteractiveBrokers\Brokerage\FinancialAdvisor\Group.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\HistoricalDataType.cs" Link="InteractiveBrokers\Brokerage\HistoricalDataType.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\InteractiveBrokersAccountData.cs" Link="InteractiveBrokers\Brokerage\InteractiveBrokersAccountData.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\InteractiveBrokersBrokerage.cs" Link="InteractiveBrokers\Brokerage\InteractiveBrokersBrokerage.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\InteractiveBrokersBrokerageFactory.cs" Link="InteractiveBrokers\Brokerage\InteractiveBrokersBrokerageFactory.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\InteractiveBrokersStateManager.cs" Link="InteractiveBrokers\Brokerage\InteractiveBrokersStateManager.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\InteractiveBrokersSymbolMapper.cs" Link="InteractiveBrokers\Brokerage\InteractiveBrokersSymbolMapper.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\Converters\KrakenBidAskConverter.cs" Link="Kraken\Converters\KrakenBidAskConverter.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\Converters\KrakenCandlesConverter.cs" Link="Kraken\Converters\KrakenCandlesConverter.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\Converters\KrakenTradeConverter.cs" Link="Kraken\Converters\KrakenTradeConverter.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\KrakenBrokerage.cs" Link="Kraken\KrakenBrokerage.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\KrakenBrokerage.DataQueueHandler.cs" Link="Kraken\KrakenBrokerage.DataQueueHandler.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\KrakenBrokerage.Messaging.cs" Link="Kraken\KrakenBrokerage.Messaging.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\KrakenBrokerage.RateLimits.cs" Link="Kraken\KrakenBrokerage.RateLimits.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\KrakenBrokerage.Utility.cs" Link="Kraken\KrakenBrokerage.Utility.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\KrakenBrokerageFactory.cs" Link="Kraken\KrakenBrokerageFactory.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\KrakenSymbolMapper.cs" Link="Kraken\KrakenSymbolMapper.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\KrakenWebSocketWrapper.cs" Link="Kraken\KrakenWebSocketWrapper.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\Models\KrakenBaseWsResponse.cs" Link="Kraken\Models\KrakenBaseWsResponse.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\Models\KrakenBidAsk.cs" Link="Kraken\Models\KrakenBidAsk.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\Models\KrakenCandle.cs" Link="Kraken\Models\KrakenCandle.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\Models\KrakenOpenOrder.cs" Link="Kraken\Models\KrakenOpenOrder.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\Models\KrakenOpenPosition.cs" Link="Kraken\Models\KrakenOpenPosition.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\Models\KrakenOrderDescription.cs" Link="Kraken\Models\KrakenOrderDescription.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\Models\KrakenOrderStatusEvent.cs" Link="Kraken\Models\KrakenOrderStatusEvent.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\Models\KrakenRateLimits.cs" Link="Kraken\Models\KrakenRateLimits.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\Models\KrakenTicker.cs" Link="Kraken\Models\KrakenTicker.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\Models\KrakenTrade.cs" Link="Kraken\Models\KrakenTrade.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\Models\KrakenTradeExecutionEvent.cs" Link="Kraken\Models\KrakenTradeExecutionEvent.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\Models\KrakenWsAddOrderResponse.cs" Link="Kraken\Models\KrakenWsAddOrderResponse.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\Models\KrakenWsOpenOrder.cs" Link="Kraken\Models\KrakenWsOpenOrder.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\Environment.cs" Link="Oanda\Environment.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\OandaBrokerage.cs" Link="Oanda\OandaBrokerage.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\OandaBrokerageFactory.cs" Link="Oanda\OandaBrokerageFactory.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\OandaRestApiBase.cs" Link="Oanda\OandaRestApiBase.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\OandaRestApiV20.cs" Link="Oanda\OandaRestApiV20.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\OandaSymbolMapper.cs" Link="Oanda\OandaSymbolMapper.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Api\DefaultApi.cs" Link="Oanda\RestV20\Api\DefaultApi.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Client\ApiClient.cs" Link="Oanda\RestV20\Client\ApiClient.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Client\ApiException.cs" Link="Oanda\RestV20\Client\ApiException.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Client\ApiResponse.cs" Link="Oanda\RestV20\Client\ApiResponse.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Client\Configuration.cs" Link="Oanda\RestV20\Client\Configuration.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Client\ExceptionFactory.cs" Link="Oanda\RestV20\Client\ExceptionFactory.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Client\IApiAccessor.cs" Link="Oanda\RestV20\Client\IApiAccessor.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\DefaultApiExtensions.cs" Link="Oanda\RestV20\DefaultApiExtensions.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\AcceptDatetimeFormat.cs" Link="Oanda\RestV20\Model\AcceptDatetimeFormat.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\Account.cs" Link="Oanda\RestV20\Model\Account.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\AccountChanges.cs" Link="Oanda\RestV20\Model\AccountChanges.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\AccountChangesState.cs" Link="Oanda\RestV20\Model\AccountChangesState.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\AccountFinancingMode.cs" Link="Oanda\RestV20\Model\AccountFinancingMode.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\AccountID.cs" Link="Oanda\RestV20\Model\AccountID.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\AccountProperties.cs" Link="Oanda\RestV20\Model\AccountProperties.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\AccountSummary.cs" Link="Oanda\RestV20\Model\AccountSummary.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\AccountUnits.cs" Link="Oanda\RestV20\Model\AccountUnits.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\CalculatedPositionState.cs" Link="Oanda\RestV20\Model\CalculatedPositionState.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\CalculatedTradeState.cs" Link="Oanda\RestV20\Model\CalculatedTradeState.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\Candlestick.cs" Link="Oanda\RestV20\Model\Candlestick.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\CandlestickData.cs" Link="Oanda\RestV20\Model\CandlestickData.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\CandlestickGranularity.cs" Link="Oanda\RestV20\Model\CandlestickGranularity.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\ClientComment.cs" Link="Oanda\RestV20\Model\ClientComment.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\ClientConfigureRejectTransaction.cs" Link="Oanda\RestV20\Model\ClientConfigureRejectTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\ClientConfigureTransaction.cs" Link="Oanda\RestV20\Model\ClientConfigureTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\ClientExtensions.cs" Link="Oanda\RestV20\Model\ClientExtensions.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\ClientID.cs" Link="Oanda\RestV20\Model\ClientID.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\ClientTag.cs" Link="Oanda\RestV20\Model\ClientTag.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\ClosePositionBody.cs" Link="Oanda\RestV20\Model\ClosePositionBody.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\CloseTradeBody.cs" Link="Oanda\RestV20\Model\CloseTradeBody.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\CloseTransaction.cs" Link="Oanda\RestV20\Model\CloseTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\ConfigureAccountBody.cs" Link="Oanda\RestV20\Model\ConfigureAccountBody.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\CreateOrderBody.cs" Link="Oanda\RestV20\Model\CreateOrderBody.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\CreateTransaction.cs" Link="Oanda\RestV20\Model\CreateTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\Currency.cs" Link="Oanda\RestV20\Model\Currency.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\DailyFinancingTransaction.cs" Link="Oanda\RestV20\Model\DailyFinancingTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\DateTime.cs" Link="Oanda\RestV20\Model\DateTime.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\DecimalNumber.cs" Link="Oanda\RestV20\Model\DecimalNumber.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\DelayedTradeClosureTransaction.cs" Link="Oanda\RestV20\Model\DelayedTradeClosureTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\DynamicOrderState.cs" Link="Oanda\RestV20\Model\DynamicOrderState.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\FundingReason.cs" Link="Oanda\RestV20\Model\FundingReason.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse200.cs" Link="Oanda\RestV20\Model\InlineResponse200.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse2001.cs" Link="Oanda\RestV20\Model\InlineResponse2001.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse20010.cs" Link="Oanda\RestV20\Model\InlineResponse20010.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse20011.cs" Link="Oanda\RestV20\Model\InlineResponse20011.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse20012.cs" Link="Oanda\RestV20\Model\InlineResponse20012.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse20013.cs" Link="Oanda\RestV20\Model\InlineResponse20013.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse20014.cs" Link="Oanda\RestV20\Model\InlineResponse20014.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse20015.cs" Link="Oanda\RestV20\Model\InlineResponse20015.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse20016.cs" Link="Oanda\RestV20\Model\InlineResponse20016.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse20017.cs" Link="Oanda\RestV20\Model\InlineResponse20017.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse20018.cs" Link="Oanda\RestV20\Model\InlineResponse20018.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse20019.cs" Link="Oanda\RestV20\Model\InlineResponse20019.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse2002.cs" Link="Oanda\RestV20\Model\InlineResponse2002.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse20020.cs" Link="Oanda\RestV20\Model\InlineResponse20020.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse20021.cs" Link="Oanda\RestV20\Model\InlineResponse20021.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse20022.cs" Link="Oanda\RestV20\Model\InlineResponse20022.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse20023.cs" Link="Oanda\RestV20\Model\InlineResponse20023.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse20024.cs" Link="Oanda\RestV20\Model\InlineResponse20024.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse20025.cs" Link="Oanda\RestV20\Model\InlineResponse20025.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse20026.cs" Link="Oanda\RestV20\Model\InlineResponse20026.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse20027.cs" Link="Oanda\RestV20\Model\InlineResponse20027.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse20028.cs" Link="Oanda\RestV20\Model\InlineResponse20028.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse20029.cs" Link="Oanda\RestV20\Model\InlineResponse20029.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse2003.cs" Link="Oanda\RestV20\Model\InlineResponse2003.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse2004.cs" Link="Oanda\RestV20\Model\InlineResponse2004.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse2005.cs" Link="Oanda\RestV20\Model\InlineResponse2005.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse2006.cs" Link="Oanda\RestV20\Model\InlineResponse2006.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse2007.cs" Link="Oanda\RestV20\Model\InlineResponse2007.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse2008.cs" Link="Oanda\RestV20\Model\InlineResponse2008.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse2009.cs" Link="Oanda\RestV20\Model\InlineResponse2009.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse201.cs" Link="Oanda\RestV20\Model\InlineResponse201.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse2011.cs" Link="Oanda\RestV20\Model\InlineResponse2011.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse400.cs" Link="Oanda\RestV20\Model\InlineResponse400.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse4001.cs" Link="Oanda\RestV20\Model\InlineResponse4001.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse4002.cs" Link="Oanda\RestV20\Model\InlineResponse4002.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse4003.cs" Link="Oanda\RestV20\Model\InlineResponse4003.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse4004.cs" Link="Oanda\RestV20\Model\InlineResponse4004.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse4005.cs" Link="Oanda\RestV20\Model\InlineResponse4005.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse4006.cs" Link="Oanda\RestV20\Model\InlineResponse4006.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse4007.cs" Link="Oanda\RestV20\Model\InlineResponse4007.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse401.cs" Link="Oanda\RestV20\Model\InlineResponse401.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse404.cs" Link="Oanda\RestV20\Model\InlineResponse404.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse4041.cs" Link="Oanda\RestV20\Model\InlineResponse4041.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse4042.cs" Link="Oanda\RestV20\Model\InlineResponse4042.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse4043.cs" Link="Oanda\RestV20\Model\InlineResponse4043.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse4044.cs" Link="Oanda\RestV20\Model\InlineResponse4044.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse4045.cs" Link="Oanda\RestV20\Model\InlineResponse4045.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InlineResponse4046.cs" Link="Oanda\RestV20\Model\InlineResponse4046.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\Instrument.cs" Link="Oanda\RestV20\Model\Instrument.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InstrumentName.cs" Link="Oanda\RestV20\Model\InstrumentName.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\InstrumentType.cs" Link="Oanda\RestV20\Model\InstrumentType.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\LimitOrder.cs" Link="Oanda\RestV20\Model\LimitOrder.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\LimitOrderReason.cs" Link="Oanda\RestV20\Model\LimitOrderReason.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\LimitOrderRejectTransaction.cs" Link="Oanda\RestV20\Model\LimitOrderRejectTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\LimitOrderRequest.cs" Link="Oanda\RestV20\Model\LimitOrderRequest.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\LimitOrderTransaction.cs" Link="Oanda\RestV20\Model\LimitOrderTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\LiquidityRegenerationSchedule.cs" Link="Oanda\RestV20\Model\LiquidityRegenerationSchedule.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\LiquidityRegenerationScheduleStep.cs" Link="Oanda\RestV20\Model\LiquidityRegenerationScheduleStep.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\MarginCallEnterTransaction.cs" Link="Oanda\RestV20\Model\MarginCallEnterTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\MarginCallExitTransaction.cs" Link="Oanda\RestV20\Model\MarginCallExitTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\MarginCallExtendTransaction.cs" Link="Oanda\RestV20\Model\MarginCallExtendTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\MarketIfTouchedOrder.cs" Link="Oanda\RestV20\Model\MarketIfTouchedOrder.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\MarketIfTouchedOrderReason.cs" Link="Oanda\RestV20\Model\MarketIfTouchedOrderReason.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\MarketIfTouchedOrderRejectTransaction.cs" Link="Oanda\RestV20\Model\MarketIfTouchedOrderRejectTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\MarketIfTouchedOrderRequest.cs" Link="Oanda\RestV20\Model\MarketIfTouchedOrderRequest.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\MarketIfTouchedOrderTransaction.cs" Link="Oanda\RestV20\Model\MarketIfTouchedOrderTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\MarketOrder.cs" Link="Oanda\RestV20\Model\MarketOrder.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\MarketOrderDelayedTradeClose.cs" Link="Oanda\RestV20\Model\MarketOrderDelayedTradeClose.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\MarketOrderMarginCloseout.cs" Link="Oanda\RestV20\Model\MarketOrderMarginCloseout.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\MarketOrderMarginCloseoutReason.cs" Link="Oanda\RestV20\Model\MarketOrderMarginCloseoutReason.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\MarketOrderPositionCloseout.cs" Link="Oanda\RestV20\Model\MarketOrderPositionCloseout.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\MarketOrderReason.cs" Link="Oanda\RestV20\Model\MarketOrderReason.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\MarketOrderRejectTransaction.cs" Link="Oanda\RestV20\Model\MarketOrderRejectTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\MarketOrderRequest.cs" Link="Oanda\RestV20\Model\MarketOrderRequest.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\MarketOrderTradeClose.cs" Link="Oanda\RestV20\Model\MarketOrderTradeClose.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\MarketOrderTransaction.cs" Link="Oanda\RestV20\Model\MarketOrderTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\OpenTradeFinancing.cs" Link="Oanda\RestV20\Model\OpenTradeFinancing.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\Order.cs" Link="Oanda\RestV20\Model\Order.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\OrderCancelReason.cs" Link="Oanda\RestV20\Model\OrderCancelReason.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\OrderCancelRejectTransaction.cs" Link="Oanda\RestV20\Model\OrderCancelRejectTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\OrderCancelTransaction.cs" Link="Oanda\RestV20\Model\OrderCancelTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\OrderClientExtensionsModifyRejectTransaction.cs" Link="Oanda\RestV20\Model\OrderClientExtensionsModifyRejectTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\OrderClientExtensionsModifyTransaction.cs" Link="Oanda\RestV20\Model\OrderClientExtensionsModifyTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\OrderFillReason.cs" Link="Oanda\RestV20\Model\OrderFillReason.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\OrderFillTransaction.cs" Link="Oanda\RestV20\Model\OrderFillTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\OrderID.cs" Link="Oanda\RestV20\Model\OrderID.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\OrderIdentifier.cs" Link="Oanda\RestV20\Model\OrderIdentifier.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\OrderPositionFill.cs" Link="Oanda\RestV20\Model\OrderPositionFill.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\OrderRequest.cs" Link="Oanda\RestV20\Model\OrderRequest.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\OrderSpecifier.cs" Link="Oanda\RestV20\Model\OrderSpecifier.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\OrderState.cs" Link="Oanda\RestV20\Model\OrderState.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\OrderTriggerCondition.cs" Link="Oanda\RestV20\Model\OrderTriggerCondition.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\OrderType.cs" Link="Oanda\RestV20\Model\OrderType.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\Position.cs" Link="Oanda\RestV20\Model\Position.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\PositionAggregationMode.cs" Link="Oanda\RestV20\Model\PositionAggregationMode.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\PositionFinancing.cs" Link="Oanda\RestV20\Model\PositionFinancing.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\PositionSide.cs" Link="Oanda\RestV20\Model\PositionSide.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\Price.cs" Link="Oanda\RestV20\Model\Price.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\PriceBucket.cs" Link="Oanda\RestV20\Model\PriceBucket.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\PriceStatus.cs" Link="Oanda\RestV20\Model\PriceStatus.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\PriceValue.cs" Link="Oanda\RestV20\Model\PriceValue.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\PricingHeartbeat.cs" Link="Oanda\RestV20\Model\PricingHeartbeat.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\QuoteHomeConversionFactors.cs" Link="Oanda\RestV20\Model\QuoteHomeConversionFactors.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\ReopenTransaction.cs" Link="Oanda\RestV20\Model\ReopenTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\ReplaceOrderBody.cs" Link="Oanda\RestV20\Model\ReplaceOrderBody.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\RequestID.cs" Link="Oanda\RestV20\Model\RequestID.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\ResetResettablePLTransaction.cs" Link="Oanda\RestV20\Model\ResetResettablePLTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\SetOrderClientExtensionsBody.cs" Link="Oanda\RestV20\Model\SetOrderClientExtensionsBody.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\SetTradeClientExtensionsBody.cs" Link="Oanda\RestV20\Model\SetTradeClientExtensionsBody.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\SetTradeDependentOrdersBody.cs" Link="Oanda\RestV20\Model\SetTradeDependentOrdersBody.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\StopLossDetails.cs" Link="Oanda\RestV20\Model\StopLossDetails.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\StopLossOrder.cs" Link="Oanda\RestV20\Model\StopLossOrder.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\StopLossOrderReason.cs" Link="Oanda\RestV20\Model\StopLossOrderReason.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\StopLossOrderRejectTransaction.cs" Link="Oanda\RestV20\Model\StopLossOrderRejectTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\StopLossOrderRequest.cs" Link="Oanda\RestV20\Model\StopLossOrderRequest.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\StopLossOrderTransaction.cs" Link="Oanda\RestV20\Model\StopLossOrderTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\StopOrder.cs" Link="Oanda\RestV20\Model\StopOrder.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\StopOrderReason.cs" Link="Oanda\RestV20\Model\StopOrderReason.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\StopOrderRejectTransaction.cs" Link="Oanda\RestV20\Model\StopOrderRejectTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\StopOrderRequest.cs" Link="Oanda\RestV20\Model\StopOrderRequest.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\StopOrderTransaction.cs" Link="Oanda\RestV20\Model\StopOrderTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TakeProfitDetails.cs" Link="Oanda\RestV20\Model\TakeProfitDetails.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TakeProfitOrder.cs" Link="Oanda\RestV20\Model\TakeProfitOrder.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TakeProfitOrderReason.cs" Link="Oanda\RestV20\Model\TakeProfitOrderReason.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TakeProfitOrderRejectTransaction.cs" Link="Oanda\RestV20\Model\TakeProfitOrderRejectTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TakeProfitOrderRequest.cs" Link="Oanda\RestV20\Model\TakeProfitOrderRequest.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TakeProfitOrderTransaction.cs" Link="Oanda\RestV20\Model\TakeProfitOrderTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TimeInForce.cs" Link="Oanda\RestV20\Model\TimeInForce.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\Trade.cs" Link="Oanda\RestV20\Model\Trade.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TradeClientExtensionsModifyRejectTransaction.cs" Link="Oanda\RestV20\Model\TradeClientExtensionsModifyRejectTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TradeClientExtensionsModifyTransaction.cs" Link="Oanda\RestV20\Model\TradeClientExtensionsModifyTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TradeID.cs" Link="Oanda\RestV20\Model\TradeID.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TradeOpen.cs" Link="Oanda\RestV20\Model\TradeOpen.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TradeReduce.cs" Link="Oanda\RestV20\Model\TradeReduce.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TradeSpecifier.cs" Link="Oanda\RestV20\Model\TradeSpecifier.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TradeState.cs" Link="Oanda\RestV20\Model\TradeState.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TradeSummary.cs" Link="Oanda\RestV20\Model\TradeSummary.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TrailingStopLossDetails.cs" Link="Oanda\RestV20\Model\TrailingStopLossDetails.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TrailingStopLossOrder.cs" Link="Oanda\RestV20\Model\TrailingStopLossOrder.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TrailingStopLossOrderReason.cs" Link="Oanda\RestV20\Model\TrailingStopLossOrderReason.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TrailingStopLossOrderRejectTransaction.cs" Link="Oanda\RestV20\Model\TrailingStopLossOrderRejectTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TrailingStopLossOrderRequest.cs" Link="Oanda\RestV20\Model\TrailingStopLossOrderRequest.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TrailingStopLossOrderTransaction.cs" Link="Oanda\RestV20\Model\TrailingStopLossOrderTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\Transaction.cs" Link="Oanda\RestV20\Model\Transaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TransactionFilter.cs" Link="Oanda\RestV20\Model\TransactionFilter.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TransactionHeartbeat.cs" Link="Oanda\RestV20\Model\TransactionHeartbeat.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TransactionID.cs" Link="Oanda\RestV20\Model\TransactionID.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TransactionRejectReason.cs" Link="Oanda\RestV20\Model\TransactionRejectReason.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TransactionType.cs" Link="Oanda\RestV20\Model\TransactionType.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TransferFundsRejectTransaction.cs" Link="Oanda\RestV20\Model\TransferFundsRejectTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\TransferFundsTransaction.cs" Link="Oanda\RestV20\Model\TransferFundsTransaction.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\UnitsAvailable.cs" Link="Oanda\RestV20\Model\UnitsAvailable.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\UnitsAvailableDetails.cs" Link="Oanda\RestV20\Model\UnitsAvailableDetails.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\UserInfo.cs" Link="Oanda\RestV20\Model\UserInfo.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\UserInfoExternal.cs" Link="Oanda\RestV20\Model\UserInfoExternal.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\UserSpecifier.cs" Link="Oanda\RestV20\Model\UserSpecifier.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\VWAPReceipt.cs" Link="Oanda\RestV20\Model\VWAPReceipt.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Model\WeeklyAlignment.cs" Link="Oanda\RestV20\Model\WeeklyAlignment.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Session\PricingStreamSession.cs" Link="Oanda\RestV20\Session\PricingStreamSession.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Session\StreamSession.cs" Link="Oanda\RestV20\Session\StreamSession.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\RestV20\Session\TransactionStreamSession.cs" Link="Oanda\RestV20\Session\TransactionStreamSession.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\Server.cs" Link="Oanda\Server.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\CSharpAPI.deps.json" Link="InteractiveBrokers\Brokerage\CSharpAPI.deps.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Binance\Converters\" />
+    <Folder Include="Bitfinex\Converters\" />
+    <Folder Include="Bitfinex\Messages\" />
+    <Folder Include="InteractiveBrokers\Brokerage\FinancialAdvisor\" />
+    <Folder Include="InteractiveBrokers\Client\" />
+    <Folder Include="InteractiveBrokers\Toolbox\" />
+    <Folder Include="Coinbase\" />
+    <Folder Include="Kraken\Converters\" />
+    <Folder Include="Kraken\Models\" />
+    <Folder Include="Oanda\RestV20\Api\" />
+    <Folder Include="Oanda\RestV20\Client\" />
+    <Folder Include="Oanda\RestV20\Model\" />
+    <Folder Include="Oanda\RestV20\Session\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\CSharpAPI.dll" Link="InteractiveBrokers\Brokerage\CSharpAPI.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="QuantConnect.IBAutomater" Version="2.0.71" />
+    <PackageReference Include="RestSharp" Version="109.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Api\QuantConnect.Api.csproj" />
+    <ProjectReference Include="..\Brokerages\QuantConnect.Brokerages.csproj" />
+    <ProjectReference Include="..\Common\QuantConnect.csproj" />
+    <ProjectReference Include="..\Logging\QuantConnect.Logging.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="CSharpAPI">
+      <HintPath>..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\CSharpAPI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

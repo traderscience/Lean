@@ -475,6 +475,65 @@ namespace QuantConnect
             return Generate(date, symbol, SecurityType.Equity, market);
         }
 
+       /// <summary>
+        /// GenerateMarketStats - Iqfeed MKTSTATS symbol
+        /// </summary>
+        /// <param name="date"></param>
+        /// <param name="symbol"></param>
+        /// <param name="market"></param>
+        /// <returns></returns>
+        public static SecurityIdentifier GenerateMarketStats(DateTime date, string symbol, string market)
+        {
+            return Generate(date, symbol, SecurityType.MarketStats, market);
+        }
+
+        /// <summary>
+        /// Helper overload that will search the mapfiles to resolve the first date. This implementation
+        /// uses the configured <see cref="IMapFileProvider"/> via the <see cref="Composer.Instance"/>
+        /// </summary>
+        /// <param name="symbol">The symbol as it is known today</param>
+        /// <param name="market">The market</param>
+        /// <param name="mapSymbol">Specifies if symbol should be mapped using map file provider</param>
+        /// <param name="mapFileProvider">Specifies the IMapFileProvider to use for resolving symbols, specify null to load from Composer</param>
+        /// <param name="mappingResolveDate">The date to use to resolve the map file. Default value is <see cref="DateTime.Today"/></param>
+        /// <returns>A new <see cref="SecurityIdentifier"/> representing the specified symbol today</returns>
+        public static SecurityIdentifier GenerateMarketStats(string symbol, string market, bool mapSymbol = true, IMapFileProvider mapFileProvider = null, DateTime? mappingResolveDate = null)
+        {
+            var firstDate = DefaultDate;
+            if (mapSymbol)
+            {
+                // rje - check security type arg
+                var firstTickerDate = GetFirstTickerAndDate(mapFileProvider ?? MapFileProvider.Value, symbol, market, securityType:SecurityType.Base, mappingResolveDate: mappingResolveDate);
+                firstDate = firstTickerDate.Item2;
+                symbol = firstTickerDate.Item1;
+            }
+
+            return GenerateMarketStats(symbol, market);
+        }
+        
+       /// <summary>
+        /// Generate Strip Symbol
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="market"></param>
+        /// <returns></returns>
+        public static SecurityIdentifier GenerateStrip(string symbol, string market)
+        {
+            return Generate(DefaultDate, symbol, SecurityType.Strip, market);
+        }
+
+        /// <summary>
+        /// Generate IQfeed MKTSTATS symbol
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="market"></param>
+        /// <returns></returns>
+        public static SecurityIdentifier GenerateMarketStats(string symbol, string market)
+        {
+            return Generate(DefaultDate, symbol, SecurityType.MarketStats, market);
+        }
+        
+
         /// <summary>
         /// Generates a new <see cref="SecurityIdentifier"/> for a <see cref="ConstituentsUniverseData"/>.
         /// Note that the symbol ticker is case sensitive here.
@@ -642,6 +701,9 @@ namespace QuantConnect
                 case SecurityType.Base:
                 case SecurityType.Equity:
                 case SecurityType.Future:
+                case SecurityType.Index:
+                case SecurityType.Strip:
+                case SecurityType.MarketStats:
                     result._date = date;
                     break;
                 case SecurityType.Option:

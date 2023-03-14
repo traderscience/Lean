@@ -1,4 +1,4 @@
-﻿/*
+/*
  * QUANTCONNECT.COM - Democratizing Finance, Empowering Individuals.
  * Lean Algorithmic Trading Engine v2.0. Copyright 2014 QuantConnect Corporation.
  *
@@ -14,8 +14,8 @@
 */
 
 using System;
+using System.Security.Policy;
 using Newtonsoft.Json;
-using QuantConnect.Configuration;
 using QuantConnect.Logging;
 using QuantConnect.Orders;
 using RestSharp;
@@ -46,7 +46,12 @@ namespace QuantConnect.Api
         {
             _token = token;
             _userId = userId.ToStringInvariant();
-            Client = new RestClient("https://www.quantconnect.com/api/v2/");
+            var restOptions = new RestClientOptions()
+            {
+                BaseUrl = new Uri("https://www.quantconnect.com/api/v2/"),
+                Timeout = 30000
+            };
+            Client = new RestClient(restOptions);
         }
 
         /// <summary>
@@ -56,7 +61,7 @@ namespace QuantConnect.Api
         {
             get
             {
-                var request = new RestRequest("authenticate", Method.GET);
+                var request = new RestRequest("authenticate", Method.Get);
                 AuthenticationResponse response;
                 if (TryRequest(request, out response))
                 {
@@ -87,10 +92,10 @@ namespace QuantConnect.Api
                 var hash = Api.CreateSecureHash(timestamp, _token);
                 request.AddHeader("Timestamp", timestamp.ToStringInvariant());
 
-                Client.Authenticator = new HttpBasicAuthenticator(_userId, hash);
+                Client.UseAuthenticator(new HttpBasicAuthenticator(_userId, hash));
 
                 // Execute the authenticated REST API Call
-                var restsharpResponse = Client.Execute(request);
+                var restsharpResponse = Client.ExecuteAsync(request).GetAwaiter().GetResult();
 
                 // Use custom converter for deserializing live results data
                 JsonConvert.DefaultSettings = () => new JsonSerializerSettings

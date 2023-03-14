@@ -78,7 +78,7 @@ namespace QuantConnect.Api
 
         public ProjectResponse CreateProject(string name, Language language, string organizationId = null)
         {
-            var request = new RestRequest("projects/create", Method.POST)
+            var request = new RestRequest("projects/create", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -117,7 +117,7 @@ namespace QuantConnect.Api
 
         public ProjectResponse ReadProject(int projectId)
         {
-            var request = new RestRequest("projects/read", Method.POST)
+            var request = new RestRequest("projects/read", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -138,7 +138,7 @@ namespace QuantConnect.Api
 
         public ProjectResponse ListProjects()
         {
-            var request = new RestRequest("projects/read", Method.POST)
+            var request = new RestRequest("projects/read", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -158,7 +158,7 @@ namespace QuantConnect.Api
 
         public ProjectFilesResponse AddProjectFile(int projectId, string name, string content)
         {
-            var request = new RestRequest("files/create", Method.POST)
+            var request = new RestRequest("files/create", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -185,7 +185,7 @@ namespace QuantConnect.Api
 
         public RestResponse UpdateProjectFileName(int projectId, string oldFileName, string newFileName)
         {
-            var request = new RestRequest("files/update", Method.POST)
+            var request = new RestRequest("files/update", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -212,7 +212,7 @@ namespace QuantConnect.Api
 
         public RestResponse UpdateProjectFileContent(int projectId, string fileName, string newFileContents)
         {
-            var request = new RestRequest("files/update", Method.POST)
+            var request = new RestRequest("files/update", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -237,7 +237,7 @@ namespace QuantConnect.Api
 
         public ProjectFilesResponse ReadProjectFiles(int projectId)
         {
-            var request = new RestRequest("files/read", Method.POST)
+            var request = new RestRequest("files/read", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -258,7 +258,7 @@ namespace QuantConnect.Api
         /// <returns><see cref="ProjectNodesResponse"/> that includes the information about all nodes in the project</returns>
         public ProjectNodesResponse ReadProjectNodes(int projectId)
         {
-            var request = new RestRequest("projects/nodes/read", Method.POST)
+            var request = new RestRequest("projects/nodes/read", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -281,7 +281,7 @@ namespace QuantConnect.Api
         /// <returns><see cref="ProjectNodesResponse"/> that includes the information about all nodes in the project</returns>
         public ProjectNodesResponse UpdateProjectNodes(int projectId, string[] nodes)
         {
-            var request = new RestRequest("projects/nodes/update", Method.POST)
+            var request = new RestRequest("projects/nodes/update", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -305,7 +305,7 @@ namespace QuantConnect.Api
 
         public ProjectFilesResponse ReadProjectFile(int projectId, string fileName)
         {
-            var request = new RestRequest("files/read", Method.POST)
+            var request = new RestRequest("files/read", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -329,7 +329,7 @@ namespace QuantConnect.Api
 
         public RestResponse DeleteProjectFile(int projectId, string name)
         {
-            var request = new RestRequest("files/delete", Method.POST)
+            var request = new RestRequest("files/delete", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -352,7 +352,7 @@ namespace QuantConnect.Api
 
         public RestResponse DeleteProject(int projectId)
         {
-            var request = new RestRequest("projects/delete", Method.POST)
+            var request = new RestRequest("projects/delete", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -374,7 +374,7 @@ namespace QuantConnect.Api
 
         public Compile CreateCompile(int projectId)
         {
-            var request = new RestRequest("compile/create", Method.POST)
+            var request = new RestRequest("compile/create", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -397,7 +397,7 @@ namespace QuantConnect.Api
 
         public Compile ReadCompile(int projectId, string compileId)
         {
-            var request = new RestRequest("compile/read", Method.POST)
+            var request = new RestRequest("compile/read", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -432,7 +432,7 @@ namespace QuantConnect.Api
 
         public Backtest CreateBacktest(int projectId, string compileId, string backtestName)
         {
-            var request = new RestRequest("backtests/create", Method.POST)
+            var request = new RestRequest("backtests/create", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -464,7 +464,7 @@ namespace QuantConnect.Api
 
         public Backtest ReadBacktest(int projectId, string backtestId, bool getCharts = true)
         {
-            var request = new RestRequest("backtests/read", Method.POST)
+            var request = new RestRequest("backtests/read", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -496,7 +496,7 @@ namespace QuantConnect.Api
                         continue;
                     }
 
-                    var chartRequest = new RestRequest("backtests/read", Method.POST)
+                    var chartRequest = new RestRequest("backtests/read", Method.Post)
                     {
                         RequestFormat = DataFormat.Json
                     };
@@ -544,7 +544,7 @@ namespace QuantConnect.Api
 
         public List<Order> ReadBacktestOrders(int projectId, string backtestId, int start = 0, int end = 100)
         {
-            var request = new RestRequest("backtests/read/orders", Method.POST)
+            var request = new RestRequest("backtests/read/orders", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -571,7 +571,7 @@ namespace QuantConnect.Api
 
         public RestResponse UpdateBacktest(int projectId, string backtestId, string name = "", string note = "")
         {
-            var request = new RestRequest("backtests/update", Method.POST)
+            var request = new RestRequest("backtests/update", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -596,7 +596,7 @@ namespace QuantConnect.Api
 
         public BacktestList ListBacktests(int projectId)
         {
-            var request = new RestRequest("backtests/read", Method.POST)
+            var request = new RestRequest("backtests/read", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -619,7 +619,7 @@ namespace QuantConnect.Api
 
         public RestResponse DeleteBacktest(int projectId, string backtestId)
         {
-            var request = new RestRequest("backtests/delete", Method.POST)
+            var request = new RestRequest("backtests/delete", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -652,7 +652,7 @@ namespace QuantConnect.Api
                                                  BaseLiveAlgorithmSettings baseLiveAlgorithmSettings,
                                                  string versionId = "-1")
         {
-            var request = new RestRequest("live/create", Method.POST)
+            var request = new RestRequest("live/create", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -694,7 +694,7 @@ namespace QuantConnect.Api
                     "The Api only supports Algorithm Statuses of Running, Stopped, RuntimeError and Liquidated");
             }
 
-            var request = new RestRequest("live/read", Method.POST)
+            var request = new RestRequest("live/read", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -728,7 +728,7 @@ namespace QuantConnect.Api
 
         public LiveAlgorithmResults ReadLiveAlgorithm(int projectId, string deployId)
         {
-            var request = new RestRequest("live/read", Method.POST)
+            var request = new RestRequest("live/read", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -754,7 +754,7 @@ namespace QuantConnect.Api
 
         public List<Order> ReadLiveOrders(int projectId, int start = 0, int end = 100)
         {
-            var request = new RestRequest("live/read/orders", Method.POST)
+            var request = new RestRequest("live/read/orders", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -777,7 +777,7 @@ namespace QuantConnect.Api
 
         public RestResponse LiquidateLiveAlgorithm(int projectId)
         {
-            var request = new RestRequest("live/update/liquidate", Method.POST)
+            var request = new RestRequest("live/update/liquidate", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -799,7 +799,7 @@ namespace QuantConnect.Api
 
         public RestResponse StopLiveAlgorithm(int projectId)
         {
-            var request = new RestRequest("live/update/stop", Method.POST)
+            var request = new RestRequest("live/update/stop", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -827,7 +827,7 @@ namespace QuantConnect.Api
             var epochStartTime = startTime == null ? 0 : Time.DateTimeToUnixTimeStamp(startTime.Value);
             var epochEndTime   = endTime   == null ? Time.DateTimeToUnixTimeStamp(DateTime.UtcNow) : Time.DateTimeToUnixTimeStamp(endTime.Value);
 
-            var request = new RestRequest("live/read/log", Method.POST)
+            var request = new RestRequest("live/read/log", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -861,7 +861,7 @@ namespace QuantConnect.Api
             // Prepare filePath for request
             filePath = FormatPathForDataRequest(filePath);
 
-            var request = new RestRequest("data/read", Method.POST)
+            var request = new RestRequest("data/read", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -899,7 +899,7 @@ namespace QuantConnect.Api
                     $" three directories deep. FilePath: {filePath}");
             }
 
-            var request = new RestRequest("data/list", Method.POST)
+            var request = new RestRequest("data/list", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -918,7 +918,7 @@ namespace QuantConnect.Api
         /// </summary>
         public DataPricesList ReadDataPrices(string organizationId)
         {
-            var request = new RestRequest("data/prices", Method.POST)
+            var request = new RestRequest("data/prices", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -940,7 +940,7 @@ namespace QuantConnect.Api
         /// <returns><see cref="BacktestReport"/></returns>
         public BacktestReport ReadBacktestReport(int projectId, string backtestId)
         {
-            var request = new RestRequest("backtests/read/report", Method.POST)
+            var request = new RestRequest("backtests/read/report", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -1125,7 +1125,7 @@ namespace QuantConnect.Api
         /// <param name="organizationId">The target organization id, if null will return default organization</param>
         public Account ReadAccount(string organizationId = null)
         {
-            var request = new RestRequest("account/read", Method.POST)
+            var request = new RestRequest("account/read", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -1145,7 +1145,7 @@ namespace QuantConnect.Api
         /// <returns></returns>
         public List<Organization> ListOrganizations()
         {
-            var request = new RestRequest("organizations/list", Method.POST)
+            var request = new RestRequest("organizations/list", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -1161,7 +1161,7 @@ namespace QuantConnect.Api
         /// <returns></returns>
         public Organization ReadOrganization(string organizationId = null)
         {
-            var request = new RestRequest("organizations/read", Method.POST)
+            var request = new RestRequest("organizations/read", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -1199,7 +1199,7 @@ namespace QuantConnect.Api
             HashSet<OptimizationParameter> parameters,
             IReadOnlyList<Constraint> constraints)
         {
-            var request = new RestRequest("optimizations/estimate", Method.POST)
+            var request = new RestRequest("optimizations/estimate", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -1251,7 +1251,7 @@ namespace QuantConnect.Api
             string nodeType,
             int parallelNodes)
         {
-            var request = new RestRequest("optimizations/create", Method.POST)
+            var request = new RestRequest("optimizations/create", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -1283,7 +1283,7 @@ namespace QuantConnect.Api
         /// <returns>A list of BaseOptimization objects, <see cref="BaseOptimization"/></returns>
         public List<BaseOptimization> ListOptimizations(int projectId)
         {
-            var request = new RestRequest("optimizations/list", Method.POST)
+            var request = new RestRequest("optimizations/list", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -1304,7 +1304,7 @@ namespace QuantConnect.Api
         /// <returns><see cref="Optimization"/></returns>
         public Optimization ReadOptimization(string optimizationId)
         {
-            var request = new RestRequest("optimizations/read", Method.POST)
+            var request = new RestRequest("optimizations/read", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -1325,7 +1325,7 @@ namespace QuantConnect.Api
         /// <returns><see cref="RestResponse"/></returns>
         public RestResponse AbortOptimization(string optimizationId)
         {
-            var request = new RestRequest("optimizations/abort", Method.POST)
+            var request = new RestRequest("optimizations/abort", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -1347,7 +1347,7 @@ namespace QuantConnect.Api
         /// <returns><see cref="RestResponse"/></returns>
         public RestResponse UpdateOptimization(string optimizationId, string name = null)
         {
-            var request = new RestRequest("optimizations/update", Method.POST)
+            var request = new RestRequest("optimizations/update", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };
@@ -1357,7 +1357,7 @@ namespace QuantConnect.Api
                 { "optimizationId", optimizationId }
             };
 
-            if (name.HasValue())
+            if (!String.IsNullOrEmpty(name))
             {
                 obj.Add("name", name);
             }
@@ -1375,7 +1375,7 @@ namespace QuantConnect.Api
         /// <returns><see cref="RestResponse"/></returns>
         public RestResponse DeleteOptimization(string optimizationId)
         {
-            var request = new RestRequest("optimizations/delete", Method.POST)
+            var request = new RestRequest("optimizations/delete", Method.Post)
             {
                 RequestFormat = DataFormat.Json
             };

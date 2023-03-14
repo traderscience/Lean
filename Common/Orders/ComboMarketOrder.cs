@@ -45,9 +45,13 @@ namespace QuantConnect.Orders
         /// <param name="groupOrderManager">Manager for the orders in the group</param>
         /// <param name="tag">User defined data tag for this order</param>
         /// <param name="properties">The order properties for this order</param>
+        /// <param name="parentOrder"></param>
+        /// <param name="ocaGroup"></param>
+        /// <param name="intent"></param>
         public ComboMarketOrder(Symbol symbol, decimal quantity, DateTime time, GroupOrderManager groupOrderManager, string tag = "",
-            IOrderProperties properties = null)
-            : base(symbol, quantity, time, tag, properties)
+                       IOrderProperties properties = null,
+                       int parentOrder = 0, string ocaGroup = null, OrderIntent intent = OrderIntent.Unknown)
+            : base(symbol, quantity, time, tag, properties, parentOrder, ocaGroup, intent)
         {
             GroupOrderManager = groupOrderManager;
         }

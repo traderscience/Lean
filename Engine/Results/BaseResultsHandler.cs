@@ -216,6 +216,16 @@ namespace QuantConnect.Lean.Engine.Results
         protected OrderEventJsonConverter OrderEventJsonConverter { get; set; }
 
         /// <summary>
+        /// Strategy Results 
+        /// </summary>
+        public string JsonResult { get; protected set; } // Enables passing results to caller
+
+        /// <summary>
+        /// Strategy Logs
+        /// </summary>
+        public string Logs { get; protected set; }        // Enables caller access to Logs
+
+        /// <summary>
         /// Creates a new instance
         /// </summary>
         protected BaseResultsHandler()

@@ -59,9 +59,24 @@ namespace QuantConnect.Interfaces
         event EventHandler<AccountEvent> AccountChanged;
 
         /// <summary>
+        /// Event that fires when brokerage changes an account holding
+        /// </summary>
+        event EventHandler<HoldingEvent> HoldingChanged;
+
+        /// <summary>
         /// Event that fires when a message is received from the brokerage
         /// </summary>
         event EventHandler<BrokerageMessageEvent> Message;
+
+        /// <summary>
+        /// Gets the unique BrokerId for the brokerage
+        /// </summary>
+        public string BrokerId { get; }
+
+        /// <summary>
+        /// Get the broker Account for the brokerage instance
+        /// </summary>
+        public string AccountId { get; }
 
         /// <summary>
         /// Gets the name of the brokerage
@@ -84,6 +99,19 @@ namespace QuantConnect.Interfaces
         /// </summary>
         /// <returns>The current holdings from the account</returns>
         List<Holding> GetAccountHoldings();
+
+        /// <summary>
+        /// Get order history for the specified date range
+        /// </summary>
+        /// <returns></returns>
+        List<OrderEvent> GetOrderHistory(DateTime? firstDate, DateTime? lastDate);
+
+        /// <summary>
+        /// Get a list of closed trades for the specified dates
+        /// </summary>
+        /// <returns></returns>
+        List<QuantConnect.Statistics.Trade> GetClosedTrades(DateTime? firstDate, DateTime? lastDate);
+
 
         /// <summary>
         /// Gets the current cash balance for each currency held in the brokerage account

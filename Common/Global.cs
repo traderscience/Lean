@@ -99,6 +99,11 @@ namespace QuantConnect
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public decimal UnrealizedPnL;
 
+        public string BrokerId { get; set; }
+        public string AccountId { get; set; }
+        public DateTime OpenDateTime { get; set; }
+
+
         /// Create a new default holding:
         public Holding()
         {
@@ -306,6 +311,16 @@ namespace QuantConnect
         /// Crypto futures
         /// </summary>
         CryptoFuture,
+
+        /// <summary>
+        /// IQFeed MarketStats
+        /// </summary>
+        MarketStats,
+
+        /// <summary>
+        /// Strips
+        /// </summary>
+        Strip
     }
 
     /// <summary>
@@ -433,7 +448,15 @@ namespace QuantConnect
         /// Hour Resolution (3)
         Hour,
         /// Daily Resolution (4)
-        Daily
+        Daily,
+        /// <summary>
+        ///  Weekly Resolution (5)
+        /// </summary>
+        Weekly,
+        /// <summary>
+        /// Monthly Resolution (6)
+        /// </summary>
+        Monthly
     }
 
     /// <summary>

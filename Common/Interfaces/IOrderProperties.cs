@@ -28,6 +28,34 @@ namespace QuantConnect.Interfaces
         TimeInForce TimeInForce { get; set; }
 
         /// <summary>
+        /// Market Price for security (submitted by client)
+        /// </summary>
+        decimal MarketPrice { get; set; }
+
+        /// <summary>
+        /// Parameter list for Broker Algo order
+        /// </summary>
+        string AlgoJsonParameters { get; set; }
+
+        /// <summary>
+        /// IgnoreMissingPrices
+        /// </summary>
+        bool IgnoreMissingPrices { get; set; }
+
+        /// <summary>
+        /// Parent order (if any)
+        /// </summary>
+        long ParentOrder { get; set; }
+
+        /// <summary>
+        /// One Cancels All order group
+        /// </summary>
+        string OcaGroup { get; set; }
+        /// <summary>
+        /// Order Intent
+        /// </summary>
+        OrderIntent Intent { get; set; }
+        /// <summary>
         /// Returns a new instance clone of this object
         /// </summary>
         IOrderProperties Clone();

@@ -74,8 +74,9 @@ namespace QuantConnect.Data.Market
         /// <param name="brickSize">The size of each renko brick</param>
         /// <param name="open">The opening price for the new bar</param>
         /// <param name="volume">Any initial volume associated with the data</param>
+        /// <param name="volumeSize">The volume limit for a new bar</param>
         public RenkoBar(Symbol symbol, DateTime time, decimal brickSize, 
-            decimal open, decimal volume)
+            decimal open, decimal volume, decimal volumeSize = 0)
         {
             Type = RenkoType.Classic;
 
@@ -86,6 +87,7 @@ namespace QuantConnect.Data.Market
             Open = open;
             Close = open;
             Volume = volume;
+            VolumeSize = volumeSize;    
             High = open;
             Low = open;
         }
@@ -101,8 +103,10 @@ namespace QuantConnect.Data.Market
         /// <param name="high">The high price for the new bar</param>
         /// <param name="low">The low price for the new bar</param>
         /// <param name="close">The closing price for the new bar</param>
+        /// <param name="volume">Volume for the new bar</param>
+        /// <param name="volumeSize">The volume limit for a new bar</param>
         public RenkoBar(Symbol symbol, DateTime start, DateTime endTime,
-            decimal brickSize, decimal open, decimal high, decimal low, decimal close)
+            decimal brickSize, decimal open, decimal high, decimal low, decimal close, decimal volume=0, decimal volumeSize = 0)
         {
             Type = RenkoType.Wicked;
 
@@ -112,7 +116,8 @@ namespace QuantConnect.Data.Market
             BrickSize = brickSize;
             Open = open;
             Close = close;
-            Volume = 0;
+            Volume = volume;
+            VolumeSize = volumeSize;
             High = high;
             Low = low;
         }

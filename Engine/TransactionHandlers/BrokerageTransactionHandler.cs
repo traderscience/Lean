@@ -37,19 +37,7 @@ namespace QuantConnect.Lean.Engine.TransactionHandlers
     public class BrokerageTransactionHandler : ITransactionHandler
     {
         private IAlgorithm _algorithm;
-
-        /// <summary>
-        /// Algorithm instance
-        /// </summary>
-        public IAlgorithm Algorithm { get { return _algorithm; } }
-
         private IBrokerage _brokerage;
-
-        /// <summary>
-        /// Brokerage instance
-        /// </summary>
-        public IBrokerage Brokerage { get { return _brokerage; } set { _brokerage = value; } }  
-
         private bool _loggedFeeAdjustmentWarning;
 
         // Counter to keep track of total amount of processed orders
@@ -106,9 +94,9 @@ namespace QuantConnect.Lean.Engine.TransactionHandlers
         /// </summary>
         protected readonly CancelPendingOrders _cancelPendingOrders = new CancelPendingOrders();
 
-        protected IResultHandler _resultHandler;  // TraderScience - changed to protected from private
+        private IResultHandler _resultHandler;
 
-        protected readonly object _lockHandleOrderEvent = new object();
+        private readonly object _lockHandleOrderEvent = new object();
 
         /// <summary>
         /// Event fired when there is a new <see cref="OrderEvent"/>
@@ -216,7 +204,7 @@ namespace QuantConnect.Lean.Engine.TransactionHandlers
         /// Boolean flag indicating the Run thread method is busy.
         /// False indicates it is completely finished processing and ready to be terminated.
         /// </summary>
-        public bool IsActive { get; protected set; }
+        public bool IsActive { get; private set; }
 
         #region Order Request Processing
 
@@ -254,7 +242,7 @@ namespace QuantConnect.Lean.Engine.TransactionHandlers
         /// </summary>
         /// <param name="request">A request detailing the order to be submitted</param>
         /// <returns>New unique, increasing orderid</returns>
-        public virtual OrderTicket AddOrder(SubmitOrderRequest request)
+        public OrderTicket AddOrder(SubmitOrderRequest request)
         {
             var response = !_algorithm.IsWarmingUp
                 ? OrderResponse.Success(request)
@@ -673,24 +661,6 @@ namespace QuantConnect.Lean.Engine.TransactionHandlers
         }
 
         /// <summary>
-        /// GetOpenPositions
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<Holding> GetOpenPositions()
-        {
-            return _brokerage?.GetAccountHoldings();
-        }
-
-        /// <summary>
-        /// GetCashBalance
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<CashAmount> GetCashBalance()
-        {
-            return _brokerage?.GetCashBalance();
-        }
-
-        /// <summary>
         /// Register an already open Order
         /// </summary>
         public void AddOpenOrder(Order order, OrderTicket orderTicket)
@@ -727,7 +697,7 @@ namespace QuantConnect.Lean.Engine.TransactionHandlers
         /// </summary>
         /// <param name="request"><see cref="OrderRequest"/> to be handled</param>
         /// <returns><see cref="OrderResponse"/> for request</returns>
-        public virtual void HandleOrderRequest(OrderRequest request)
+        public void HandleOrderRequest(OrderRequest request)
         {
             OrderResponse response;
             switch (request.OrderRequestType)
@@ -882,7 +852,7 @@ namespace QuantConnect.Lean.Engine.TransactionHandlers
         /// <summary>
         /// Handles a request to update order properties
         /// </summary>
-        protected virtual OrderResponse HandleUpdateOrderRequest(UpdateOrderRequest request)
+        private OrderResponse HandleUpdateOrderRequest(UpdateOrderRequest request)
         {
             Order order;
             OrderTicket ticket;
@@ -971,7 +941,7 @@ namespace QuantConnect.Lean.Engine.TransactionHandlers
         /// <summary>
         /// Handles a request to cancel an order
         /// </summary>
-        protected virtual OrderResponse HandleCancelOrderRequest(CancelOrderRequest request)
+        private OrderResponse HandleCancelOrderRequest(CancelOrderRequest request)
         {
             Order order;
             OrderTicket ticket;
@@ -1242,7 +1212,7 @@ namespace QuantConnect.Lean.Engine.TransactionHandlers
             }
         }
 
-        protected virtual void HandleOrderEvent(OrderEvent orderEvent)
+        private void HandleOrderEvent(OrderEvent orderEvent)
         {
             HandleOrderEvents(new List<OrderEvent> { orderEvent });
         }

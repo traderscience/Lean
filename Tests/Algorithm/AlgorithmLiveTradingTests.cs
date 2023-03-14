@@ -27,7 +27,6 @@ using QuantConnect.Lean.Engine.Results;
 using QuantConnect.Lean.Engine.TransactionHandlers;
 using QuantConnect.Orders;
 using QuantConnect.Securities;
-using QuantConnect.Statistics;
 using QuantConnect.Tests.Engine.DataFeeds;
 
 namespace QuantConnect.Tests.Algorithm
@@ -83,7 +82,6 @@ namespace QuantConnect.Tests.Algorithm
         public event EventHandler<BrokerageMessageEvent> Message;
         public event EventHandler<DelistingNotificationEventArgs> DelistingNotification;
         public event EventHandler<BrokerageOrderIdChangedEvent> OrderIdChanged;
-        public event EventHandler<HoldingEvent> HoldingChanged;
 #pragma warning restore 0067
 
         public string Name => "NullBrokerage";
@@ -100,22 +98,7 @@ namespace QuantConnect.Tests.Algorithm
         public string AccountBaseCurrency => Currencies.USD;
         public virtual IEnumerable<BaseData> GetHistory(HistoryRequest request) { return Enumerable.Empty<BaseData>(); }
         public DateTime LastSyncDateTimeUtc { get; } = DateTime.UtcNow;
-
-        public string BrokerId { get; set; }
-
-        public string AccountId { get; set; }
-
         public bool ShouldPerformCashSync(DateTime currentTimeUtc) { return false; }
         public bool PerformCashSync(IAlgorithm algorithm, DateTime currentTimeUtc, Func<TimeSpan> getTimeSinceLastFill) { return true; }
-
-        public List<OrderEvent> GetOrderHistory(DateTime? firstDate, DateTime? lastDate)
-        {
-            return new List<OrderEvent>();
-        }
-
-        public List<Trade> GetClosedTrades(DateTime? firstDate, DateTime? lastDate)
-        {
-            return new List<Trade>();
-        }
     }
 }

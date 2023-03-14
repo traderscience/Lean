@@ -16,7 +16,6 @@
 using RestSharp;
 using RestSharp.Authenticators;
 using System;
-using System.Threading.Tasks;
 
 namespace QuantConnect.ToolBox.AlphaVantageDownloader
 {
@@ -47,9 +46,7 @@ namespace QuantConnect.ToolBox.AlphaVantageDownloader
         /// </summary>
         /// <param name="client">The <see cref="IRestClient"/></param>
         /// <param name="request">The <see cref="IRestRequest"/></param>
-        public ValueTask Authenticate(RestClient client, RestRequest request)
-        {
-            return new ValueTask(new Task(() => request.AddOrUpdateParameter("apikey", _apiKey)));
-        }
+        public void Authenticate(IRestClient client, IRestRequest request)
+            => request.AddOrUpdateParameter("apikey", _apiKey);
     }
 }

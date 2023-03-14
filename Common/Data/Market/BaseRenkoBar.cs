@@ -62,11 +62,6 @@ namespace QuantConnect.Data.Market
         public decimal Volume { get; protected set; }
 
         /// <summary>
-        /// Gets the volume size limit for the bar if not price based.
-        /// </summary>
-        public decimal VolumeSize { get; protected set; }
-
-        /// <summary>
         /// Gets the end time of this renko bar or the most recent update time if it <see cref="IsClosed"/>
         /// </summary>
         public override DateTime EndTime { get; set; }

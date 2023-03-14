@@ -454,9 +454,9 @@ namespace QuantConnect.ToolBox.CoinApi
 
                 // Execute
                 var client = new RestClient(baseUrl);
-                var restRequest = new RestRequest() { Method = Method.Get };
+                var restRequest = new RestRequest(Method.GET);
                 restRequest.AddHeader("X-CoinAPI-Key", _apiKey);
-                var response = client.ExecuteAsync(restRequest).GetAwaiter().GetResult();
+                var response = client.Execute(restRequest);
 
                 // Log the information associated with the API Key's rest call limits.
                 TraceRestUsage(response);
@@ -485,7 +485,7 @@ namespace QuantConnect.ToolBox.CoinApi
 
         #endregion
 
-        private void TraceRestUsage(RestResponse response)
+        private void TraceRestUsage(IRestResponse response)
         {
             var total = GetHttpHeaderValue(response, "x-ratelimit-limit");
             var used = GetHttpHeaderValue(response, "x-ratelimit-used");
@@ -494,7 +494,7 @@ namespace QuantConnect.ToolBox.CoinApi
             Log.Trace($"CoinApiDataQueueHandler.TraceRestUsage(): Used {used}, Remaining {remaining}, Total {total}");
         }
 
-        private string GetHttpHeaderValue(RestResponse response, string propertyName)
+        private string GetHttpHeaderValue(IRestResponse response, string propertyName)
         {
             return response.Headers
                 .FirstOrDefault(x => x.Name == propertyName)?

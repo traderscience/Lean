@@ -1042,9 +1042,5 @@ namespace QuantConnect.AlgorithmFactory.Python.Wrappers
         {
             return _baseAlgorithm.Shortable(symbol, quantity);
         }
-
-        public void OnHoldingEvent(HoldingEvent holdingEvent)
-        {
-        }
     }
 }

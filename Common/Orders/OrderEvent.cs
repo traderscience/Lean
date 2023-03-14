@@ -194,61 +194,6 @@ namespace QuantConnect.Orders
         /// <summary>
         /// Order Event empty constructor required for json converter
         /// </summary>
-        /// 
-        /// <summary>
-        /// BrokerageId, eg "IB"
-        /// </summary>
-        [ProtoMember(18)]
-        public string BrokerageId { get; set; }
-
-        /// <summary>
-        /// Broker Account Id
-        /// </summary>
-        [ProtoMember(19)]
-        public string AccountId { get; set; }
-
-        /// <summary>
-        /// Order Intention (BTO, STO, BTC, STC)
-        /// </summary>
-        [ProtoMember(20)]
-        public OrderIntent Intent { get; set; }
-
-        /// <summary>
-        /// One Cancels All order group
-        /// </summary>
-        [ProtoMember(21)]
-        public String OcaGroup { get; set; }
-
-        /// <summary>
-        /// Broker Order Id
-        /// </summary>
-        [ProtoMember(22)]
-        public int BrokerOrderId { get; set; }
-
-        /// <summary>
-        /// Parent order id at broker
-        /// </summary>
-        [ProtoMember(23)]
-        public int BrokerParentOrderId { get; set; }
-
-        /// <summary>
-        /// Broker Client session Id
-        /// </summary>
-        [ProtoMember(24)]
-        public int BrokerClientId { get; set; }
-
-        /// <summary>
-        /// External client session Id
-        /// </summary>
-        [ProtoMember(25)]
-        public int ExternalClientId { get; set; }
-
-        /// <summary>
-        /// Additional notes about this event
-        /// </summary>
-        [ProtoMember(26)]
-        public string Tag { get; set; }
-
         public OrderEvent()
         {
         }

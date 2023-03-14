@@ -33,11 +33,6 @@ namespace QuantConnect.Orders
         /// <summary>
         /// The request is a <see cref="CancelOrderRequest"/> (2)
         /// </summary>
-        Cancel,
-
-        /// <summary>
-        /// This is an order created by an external app
-        /// </summary>
-        External
+        Cancel
     }
 }

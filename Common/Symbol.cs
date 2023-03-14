@@ -63,78 +63,6 @@ namespace QuantConnect
         {
             SecurityIdentifier sid;
 
-            string symbol = ticker; // RJE
-
-            // RJE - parse ticker for security type
-            if (securityType == SecurityType.Base)
-            {
-                var symParts = ticker.Split(';');
-
-                // check if this is a Forex symbol
-                if (symParts[0].EndsWith(".oanda"))
-                {
-                    ticker = symParts[0] = symParts[0].Replace(".oanda", string.Empty);
-                    market = Market.Oanda;
-                    securityType = SecurityType.Forex;
-                }
-                else
-                if (symParts[0].EndsWith(".FXCM"))
-                {
-                    ticker = symParts[0] = symParts[0].Replace(".FXCM", string.Empty);
-                    market = Market.FXCM;
-                    securityType = SecurityType.Forex;
-                }
-                else
-                if (symParts[0].StartsWith("@") && symParts[0].Contains("#"))
-                {
-                    var tickerParts = symParts[0].Substring(1).Split('#');
-                    ticker = tickerParts[0];
-                    securityType = SecurityType.Future;
-                    market = Market.USA;
-                }
-                else
-                if (symParts.Length > 1)
-                {
-                    // symbol includes security type specifier eg USDCAD;forex
-                    symbol = symParts[0];
-                    switch (symParts[1].ToLower()) //(System.Globalization.CultureInfo.InvariantCulture))
-                    {
-                        case "equity":
-                            securityType = SecurityType.Equity;
-                            break;
-                        case "forex":
-                            securityType = SecurityType.Forex;
-                            market = Market.FXCM;
-                            break;
-                        case "future":
-                            securityType = SecurityType.Future;
-                            break;
-                        case "option":
-                            securityType = SecurityType.Option;
-                            break;
-                        case "index":
-                            securityType = SecurityType.Index;
-                            break;
-                        case "cfd":
-                            securityType = SecurityType.Cfd;
-                            break;
-                        case "marketstats":
-                            securityType = SecurityType.MarketStats;
-                            break;
-                        case "strip":
-                            securityType = SecurityType.Strip;
-                            break;
-                        default:
-                            securityType = SecurityType.Equity;
-                            break;
-                    }
-                    ticker = symbol;
-                }
-                else
-                    securityType = SecurityType.Equity;
-            }
-
-
             switch (securityType)
             {
                 case SecurityType.Base:
@@ -143,14 +71,6 @@ namespace QuantConnect
 
                 case SecurityType.Equity:
                     sid = SecurityIdentifier.GenerateEquity(ticker, market);
-                    break;
-
-                case SecurityType.MarketStats:
-                    sid = SecurityIdentifier.GenerateMarketStats(ticker, market);
-                    break;
-
-                case SecurityType.Strip:
-                    sid = SecurityIdentifier.GenerateStrip(ticker, market);
                     break;
 
                 case SecurityType.Forex:

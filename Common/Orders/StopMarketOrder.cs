@@ -14,8 +14,6 @@
 */
 
 using System;
-using NodaTime;
-using System.Security.Cryptography;
 using QuantConnect.Interfaces;
 using QuantConnect.Securities;
 
@@ -55,12 +53,8 @@ namespace QuantConnect.Orders
         /// <param name="stopPrice">Price the order should be filled at if a limit order</param>
         /// <param name="tag">User defined data tag for this order</param>
         /// <param name="properties">The order properties for this order</param>
-        /// <param name="parentOrder"></param>
-        /// <param name="ocaGroup"></param>
-        /// <param name="intent"></param>
-        public StopMarketOrder(Symbol symbol, decimal quantity, decimal stopPrice, DateTime time, string tag = "", IOrderProperties properties = null,
-            int parentOrder = 0, string ocaGroup = null, OrderIntent intent = OrderIntent.Unknown)
-            : base(symbol, quantity, time, tag, properties, parentOrder, ocaGroup, intent)
+        public StopMarketOrder(Symbol symbol, decimal quantity, decimal stopPrice, DateTime time, string tag = "", IOrderProperties properties = null)
+            : base(symbol, quantity, time, tag, properties)
         {
             StopPrice = stopPrice;
 

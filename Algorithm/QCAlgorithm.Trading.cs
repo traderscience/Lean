@@ -820,29 +820,6 @@ namespace QuantConnect.Algorithm
         }
 
         /// <summary>
-        /// Send an Algo order to the transaction handler:
-        /// </summary>
-        /// <param name="symbol">String symbol for the asset</param>
-        /// <param name="quantity">Quantity of shares for limit order</param>
-        /// <param name="limitPrice">Limit price to fill this order</param>
-        /// <param name="tag">String tag for the order (optional)</param>
-        /// <param name="orderProperties">The order properties to use, which must include AlgoJsonParameters./></param>
-        /// <param name="intent">Order Intent</param>
-        /// <returns>The order ticket instance.</returns>
-        public OrderTicket AlgoOrder(Symbol symbol, decimal quantity, decimal limitPrice, string tag = "", IOrderProperties orderProperties = null, OrderIntent intent = OrderIntent.Unknown)
-        {
-            var security = Securities[symbol];
-            var request = CreateSubmitOrderRequest(OrderType.Algo, security, quantity, tag, properties: orderProperties ?? DefaultOrderProperties?.Clone(), stopPrice: 0.0m, limitPrice: limitPrice);
-            var response = PreOrderChecks(request);
-            if (response.IsError)
-            {
-                return OrderTicket.InvalidSubmitRequest(Transactions, request, response);
-            }
-            return Transactions.AddOrder(request);
-        }
-
-
-        /// <summary>
         /// Will submit an order request to the algorithm
         /// </summary>
         /// <param name="request">The request to submit</param>

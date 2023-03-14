@@ -39,40 +39,10 @@ namespace QuantConnect.Orders.Serialization
         public string AlgorithmId { get; set; }
 
         /// <summary>
-        /// 
-        /// </summary>
-        [JsonProperty("account-id")]
-        public string AccountId { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [JsonProperty("brokerage-id")]
-        public string BrokerageId { get; set; }
-
-        /// <summary>
-        /// Internal order id
+        /// Order ID
         /// </summary>
         [JsonProperty("order-id")]
         public int OrderId { get; set; }
-
-        /// <summary>
-        /// Internal parent order id
-        /// </summary>
-        [JsonProperty("parent-order-id")]
-        public int ParentOrder { get; set; }
-
-        /// <summary>
-        /// Order id at broker
-        /// </summary>
-        [JsonProperty("broker-order-id")]
-        public int BrokerOrderId { get; set; }
-
-        /// <summary>
-        /// Order parent id at broker
-        /// </summary>
-        [JsonProperty("broker-parent-order-id")]
-        public int BrokerParentId { get; set; }
 
         /// <summary>
         /// Order id to process before processing this order.
@@ -218,18 +188,6 @@ namespace QuantConnect.Orders.Serialization
         [JsonProperty("time-in-force-expiry", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public double? TimeInForceExpiry { get; set; }
 
-       /// <summary>
-        /// Order Intent (BTO, STO, .etc.)
-        /// </summary>
-        [JsonProperty("order-intent")]
-        public OrderIntent Intent { get; set; }
-
-        /// <summary>
-        /// Order oca group at broker
-        /// </summary>
-        [JsonProperty("ocagroup")]
-        public string OcaGroup { get; set; }
-
         /// <summary>
         /// The group order manager for combo orders
         /// </summary>
@@ -315,12 +273,7 @@ namespace QuantConnect.Orders.Serialization
                 TriggerPrice = limitIfTouched.TriggerPrice;
                 TriggerTouched = limitIfTouched.TriggerTouched;
             }
-            else if (order.Type == OrderType.Algo)
-            {
-                var limit = order as AlgoOrder;
-                LimitPrice = limit.LimitPrice;
-            }
- 
+
             GroupOrderManager = order.GroupOrderManager;
         }
     }

@@ -80,18 +80,5 @@ namespace QuantConnect.Lean.Engine.TransactionHandlers
         /// Register an already open Order
         /// </summary>
         void AddOpenOrder(Order order, OrderTicket orderTicket);
-
-        /// <summary>
-        /// Get a list of open positions at the broker
-        /// </summary>
-        /// <returns></returns>
-        IEnumerable<Holding> GetOpenPositions();
-
-        /// <summary>
-        /// Get a list of cash balances from broker
-        /// </summary>
-        /// <returns></returns>
-        IEnumerable<CashAmount> GetCashBalance();
-
     }
 }

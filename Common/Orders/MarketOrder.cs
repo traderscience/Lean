@@ -48,12 +48,8 @@ namespace QuantConnect.Orders
         /// <param name="price">Price of the order</param>
         /// <param name="tag">User defined data tag for this order</param>
         /// <param name="properties">The order properties for this order</param>
-        /// <param name="parentOrder"></param>
-        /// <param name="ocaGroup"></param>
-        /// <param name="intent"></param>
-        public MarketOrder(Symbol symbol, decimal quantity, DateTime time, decimal price, string tag = "", IOrderProperties properties = null,
-                    int parentOrder = 0, string ocaGroup = null, OrderIntent intent = OrderIntent.Unknown)
-                        : this(symbol, quantity, time, tag, properties, parentOrder, ocaGroup, intent)
+        public MarketOrder(Symbol symbol, decimal quantity, DateTime time, decimal price, string tag = "", IOrderProperties properties = null)
+            : this(symbol, quantity, time, tag, properties)
         {
             Price = price;
         }
@@ -66,12 +62,8 @@ namespace QuantConnect.Orders
         /// <param name="time">Time the order was placed</param>
         /// <param name="tag">User defined data tag for this order</param>
         /// <param name="properties">The order properties for this order</param>
-        /// <param name="parentOrder"></param>
-        /// <param name="ocaGroup"></param>
-        /// <param name="intent"></param>
-        public MarketOrder(Symbol symbol, decimal quantity, DateTime time, string tag = "", IOrderProperties properties = null, 
-                        int parentOrder = 0, string ocaGroup = null, OrderIntent intent = OrderIntent.Unknown)
-            : base(symbol, quantity, time, tag, properties, parentOrder, ocaGroup, intent)
+        public MarketOrder(Symbol symbol, decimal quantity, DateTime time, string tag = "", IOrderProperties properties = null)
+            : base(symbol, quantity, time, tag, properties)
         {
         }
 

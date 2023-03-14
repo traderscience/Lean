@@ -65,15 +65,7 @@ namespace QuantConnect
             Tuple.Create(CFE, 33),
             Tuple.Create(FTX, 34),
             Tuple.Create(FTXUS, 35),
-            Tuple.Create(BinanceUS, 36),
-
-            // Additional TraderScience Markets
-            Tuple.Create(TraderScience, 101),
-            Tuple.Create(Numerai, 102),
-            Tuple.Create(TradeStation, 103),
-            Tuple.Create(Collective2, 104),
-            Tuple.Create(ZuluTrade, 105),
-            Tuple.Create(QuandlBitfinex, 106)
+            Tuple.Create(BinanceUS, 36)
         };
 
         static Market()
@@ -237,36 +229,6 @@ namespace QuantConnect
         /// Binance.US
         /// </summary>
         public const string BinanceUS = "binanceus";
-
-        /// <summary>
-        /// Tradestation
-        /// </summary>
-        public const string TradeStation = "tradestation";
-
-        /// <summary>
-        /// Collective2
-        /// </summary>
-        public const string Collective2 = "collective2";
-
-        /// <summary>
-        /// ZuluTrade
-        /// </summary>
-        public const string ZuluTrade = "zulutrade";
-
-        /// <summary>
-        /// Numerai
-        /// </summary>
-        public const string Numerai = "numerai";
-
-        /// <summary>
-        /// TraderScience
-        /// </summary>
-        public const string TraderScience = "traderscience";
-
-        /// <summary>
-        /// Quandl Bitfinex
-        /// </summary>
-        public const string QuandlBitfinex = "quandlbitfinex";
 
         /// <summary>
         /// Adds the specified market to the map of available markets with the specified identifier.

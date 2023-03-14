@@ -85,8 +85,6 @@ namespace QuantConnect.Util
             var primaryDllLookupDirectory = new DirectoryInfo(dllDirectoryString).FullName;
             Log.Trace($"Composer(): Loading Assemblies from {primaryDllLookupDirectory}");
 
-            // determine if there is a separate plugin directory.
-            // If it exists, load all of its dlls
             var loadFromPluginDir = !string.IsNullOrWhiteSpace(PluginDirectory)
                 && Directory.Exists(PluginDirectory) &&
                 new DirectoryInfo(PluginDirectory).FullName != primaryDllLookupDirectory;
@@ -96,13 +94,11 @@ namespace QuantConnect.Util
                 {
                     var catalogs = new List<ComposablePartCatalog>
                     {
-                        new DirectoryCatalog(primaryDllLookupDirectory, "QuantConnect*.dll"),
-                        new DirectoryCatalog(primaryDllLookupDirectory, "TraderScience*.dll"),
+                        new DirectoryCatalog(primaryDllLookupDirectory, "*.dll"),
                         new DirectoryCatalog(primaryDllLookupDirectory, "*.exe")
                     };
                     if (loadFromPluginDir)
                     {
-                        Log.Trace($"Composer(): Loading Plugin Assemblies from {PluginDirectory}");
                         catalogs.Add(new DirectoryCatalog(PluginDirectory, "*.dll"));
                     }
                     var aggregate = new AggregateCatalog(catalogs);
@@ -124,14 +120,9 @@ namespace QuantConnect.Util
             // which is much faster that using CompositionContainer which uses reflexion
             var exportedTypes = new ConcurrentBag<Type>();
             var fileNames = Directory.EnumerateFiles(primaryDllLookupDirectory, $"{nameof(QuantConnect)}.*.dll");
-            // Private dlls
-            fileNames = fileNames.Concat(Directory.EnumerateFiles(primaryDllLookupDirectory, $"TraderScience*.dll"));
-            fileNames = fileNames.Concat(Directory.EnumerateFiles(primaryDllLookupDirectory, $"Strategy*.dll"));
-
             if (loadFromPluginDir)
             {
-                //fileNames = fileNames.Concat(Directory.EnumerateFiles(PluginDirectory, $"{nameof(QuantConnect)}.*.dll"));
-                fileNames = fileNames.Concat(Directory.EnumerateFiles(PluginDirectory, $"*.dll"));
+                fileNames = fileNames.Concat(Directory.EnumerateFiles(PluginDirectory, $"{nameof(QuantConnect)}.*.dll"));
             }
 
             // guarantee file name uniqueness
@@ -254,7 +245,7 @@ namespace QuantConnect.Util
         /// <param name="forceTypeNameOnExisting">When false, if any existing instance of type T is found, it will be returned even if type name doesn't match.
         /// This is useful in cases where a single global instance is desired, like for <see cref="IDataAggregator"/></param>
         /// <returns>The export instance</returns>
-        public T GetExportedValueByTypeName<T>(string typeName, bool forceTypeNameOnExisting = true, bool useCachedInstance = true)
+        public T GetExportedValueByTypeName<T>(string typeName, bool forceTypeNameOnExisting = true)
             where T : class
         {
             try
@@ -262,21 +253,18 @@ namespace QuantConnect.Util
                 lock (_exportedValuesLockObject)
                 {
                     T instance = null;
+                    IEnumerable values;
                     var type = typeof(T);
-
-                    if (useCachedInstance)
+                    if (_exportedValues.TryGetValue(type, out values))
                     {
-                        IEnumerable values;
-                        if (_exportedValues.TryGetValue(type, out values))
+                        // if we've already loaded this part, then just return the same one
+                        instance = values.OfType<T>().FirstOrDefault(x => !forceTypeNameOnExisting || x.GetType().MatchesTypeName(typeName));
+                        if (instance != null)
                         {
-                            // if we've already loaded this part, then just return the same one
-                            instance = values.OfType<T>().FirstOrDefault(x => !forceTypeNameOnExisting || x.GetType().MatchesTypeName(typeName));
-                            if (instance != null)
-                            {
-                                return instance;
-                            }
+                            return instance;
                         }
                     }
+
                     var typeT = _exportedTypes.Where(type1 =>
                             {
                                 try
@@ -381,17 +369,9 @@ namespace QuantConnect.Util
                     {
                         _composableParts.Wait();
                     }
-                    try
-                    {
-                        values = _compositionContainer.GetExportedValues<T>().ToList();
-                        _exportedValues[typeof(T)] = values;
-                        return values.OfType<T>();
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Error($"Composer: exception {ex.ToString()}");
-                    }
-                    return null;
+                    values = _compositionContainer.GetExportedValues<T>().ToList();
+                    _exportedValues[typeof (T)] = values;
+                    return values.OfType<T>();
                 }
             }
             catch (ReflectionTypeLoadException err)

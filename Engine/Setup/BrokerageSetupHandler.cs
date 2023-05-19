@@ -18,6 +18,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
+using System.Threading;
 using Fasterflect;
 using QuantConnect.AlgorithmFactory;
 using QuantConnect.Brokerages;
@@ -100,12 +102,19 @@ namespace QuantConnect.Lean.Engine.Setup
         {
             string error;
             IAlgorithm algorithm;
+            bool complete = false;
 
             // limit load times to 10 seconds and force the assembly to have exactly one derived type
             var loader = new Loader(false, algorithmNodePacket.Language, BaseSetupHandler.AlgorithmCreationTimeout, names => names.SingleOrAlgorithmTypeName(Config.Get("algorithm-type-name")), WorkerThread);
-            var complete = loader.TryCreateAlgorithmInstanceWithIsolator(assemblyPath, algorithmNodePacket.RamAllocation, out algorithm, out error);
+            if (true)
+            {
+                complete = loader.TryCreateAlgorithmInstance(assemblyPath, out algorithm, out error);
+            }
+            else
+            {
+                complete = loader.TryCreateAlgorithmInstanceWithIsolator(assemblyPath, algorithmNodePacket.RamAllocation, out algorithm, out error);
+            }
             if (!complete) throw new AlgorithmSetupException($"During the algorithm initialization, the following exception has occurred: {error}");
-
             return algorithm;
         }
 
@@ -125,9 +134,9 @@ namespace QuantConnect.Lean.Engine.Setup
             }
 
             // find the correct brokerage factory based on the specified brokerage in the live job packet
-            _factory = Composer.Instance.Single<IBrokerageFactory>(brokerageFactory => brokerageFactory.BrokerageType.MatchesTypeName(liveJob.Brokerage));
+            var factoryList = Composer.Instance.GetExportedValues<IBrokerageFactory>().Where(brokerageFactory => brokerageFactory.BrokerageType.MatchesTypeName(liveJob.Brokerage));
+            _factory = factoryList.FirstOrDefault();
             factory = _factory;
-
             PreloadDataQueueHandler(liveJob, uninitializedAlgorithm, factory);
 
             // initialize the correct brokerage using the resolved factory

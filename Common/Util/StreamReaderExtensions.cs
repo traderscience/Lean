@@ -102,10 +102,10 @@ namespace QuantConnect.Util
         /// <param name="delimiter">The data delimiter character to use, default is ','</param>
         /// <returns>The date time instance read</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DateTime GetDateTime(this StreamReader stream, string format = DateFormat.TwelveCharacter, char delimiter = DefaultDelimiter)
+        public static DateTime? GetDateTime(this StreamReader stream, string format = DateFormat.TwelveCharacter, char delimiter = DefaultDelimiter)
         {
             var current = (char)stream.Read();
-            while (current == ' ')
+            while (current == ' ' || current == '\n' || current == '\r' || current == delimiter)
             {
                 current = (char)stream.Read();
             }
@@ -118,6 +118,8 @@ namespace QuantConnect.Util
                 data[index++] = current;
                 current = (char)stream.Read();
             }
+            if (index != format.Length)
+                return null;
 
             return DateTime.ParseExact(data,
                 format,

@@ -59,11 +59,6 @@ namespace QuantConnect.Data
         )
         {
             _symbol = symbol;
-            // All fx data is quote data.
-            if (_securityType == SecurityType.Forex || _securityType == SecurityType.Cfd)
-            {
-                _tickType = TickType.Quote;
-            }
 
             if (_securityType != SecurityType.Equity && _securityType != SecurityType.Forex && _securityType != SecurityType.Cfd && _securityType != SecurityType.Crypto
                 && _securityType != SecurityType.Future && _securityType != SecurityType.Option && _securityType != SecurityType.FutureOption

@@ -25,7 +25,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using QuantConnect.Securities;
-using System.Net;
+//using System.Net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -201,12 +201,11 @@ namespace QuantConnect.ToolBox.AlphaVantageDownloader
             }
 
             _rateGate.WaitToProceed();
-            var url = _avClient.BuildUri(request);
             Log.Trace("Downloading /{0}?{1}", request.Resource, string.Join("&", request.Parameters));
             try
             {
                 var response = _avClient.ExecuteAsync(request).GetAwaiter().GetResult();
-                if (response.StatusCode != HttpStatusCode.OK)
+                if (response.StatusCode != System.Net.HttpStatusCode.OK)
                 {
                     Log.Error($"AlphaVantage: request failed: [{(int)response.StatusCode}] {response.StatusDescription}, Content: {response.Content}, ErrorMessage: {response.ErrorMessage}");
                     return new List<TimeSeries>();

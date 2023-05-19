@@ -45,6 +45,7 @@ namespace QuantConnect.Lean.Engine.Results
         // used for resetting out/error upon completion
         private static readonly TextWriter StandardOut = Console.Out;
         private static readonly TextWriter StandardError = Console.Error;
+        protected bool UseJsonLogs = false;
 
         private string _hostName;
 
@@ -214,6 +215,12 @@ namespace QuantConnect.Lean.Engine.Results
         /// The order event json converter instance to use
         /// </summary>
         protected OrderEventJsonConverter OrderEventJsonConverter { get; set; }
+
+        /// TraderScience additions
+        /// <summary>
+        /// Job Id
+        /// </summary>
+        public string JobId { get; set; }
 
         /// <summary>
         /// Strategy Results 
@@ -410,6 +417,7 @@ namespace QuantConnect.Lean.Engine.Results
         {
         }
 
+		
         /// <summary>
         /// Returns the location of the logs
         /// </summary>
@@ -418,12 +426,21 @@ namespace QuantConnect.Lean.Engine.Results
         /// <returns>The path to the logs</returns>
         public virtual string SaveLogs(string id, List<LogEntry> logs)
         {
-            var filename = $"{id}-log.txt";
-            var path = GetResultsPath(filename);
-            var logLines = logs.Select(x => x.Message);
-            File.WriteAllLines(path, logLines);
-            return path;
-        }
+        	string logPath;
+        	if (UseJsonLogs)
+        	{
+            	var name = $"{id}-log.json";
+            	logPath = GetResultsPath(name);
+            	File.WriteAllText(logPath, JsonConvert.SerializeObject(logs, Formatting.Indented));
+        	}
+        	else
+        	{
+            	var filename = $"{id}-log.txt";
+            	logPath = GetResultsPath(filename);
+            	var logLines = logs.Select(x => x.Message);
+            	File.WriteAllLines(logPath, logLines);
+            }
+            return logPath;        }
 
         /// <summary>
         /// Save the results to disk

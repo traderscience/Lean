@@ -29,6 +29,10 @@ using System.Net;
 using QuantConnect.Lean.Engine.DataFeeds;
 using QuantConnect.Securities;
 using QuantConnect.Util;
+using QuantConnect.Configuration;
+using System.Threading.Tasks;
+using System.Configuration;
+//using System.Runtime.Remoting.Messaging;
 
 namespace QuantConnect.ToolBox.IQFeed
 {
@@ -58,7 +62,6 @@ namespace QuantConnect.ToolBox.IQFeed
         // We store symbol data in memory by default (e.g. Equity, FX),
         // and we store root symbol placeholder (one per underlying) for those symbols that are loaded in memory on demand (e.g. Equity/Index options, Futures)
         private List<SymbolData> _symbolUniverse = new List<SymbolData>();
-
         // tickets and symbols are isomorphic
         private Dictionary<Symbol, string> _symbols = new Dictionary<Symbol, string>();
         private Dictionary<string, Symbol> _tickers = new Dictionary<string, Symbol>();
@@ -83,6 +86,7 @@ namespace QuantConnect.ToolBox.IQFeed
         private readonly SymbolFundamentalData _symbolFundamentalData;
         private readonly SymbolPropertiesDatabase _symbolPropertiesDatabase;
 
+        private string _IQFeedDirectory;
         public IQFeedDataQueueUniverseProvider()
         {
             _symbolPropertiesDatabase = SymbolPropertiesDatabase.FromDataFolder();
@@ -90,8 +94,28 @@ namespace QuantConnect.ToolBox.IQFeed
             _symbolFundamentalData.Connect();
             _symbolFundamentalData.SetClientName("SymbolFundamentalData");
 
+            var dataDirectory = Config.Get("data-folder", null);
+            if (dataDirectory == null)
+            {
+                Log.Error("IQfeedDataQueueUniverse:LoadSymbols: data directory not specified");
+                throw new Exception("Data Directory not specified");
+            }
+            _IQFeedDirectory = Path.Combine(dataDirectory, "IQFeed");
+
+           if (!Directory.Exists(_IQFeedDirectory)) 
+                Directory.CreateDirectory(_IQFeedDirectory);
+
             var symbols = LoadSymbols();
             UpdateCollections(symbols);
+
+            /*
+            var loaderTask = Task.Run(() =>
+            {
+                var symbols = LoadSymbols();
+                UpdateCollections(symbols);
+            });
+            loaderTask.Wait();
+            */
         }
 
         /// <summary>
@@ -251,7 +275,6 @@ namespace QuantConnect.ToolBox.IQFeed
             // default URI
             const string uri = "http://www.dtniq.com/product/mktsymbols_v2.zip";
 
-            if (!Directory.Exists(Globals.Cache)) Directory.CreateDirectory(Globals.Cache);
 
             // we try to check if we already downloaded the file and it is in cache. If yes, we use it. Otherwise, download new file.
             IStreamReader reader;
@@ -261,13 +284,13 @@ namespace QuantConnect.ToolBox.IQFeed
             var thisYearWeek = $"{DateTime.Today.ToStringInvariant("yyyy")}-{dayOfWeek.ToStringInvariant()}";
 
             var todayZipFileName = "IQFeed-symbol-universe-" + thisYearWeek + ".zip";
-            var todayFullZipName = Path.Combine(Globals.Cache, todayZipFileName);
+            var todayFullZipName = Path.Combine(_IQFeedDirectory, todayZipFileName);
 
             var todayCsvFileName = "mktsymbols_v2.txt";
-            var todayFullCsvName = Path.Combine(Globals.Cache, todayCsvFileName);
+            var todayFullCsvName = Path.Combine(_IQFeedDirectory, todayCsvFileName);
 
             var iqfeedNameMapFileName = "IQFeed-symbol-map.json";
-            var iqfeedNameMapFullName = Path.Combine("IQFeed", iqfeedNameMapFileName);
+            var iqfeedNameMapFullName = Path.Combine(_IQFeedDirectory, iqfeedNameMapFileName);
 
             var mapExists = File.Exists(iqfeedNameMapFullName);
             var universeExists = File.Exists(todayFullZipName);
@@ -288,7 +311,7 @@ namespace QuantConnect.ToolBox.IQFeed
                     client.DownloadFile(uri, todayFullZipName);
                 }
 
-                Compression.Unzip(todayFullZipName, Globals.Cache, true);
+                Compression.Unzip(todayFullZipName, _IQFeedDirectory, true);
             }
             else
             {
@@ -314,135 +337,146 @@ namespace QuantConnect.ToolBox.IQFeed
 
                 prevPosition = currentPosition;
 
-                var line = reader.ReadLine();
-
-                currentPosition += line.Length + NewLine.Length; // file position 'estimator' for ASCII file of IQFeed universe
-
-                var columns = line.Split(Tabulation);
-
-                if (columns[columnSymbol] == "TST$Y") continue; // skip test symbol
-
-                if (columns.Length != totalColumns)
+                try
                 {
-                    Log.Trace("Discrepancy found while parsing IQFeed symbol universe file. Expected 8 columns, but arrived {0}. Line: {1}", columns.Length, line);
-                    continue;
-                }
+                    var line = reader.ReadLine();
 
-                switch (columns[columnSecurityType])
-                {
-                    case "INDEX":
-                    case "EQUITY":
+                    currentPosition += line.Length + NewLine.Length; // file position 'estimator' for ASCII file of IQFeed universe
 
-                        // we load equities/indices in memory
-                        symbolUniverse.Add(new SymbolData
-                        {
-                            Symbol = Symbol.Create(columns[columnSymbol], SecurityType.Equity, Market.USA),
-                            SecurityCurrency = Currencies.USD,
-                            SecurityExchange = Market.USA,
-                            Ticker = columns[columnSymbol]
-                        });
-                        break;
+                    var columns = line.Split(Tabulation);
 
-                    case "IEOPTION":
+                    if (columns[columnSymbol] == "TST$Y") continue; // skip test symbol
 
-                        var ticker = columns[columnSymbol];
-                        var result = SymbolRepresentation.ParseOptionTickerIQFeed(ticker);
-                        var optionUnderlying = result.Underlying;
-                        var canonicalSymbol = Symbol.Create(optionUnderlying, SecurityType.Option, Market.USA);
+                    if (columns.Length != totalColumns)
+                    {
+                        Log.Trace("Discrepancy found while parsing IQFeed symbol universe file. Expected 8 columns, but arrived {0}. Line: {1}", columns.Length, line);
+                        continue;
+                    }
 
-                        if (!symbolCache.ContainsKey(canonicalSymbol))
-                        {
-                            var placeholderSymbolData = new SymbolData
-                            {
-                                Symbol = canonicalSymbol,
-                                SecurityCurrency = Currencies.USD,
-                                SecurityExchange = Market.USA,
-                                StartPosition = prevPosition,
-                                EndPosition = currentPosition
-                            };
+                    switch (columns[columnSecurityType])
+                    {
+                        case "INDEX":
+                        case "EQUITY":
 
-                            symbolCache.Add(canonicalSymbol, placeholderSymbolData);
-                        }
-                        else
-                        {
-                            symbolCache[canonicalSymbol].EndPosition = currentPosition;
-                        }
-
-                        break;
-
-                    case "FOREX":
-
-                        // we use FXCM symbols only
-                        if (columns[columnSymbol].EndsWith(".FXCM"))
-                        {
-                            var symbol = columns[columnSymbol].Replace(".FXCM", string.Empty);
-
+                            // we load equities/indices in memory
                             symbolUniverse.Add(new SymbolData
                             {
-                                Symbol = Symbol.Create(symbol, SecurityType.Forex, Market.FXCM),
+                                Symbol = Symbol.Create(columns[columnSymbol], SecurityType.Equity, Market.USA),
                                 SecurityCurrency = Currencies.USD,
-                                SecurityExchange = Market.FXCM,
+                                SecurityExchange = Market.USA,
                                 Ticker = columns[columnSymbol]
                             });
-                        }
-                        break;
+                            break;
 
-                    case "FUTURE":
+                        case "IEOPTION":
 
-                        // we are not interested in designated continuous contracts
-                        if (columns[columnSymbol].EndsWith("#") || columns[columnSymbol].EndsWith("#C") || columns[columnSymbol].EndsWith("$$"))
-                            continue;
+                            var ticker = columns[columnSymbol];
+                            var result = SymbolRepresentation.ParseOptionTickerIQFeed(ticker);
+                            var optionUnderlying = result.Underlying;
+                            var canonicalSymbol = Symbol.Create(optionUnderlying, SecurityType.Option, Market.USA);
 
-                        var futuresTicker = columns[columnSymbol].TrimStart(new[] { '@' });
-
-                        var parsed = SymbolRepresentation.ParseFutureTicker(futuresTicker);
-                        var underlyingString = parsed.Underlying;
-
-                        if (_iqFeedNameMap.ContainsKey(underlyingString))
-                            underlyingString = _iqFeedNameMap[underlyingString];
-                        else
-                        {
-                            if (!mapExists)
+                            if (!symbolCache.ContainsKey(canonicalSymbol))
                             {
-                                if (!_iqFeedNameMap.ContainsKey(underlyingString))
+                                var placeholderSymbolData = new SymbolData
                                 {
-                                    // if map is not created yet, we request this information from IQFeed
-                                    var exchangeSymbol = _symbolFundamentalData.Request(columns[columnSymbol]).Item2;
-                                    if (!string.IsNullOrEmpty(exchangeSymbol))
+                                    Symbol = canonicalSymbol,
+                                    SecurityCurrency = Currencies.USD,
+                                    SecurityExchange = Market.USA,
+                                    StartPosition = prevPosition,
+                                    EndPosition = currentPosition
+                                };
+
+                                symbolCache.Add(canonicalSymbol, placeholderSymbolData);
+                            }
+                            else
+                            {
+                                symbolCache[canonicalSymbol].EndPosition = currentPosition;
+                            }
+
+                            break;
+
+                        case "FOREX":
+
+                            // we use FXCM symbols only
+                            if (columns[columnSymbol].EndsWith(".FXCM"))
+                            {
+                                var symbol = columns[columnSymbol].Replace(".FXCM", string.Empty);
+
+                                symbolUniverse.Add(new SymbolData
+                                {
+                                    Symbol = Symbol.Create(symbol, SecurityType.Forex, Market.FXCM),
+                                    SecurityCurrency = Currencies.USD,
+                                    SecurityExchange = Market.FXCM,
+                                    Ticker = columns[columnSymbol]
+                                });
+                            }
+                            break;
+
+                        case "FUTURE":
+                            break;
+                            // we are not interested in designated continuous contracts
+                            if (columns[columnSymbol].EndsWith("#") || columns[columnSymbol].EndsWith("#C") || columns[columnSymbol].EndsWith("$$"))
+                                continue;
+
+                            var futuresTicker = columns[columnSymbol].TrimStart(new[] { '@' });
+
+                            var parsed = SymbolRepresentation.ParseFutureTicker(futuresTicker);
+                            var underlyingString = parsed.Underlying;
+
+                            if (_iqFeedNameMap.ContainsKey(underlyingString))
+                                underlyingString = _iqFeedNameMap[underlyingString];
+                            else
+                            {
+                                if (!mapExists)
+                                {
+                                    if (!_iqFeedNameMap.ContainsKey(underlyingString))
                                     {
-                                        _iqFeedNameMap[underlyingString] = exchangeSymbol;
-                                        underlyingString = exchangeSymbol;
+                                        // if map is not created yet, we request this information from IQFeed
+                                        // RJE note (May 16/23) this request adds significant time to
+                                        // building a map file for the first time.
+                                        // TBD: Should this be done in a background thread
+                                        // after all non-futures have been processed?
+                                        var exchangeSymbol = _symbolFundamentalData.Request(columns[columnSymbol]).Item2;
+                                        if (!string.IsNullOrEmpty(exchangeSymbol))
+                                        {
+                                            _iqFeedNameMap[underlyingString] = exchangeSymbol;
+                                            underlyingString = exchangeSymbol;
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        var market = GetFutureMarket(underlyingString, columns[columnExchange]);
-                        canonicalSymbol = Symbol.Create(underlyingString, SecurityType.Future, market);
+                            var market = GetFutureMarket(underlyingString, columns[columnExchange]);
+                            canonicalSymbol = Symbol.Create(underlyingString, SecurityType.Future, market);
 
-                        if (!symbolCache.ContainsKey(canonicalSymbol))
-                        {
-                            var placeholderSymbolData = new SymbolData
+                            if (!symbolCache.ContainsKey(canonicalSymbol))
                             {
-                                Symbol = canonicalSymbol,
-                                SecurityCurrency = Currencies.USD,
-                                SecurityExchange = market,
-                                StartPosition = prevPosition,
-                                EndPosition = currentPosition
-                            };
+                                var placeholderSymbolData = new SymbolData
+                                {
+                                    Symbol = canonicalSymbol,
+                                    SecurityCurrency = Currencies.USD,
+                                    SecurityExchange = market,
+                                    StartPosition = prevPosition,
+                                    EndPosition = currentPosition
+                                };
 
-                            symbolCache.Add(canonicalSymbol, placeholderSymbolData);
-                        }
-                        else
-                        {
-                            symbolCache[canonicalSymbol].EndPosition = currentPosition;
-                        }
+                                symbolCache.Add(canonicalSymbol, placeholderSymbolData);
+                            }
+                            else
+                            {
+                                symbolCache[canonicalSymbol].EndPosition = currentPosition;
+                            }
 
-                        break;
+                            break;
 
-                    default:
+                        default:
 
-                        continue;
+                            continue;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error($"IQFeedDataQueueUniverse: exception loading symbol map {ex.ToString}");
                 }
             }
 
@@ -471,7 +505,7 @@ namespace QuantConnect.ToolBox.IQFeed
             var thisYearWeek = $"{DateTime.Today.ToStringInvariant("yyyy")}-{dayOfWeek.ToStringInvariant()}";
 
             var todayCsvFileName = "mktsymbols_v2.txt";
-            var todayFullCsvName = Path.Combine(Globals.Cache, todayCsvFileName);
+            var todayFullCsvName = Path.Combine(_IQFeedDirectory, todayCsvFileName);
 
             var reader = new LocalFileSubscriptionStreamReader(_dataCacheProvider, todayFullCsvName, placeholder.StartPosition);
 

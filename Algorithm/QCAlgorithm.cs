@@ -168,8 +168,6 @@ namespace QuantConnect.Algorithm
             MarketHoursDatabase = MarketHoursDatabase.FromDataFolder();
             SymbolPropertiesDatabase = SymbolPropertiesDatabase.FromDataFolder();
 
-            // RJE DataFeedProviderType = LeanData.GetDataFeedProviderName();
-
             // universe selection
             UniverseManager = new UniverseManager();
             Universe = new UniverseDefinitions(this);

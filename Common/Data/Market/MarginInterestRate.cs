@@ -52,9 +52,11 @@ namespace QuantConnect.Data.Market
         public override BaseData Reader(SubscriptionDataConfig config, StreamReader stream, DateTime date, bool isLiveMode)
         {
             var dateTime = stream.GetDateTime("yyyyMMdd HH:mm:ss");
+            if (dateTime == null)
+                return null;
             var interestRate = stream.GetDecimal();
             return new MarginInterestRate {
-                Time = dateTime,
+                Time = dateTime.Value,
                 InterestRate = Value = interestRate,
                 Symbol = config.Symbol
             };

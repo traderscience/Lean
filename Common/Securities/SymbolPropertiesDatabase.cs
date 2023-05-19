@@ -258,7 +258,7 @@ namespace QuantConnect.Securities
             var csv = line.Split(',');
 
             SecurityType securityType;
-            if (!csv[2].TryParseSecurityType(out securityType))
+            if (!csv.Any() || String.IsNullOrEmpty(csv[2]) || !csv[2].TryParseSecurityType(out securityType))
             {
                 key = null;
                 return null;

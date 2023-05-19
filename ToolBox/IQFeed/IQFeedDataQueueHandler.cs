@@ -447,7 +447,7 @@ namespace QuantConnect.ToolBox.IQFeed
             {
                 var ticksPerSecond = count / (DateTime.Now - start).TotalSeconds;
                 int dataQueueCount = Interlocked.Exchange(ref _dataQueueCount, 0);
-                if (ticksPerSecond > 1000 || dataQueueCount > 31)
+                if (ticksPerSecond > 1000 || dataQueueCount > 250)
                 {
                     Log.Trace($"IQFeed.OnSecond(): Ticks/sec: {ticksPerSecond.ToStringInvariant("0000.00")} " +
                         $"Engine.Ticks.Count: {dataQueueCount} CPU%: {OS.CpuUsage.ToStringInvariant("0.0") + "%"}"

@@ -28,25 +28,22 @@ namespace QuantConnect.Api
     /// </summary>
     public class ApiConnection
     {
-        /// <summary>
-        /// Authorized client to use for requests.
-        /// </summary>
-        public RestClient Client;
 
         // Authorization Credentials
         private readonly string _userId;
         private readonly string _token;
+        private readonly string _url;
 
         /// <summary>
         /// Create a new Api Connection Class.
         /// </summary>
         /// <param name="userId">User Id number from QuantConnect.com account. Found at www.quantconnect.com/account </param>
         /// <param name="token">Access token for the QuantConnect account. Found at www.quantconnect.com/account </param>
-        public ApiConnection(int userId, string token)
+        public ApiConnection(int userId, string token, string url = "https://www.quantconnect.com/api/v2/")
         {
             _token = token;
             _userId = userId.ToStringInvariant();
-            Client = new RestClient("https://www.quantconnect.com/api/v2/");
+            _url = url;
         }
 
         /// <summary>
@@ -76,6 +73,8 @@ namespace QuantConnect.Api
         public bool TryRequest<T>(RestRequest request, out T result)
             where T : RestResponse
         {
+            result = default(T);
+            if (request == null) return false;
             var responseContent = string.Empty;
 
             try
@@ -87,33 +86,38 @@ namespace QuantConnect.Api
                 var hash = Api.CreateSecureHash(timestamp, _token);
                 request.AddHeader("Timestamp", timestamp.ToStringInvariant());
 
-                Client.UseAuthenticator(new HttpBasicAuthenticator(_userId, hash));
-
-                // Execute the authenticated REST API Call
-                var restsharpResponse = Client.ExecuteAsync(request).GetAwaiter().GetResult();
-
-                // Use custom converter for deserializing live results data
-                JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+                var options = new RestClientOptions(_url)
                 {
-                    Converters = { new LiveAlgorithmResultsJsonConverter(), new OrderJsonConverter() }
+                    Authenticator = new HttpBasicAuthenticator(_userId, hash)
                 };
-
-                //Verify success
-                if (restsharpResponse.ErrorException != null)
+                using (var client = new RestClient(options))
                 {
-                    Log.Error($"ApiConnection.TryRequest({request.Resource}): Error: {restsharpResponse.ErrorException.Message}");
-                    result = null;
-                    return false;
+
+                    // Execute the authenticated REST API Call
+                    var restsharpResponse = client.ExecuteAsync(request).GetAwaiter().GetResult();
+
+                    // Use custom converter for deserializing live results data
+                    JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+                    {
+                        Converters = { new LiveAlgorithmResultsJsonConverter(), new OrderJsonConverter() }
+                    };
+
+                    //Verify success
+                    if (restsharpResponse.ErrorException != null)
+                    {
+                        Log.Error($"ApiConnection.TryRequest({request.Resource}): Error: {restsharpResponse.ErrorException.Message}");
+                        result = null;
+                        return false;
+                    }
+
+                    if (!restsharpResponse.IsSuccessful)
+                    {
+                        Log.Error($"ApiConnect.TryRequest(): Content: {restsharpResponse.Content}");
+                    }
+
+                    responseContent = restsharpResponse.Content;
+                    result = JsonConvert.DeserializeObject<T>(responseContent);
                 }
-
-                if (!restsharpResponse.IsSuccessful)
-                {
-                    Log.Error($"ApiConnect.TryRequest(): Content: {restsharpResponse.Content}");
-                }
-
-                responseContent = restsharpResponse.Content;
-                result = JsonConvert.DeserializeObject<T>(responseContent);
-
                 if (result == null || !result.Success)
                 {
                     Log.Debug($"ApiConnection.TryRequest(): Raw response: '{responseContent}'");

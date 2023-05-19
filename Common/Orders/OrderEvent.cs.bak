@@ -309,14 +309,9 @@ namespace QuantConnect.Orders
         public OrderEvent(Order order, DateTime utcTime, OrderFee orderFee, string message = "")
         {
             OrderId = order.Id;
-            BrokerageId = order.BrokerageId;
-            AccountId = order.AccountId;
             Symbol = order.Symbol;
             Status = order.Status;
             Direction = order.Direction;
-            OcaGroup = order.OcaGroup;
-            Intent = order.Intent;
-            Tag = order.Tag;
 
             //Initialize to zero, manually set fill quantity
             FillQuantity = 0;

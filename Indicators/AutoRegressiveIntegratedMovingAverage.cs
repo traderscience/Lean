@@ -14,11 +14,13 @@
 */
 
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Numerics.LinearRegression;
+using QuantConnect.Logging;
 
 namespace QuantConnect.Indicators
 {
@@ -184,7 +186,7 @@ namespace QuantConnect.Indicators
                 arrayData = _diffOrder > 0 ? DifferenceSeries(_diffOrder, arrayData, out _diffHeads) : arrayData;
                 TwoStepFit(arrayData);
                 double summants = 0;
-                if (_arOrder > 0)
+                if (_arOrder > 0 && ArParameters != null)
                 {
                     for (var i = 0; i < _arOrder; i++) // AR Parameters
                     {
@@ -192,7 +194,7 @@ namespace QuantConnect.Indicators
                     }
                 }
 
-                if (_maOrder > 0)
+                if (_maOrder > 0 && MaParameters != null)
                 {
                     for (var i = 0; i < _maOrder; i++) // MA Parameters
                     {
@@ -250,39 +252,48 @@ namespace QuantConnect.Indicators
         /// <param name="errorMa">The summed residuals (by default 0) associated with the MA component.</param>
         private void MovingAverageStep(double[][] lags, double[] data, double errorMa)
         {
-            var appendedData = new List<double[]>();
-            var laggedErrors = LaggedSeries(_maOrder, _residuals.ToArray());
-            for (var i = 0; i < laggedErrors.Length; i++)
-            {
-                var doubles = lags[i].ToList();
-                doubles.AddRange(laggedErrors[i]);
-                appendedData.Add(doubles.ToArray());
-            }
 
-            var maFits = Fit.MultiDim(appendedData.ToArray(), data.Skip(_maOrder).ToArray(),
-                method: DirectRegressionMethod.NormalEquations, intercept: _intercept);
-            for (var i = _maOrder; i < data.Length; i++) // Calculate the error assoc. with model.
+            try
             {
-                var paramVector = _intercept
-                    ? Vector.Build.Dense(maFits.Skip(1).ToArray())
-                    : Vector.Build.Dense(maFits);
-                var residual = data[i] - Vector.Build.Dense(appendedData[i - _maOrder]).DotProduct(paramVector);
-                errorMa += Math.Pow(residual, 2);
-            }
+                var appendedData = new List<double[]>();
+                var laggedErrors = LaggedSeries(_maOrder, _residuals.ToArray());
+                for (var i = 0; i < laggedErrors.Length; i++)
+                {
+                    var doubles = lags[i].ToList();
+                    doubles.AddRange(laggedErrors[i]);
+                    appendedData.Add(doubles.ToArray());
+                }
 
-            switch (_intercept)
+                var maFits = Fit.MultiDim(appendedData.ToArray(), data.Skip(_maOrder).ToArray(),
+                    method: DirectRegressionMethod.NormalEquations, intercept: _intercept);
+
+                for (var i = _maOrder; i < data.Length; i++) // Calculate the error assoc. with model.
+                {
+                    var paramVector = _intercept
+                        ? Vector.Build.Dense(maFits.Skip(1).ToArray())
+                        : Vector.Build.Dense(maFits);
+                    var residual = data[i] - Vector.Build.Dense(appendedData[i - _maOrder]).DotProduct(paramVector);
+                    errorMa += Math.Pow(residual, 2);
+                }
+
+                switch (_intercept)
+                {
+                    case true:
+                        MaResidualError = errorMa / (data.Length - Math.Max(_arOrder, _maOrder) - 1);
+                        MaParameters = maFits.Skip(1 + _arOrder).ToArray();
+                        ArParameters = maFits.Skip(1).Take(_arOrder).ToArray();
+                        Intercept = maFits[0];
+                        break;
+                    default:
+                        MaResidualError = errorMa / (data.Length - Math.Max(_arOrder, _maOrder) - 1);
+                        MaParameters = maFits.Skip(_arOrder).ToArray();
+                        ArParameters = maFits.Take(_arOrder).ToArray();
+                        break;
+                }
+            }
+            catch (Exception ex)
             {
-                case true:
-                    MaResidualError = errorMa / (data.Length - Math.Max(_arOrder, _maOrder) - 1);
-                    MaParameters = maFits.Skip(1 + _arOrder).ToArray();
-                    ArParameters = maFits.Skip(1).Take(_arOrder).ToArray();
-                    Intercept = maFits[0];
-                    break;
-                default:
-                    MaResidualError = errorMa / (data.Length - Math.Max(_arOrder, _maOrder) - 1);
-                    MaParameters = maFits.Skip(_arOrder).ToArray();
-                    ArParameters = maFits.Take(_arOrder).ToArray();
-                    break;
+                QuantConnect.Logging.Log.Trace($"AutoRegressiveMovingAverage:Step: exception {ex.ToString()}");
             }
         }
 
@@ -295,28 +306,35 @@ namespace QuantConnect.Indicators
         private void AutoRegressiveStep(double[][] lags, double[] data, double errorAr)
         {
             double[] arFits;
-            // The function (lags[time][lagged X]) |---> ΣᵢφᵢXₜ₋ᵢ 
-            arFits = Fit.MultiDim(lags, data.Skip(_arOrder).ToArray(),
-                method: DirectRegressionMethod.NormalEquations);
-            var fittedVec = Vector.Build.Dense(arFits);
-
-            for (var i = 0; i < data.Length; i++) // Calculate the error assoc. with model.
+            try
             {
-                if (i < _arOrder)
+                // The function (lags[time][lagged X]) |---> ΣᵢφᵢXₜ₋ᵢ 
+                arFits = Fit.MultiDim(lags, data.Skip(_arOrder).ToArray(),
+                    method: DirectRegressionMethod.NormalEquations);
+                var fittedVec = Vector.Build.Dense(arFits);
+
+                for (var i = 0; i < data.Length; i++) // Calculate the error assoc. with model.
                 {
-                    _residuals.Add(0); // 0-padding
-                    continue;
+                    if (i < _arOrder)
+                    {
+                        _residuals.Add(0); // 0-padding
+                        continue;
+                    }
+
+                    var residual = data[i] - Vector.Build.Dense(lags[i - _arOrder]).DotProduct(fittedVec);
+                    errorAr += Math.Pow(residual, 2);
+                    _residuals.Add(residual);
                 }
 
-                var residual = data[i] - Vector.Build.Dense(lags[i - _arOrder]).DotProduct(fittedVec);
-                errorAr += Math.Pow(residual, 2);
-                _residuals.Add(residual);
+                ArResidualError = errorAr / (data.Length - _arOrder - 1);
+                if (_maOrder == 0)
+                {
+                    ArParameters = arFits; // Will not be thrown out
+                }
             }
-
-            ArResidualError = errorAr / (data.Length - _arOrder - 1);
-            if (_maOrder == 0)
+            catch (Exception ex)
             {
-                ArParameters = arFits; // Will not be thrown out
+                Log.Error($"AutoRegressiveIntegratedMovingAverage: exception: {ex.ToString()}");
             }
         }
     }

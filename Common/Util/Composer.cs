@@ -17,6 +17,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
@@ -24,6 +25,7 @@ using System.ComponentModel.Composition.ReflectionModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+//using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using System.Threading.Tasks;
 using QuantConnect.Configuration;
@@ -59,6 +61,10 @@ namespace QuantConnect.Util
         /// </summary>
         public Composer()
         {
+            // Check if we've already been here before
+            if (_exportedTypes.Any())
+                return;
+
             // Determine what directory to grab our assemblies from if not defined by 'composer-dll-directory' configuration key
             var dllDirectoryString = Config.Get("composer-dll-directory");
             if (string.IsNullOrWhiteSpace(dllDirectoryString))
@@ -90,6 +96,7 @@ namespace QuantConnect.Util
             var loadFromPluginDir = !string.IsNullOrWhiteSpace(PluginDirectory)
                 && Directory.Exists(PluginDirectory) &&
                 new DirectoryInfo(PluginDirectory).FullName != primaryDllLookupDirectory;
+
             _composableParts = Task.Run(() =>
             {
                 try
@@ -97,8 +104,8 @@ namespace QuantConnect.Util
                     var catalogs = new List<ComposablePartCatalog>
                     {
                         new DirectoryCatalog(primaryDllLookupDirectory, "QuantConnect*.dll"),
-                        new DirectoryCatalog(primaryDllLookupDirectory, "TraderScience*.dll"),
-                        new DirectoryCatalog(primaryDllLookupDirectory, "*.exe")
+                        new DirectoryCatalog(primaryDllLookupDirectory, "TraderScience*.dll")
+                        //new DirectoryCatalog(primaryDllLookupDirectory, "*.exe")
                     };
                     if (loadFromPluginDir)
                     {
@@ -107,7 +114,38 @@ namespace QuantConnect.Util
                     }
                     var aggregate = new AggregateCatalog(catalogs);
                     _compositionContainer = new CompositionContainer(aggregate);
-                    return _compositionContainer.Catalog.Parts.ToList();
+
+                    // RJE- rewritten to continue loading even after exceptions
+                    List<ComposablePartDefinition> definitions = new List<ComposablePartDefinition>();
+                    //foreach (var p in _compositionContainer.Catalog.Parts)
+                    var partsEnum = _compositionContainer.Catalog.Parts.GetEnumerator();
+                    Dictionary<string, object> partsDict = new Dictionary<string, object>(); 
+
+                    bool more = true;
+                    do
+                    {
+                        try
+                        {
+                            more = partsEnum.MoveNext();
+                            if (more)
+                            {
+                                string name = partsEnum.Current.ToString();
+                                if (!partsDict.ContainsKey(name))
+                                {
+                                    definitions.Add(partsEnum.Current);
+                                    partsDict.Add(name, partsDict);
+                                }
+                                else
+                                {
+                                    Log.Trace($"Composer(): part {name} already loaded.");
+                                }
+                            }
+                        }
+                        finally 
+                        {
+                        }
+                    } while (more);
+                    return definitions;
                 }
                 catch (Exception exception)
                 {
@@ -117,11 +155,12 @@ namespace QuantConnect.Util
                         Log.Error(exception);
                     }
                 }
+                // We failed, return an empty list
                 return new List<ComposablePartDefinition>();
             });
 
             // for performance we will load our assemblies and keep their exported types
-            // which is much faster that using CompositionContainer which uses reflexion
+            // which is much faster that using CompositionContainer which uses reflection
             var exportedTypes = new ConcurrentBag<Type>();
             var fileNames = Directory.EnumerateFiles(primaryDllLookupDirectory, $"{nameof(QuantConnect)}.*.dll");
             // Private dlls
@@ -144,15 +183,28 @@ namespace QuantConnect.Util
                     files[fileName] = filePath;
                 }
             }
+            var partDict = new ConcurrentDictionary<string, string>();
+
             Parallel.ForEach(files.Values,
                 file =>
                 {
                     try
                     {
-                        foreach (var type in
-                            Assembly.LoadFrom(file).ExportedTypes.Where(type => !type.IsAbstract && !type.IsInterface && !type.IsEnum))
+                        var typeList = Assembly.LoadFrom(file).ExportedTypes.Where(type => !type.IsAbstract && !type.IsInterface && !type.IsEnum).ToList();
+                        foreach (var type in typeList)
                         {
-                            exportedTypes.Add(type);
+                            lock (_exportedValuesLockObject)
+                            {
+                                if (!partDict.ContainsKey(type.FullName))
+                                {
+                                    partDict.AddOrUpdate(type.FullName, file);
+                                    exportedTypes.Add(type);
+                                }
+                                else
+                                {
+                                    Log.Trace($"Composer: duplicate type {type.FullName} from file {file}. Already loaded from: {partDict[type.FullName]}");
+                                }
+                            }
                         }
                     }
                     catch (Exception)
@@ -181,8 +233,8 @@ namespace QuantConnect.Util
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
-
-            return GetExportedValues<T>().Single(predicate);
+            return GetExportedValues<T>().FirstOrDefault(predicate);  // TODO (rje) - getting multiple instances April 13/23
+            //return GetExportedValues<T>().Single(predicate);
         }
 
         /// <summary>
@@ -316,6 +368,12 @@ namespace QuantConnect.Util
 
                         if (selectedPart == null)
                         {
+                            /*
+                            foreach (var item in _exportedTypes.Where(x => x.FullName.StartsWith("TraderScience")).OrderBy(x => x.FullName))
+                            {
+                               Log.Trace($"{item.FullName}");
+                            }
+                            */
                             throw new ArgumentException(
                                 $"Unable to locate any exports matching the requested typeName: {typeName}", nameof(typeName));
                         }
@@ -374,7 +432,8 @@ namespace QuantConnect.Util
                     IEnumerable values;
                     if (_exportedValues.TryGetValue(typeof (T), out values))
                     {
-                        return values.OfType<T>();
+                        var result = values.OfType<T>();
+                        return result;
                     }
 
                     if (!_composableParts.IsCompleted)
@@ -385,7 +444,8 @@ namespace QuantConnect.Util
                     {
                         values = _compositionContainer.GetExportedValues<T>().ToList();
                         _exportedValues[typeof(T)] = values;
-                        return values.OfType<T>();
+                        var result = values.OfType<T>();
+                        return result;
                     }
                     catch (Exception ex)
                     {

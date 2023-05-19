@@ -1,4 +1,4 @@
-﻿/*
+/*
  * QUANTCONNECT.COM - Democratizing Finance, Empowering Individuals.
  * Lean Algorithmic Trading Engine v2.0. Copyright 2014 QuantConnect Corporation.
  *
@@ -20,6 +20,7 @@ using QuantConnect.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using System.Text;
 
 namespace QuantConnect.Lean.Engine.DataFeeds.Transport
 {
@@ -29,6 +30,7 @@ namespace QuantConnect.Lean.Engine.DataFeeds.Transport
     public class LocalFileSubscriptionStreamReader : IStreamReader
     {
         private readonly ZipFile _zipFile;
+        private const int BufferSize = 1048576 * 16;
 
         /// <summary>
         /// Gets whether or not this stream reader should be rate limited
@@ -53,7 +55,8 @@ namespace QuantConnect.Lean.Engine.DataFeeds.Transport
 
             if (stream != null)
             {
-                StreamReader = new StreamReader(stream);
+                StreamReader = new StreamReader(stream, Encoding.UTF8, false, BufferSize);
+                //StreamReader = new StreamReader(stream, Encoding.UTF8);
             }
         }
 
@@ -69,7 +72,7 @@ namespace QuantConnect.Lean.Engine.DataFeeds.Transport
 
             if (stream != null)
             {
-                StreamReader = new StreamReader(stream);
+                StreamReader = new StreamReader(stream, Encoding.UTF8, false, BufferSize);
 
                 if (startingPosition != 0)
                 {
@@ -93,7 +96,7 @@ namespace QuantConnect.Lean.Engine.DataFeeds.Transport
                 var stream = new MemoryStream();
                 entry.OpenReader().CopyTo(stream);
                 stream.Position = 0;
-                StreamReader = new StreamReader(stream);
+                StreamReader = new StreamReader(stream, Encoding.UTF8, false, BufferSize);
             }
         }
 

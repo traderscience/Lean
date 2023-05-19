@@ -355,16 +355,8 @@ namespace QuantConnect
             return new Symbol(sid, ticker, new Symbol(underlyingSid, underlyingSid.Symbol));
         }
 
-        /// <summary>
-        /// Function returns option contract parameters (underlying name, expiration date, strike, right) from IQFeed option ticker
-        /// Symbology details: http://www.iqfeed.net/symbolguide/index.cfm?symbolguide=guide&amp;displayaction=support%C2%A7ion=guide&amp;web=iqfeed&amp;guide=options&amp;web=IQFeed&amp;type=stock
-        /// </summary>
-        /// <param name="ticker">IQFeed option ticker</param>
-        /// <returns>Results containing 1) underlying name, 2) option right, 3) option strike 4) expiration date</returns>
-        public static OptionTickerProperties ParseOptionTickerIQFeed(string ticker)
-        {
-            // This table describes IQFeed option symbology
-            var symbology = new Dictionary<string, Tuple<int, OptionRight>>
+        // This table describes IQFeed option symbology
+        static Dictionary<string, Tuple<int, OptionRight>> symbology = new Dictionary<string, Tuple<int, OptionRight>>
                         {
                             { "A", Tuple.Create(1, OptionRight.Call) }, { "M", Tuple.Create(1, OptionRight.Put) },
                             { "B", Tuple.Create(2, OptionRight.Call) }, { "N", Tuple.Create(2, OptionRight.Put) },
@@ -380,6 +372,15 @@ namespace QuantConnect
                             { "L", Tuple.Create(12, OptionRight.Call) }, { "X", Tuple.Create(12, OptionRight.Put) },
 
                         };
+
+        /// <summary>
+        /// Function returns option contract parameters (underlying name, expiration date, strike, right) from IQFeed option ticker
+        /// Symbology details: http://www.iqfeed.net/symbolguide/index.cfm?symbolguide=guide&amp;displayaction=support%C2%A7ion=guide&amp;web=iqfeed&amp;guide=options&amp;web=IQFeed&amp;type=stock
+        /// </summary>
+        /// <param name="ticker">IQFeed option ticker</param>
+        /// <returns>Results containing 1) underlying name, 2) option right, 3) option strike 4) expiration date</returns>
+        public static OptionTickerProperties ParseOptionTickerIQFeed(string ticker)
+        {
 
             var letterRange = symbology.Keys
                             .Select(x => x[0])

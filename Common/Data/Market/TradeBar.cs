@@ -378,7 +378,11 @@ namespace QuantConnect.Data.Market
             if (config.Resolution == Resolution.Daily || config.Resolution == Resolution.Hour)
             {
                 // hourly and daily have different time format, and can use slow, robust c# parser.
-                tradeBar.Time = stream.GetDateTime().ConvertTo(config.DataTimeZone, config.ExchangeTimeZone);
+                var time = stream.GetDateTime();
+                if (time != null)
+                    tradeBar.Time = time.Value.ConvertTo(config.DataTimeZone, config.ExchangeTimeZone);
+                else
+                    return;
             }
             else
             {
@@ -619,7 +623,11 @@ namespace QuantConnect.Data.Market
             if (config.Resolution == Resolution.Daily || config.Resolution == Resolution.Hour)
             {
                 // hourly and daily have different time format, and can use slow, robust c# parser.
-                tradeBar.Time = streamReader.GetDateTime().ConvertTo(config.DataTimeZone, config.ExchangeTimeZone);
+                var time = streamReader.GetDateTime();
+                if (time != null)
+                    tradeBar.Time = time.Value.ConvertTo(config.DataTimeZone, config.ExchangeTimeZone);
+                else
+                    return null;
             }
             else
             {
@@ -702,7 +710,15 @@ namespace QuantConnect.Data.Market
             if (config.Resolution == Resolution.Daily || config.Resolution == Resolution.Hour)
             {
                 // hourly and daily have different time format, and can use slow, robust c# parser.
-                tradeBar.Time = DateTime.ParseExact(csv[0], DateFormat.TwelveCharacter, CultureInfo.InvariantCulture).ConvertTo(config.DataTimeZone, config.ExchangeTimeZone);
+                try
+                {
+                    tradeBar.Time = DateTime.ParseExact(csv[0], DateFormat.TwelveCharacter, CultureInfo.InvariantCulture).ConvertTo(config.DataTimeZone, config.ExchangeTimeZone);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error($"TradeBar:LineParseNoScale: DateTime.ParseExact exception {ex}.ToString()");
+                    return null;
+                }
             }
             else
             {
@@ -731,11 +747,25 @@ namespace QuantConnect.Data.Market
                 Period = config.Increment,
                 Symbol = config.Symbol
             };
-
             if (config.Resolution == Resolution.Daily || config.Resolution == Resolution.Hour)
             {
                 // hourly and daily have different time format, and can use slow, robust c# parser.
-                tradeBar.Time = streamReader.GetDateTime().ConvertTo(config.DataTimeZone, config.ExchangeTimeZone);
+                try
+                {
+                    var time = streamReader.GetDateTime();
+                    if (time != null)
+                        tradeBar.Time = time.Value.ConvertTo(config.DataTimeZone, config.ExchangeTimeZone);
+                    else
+                    {
+                        streamReader.ReadLine();
+                        return null;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error($"TradeBar:StreamParseNoScale: DateTime.ParseExact date:{date.ToStringInvariant()} exception {ex}.ToString()");
+                    return null;
+                }
             }
             else
             {
@@ -750,7 +780,7 @@ namespace QuantConnect.Data.Market
             {
                 tradeBar.Volume = streamReader.GetDecimal();
             }
-
+            streamReader.ReadLine();
             return tradeBar;
         }
 

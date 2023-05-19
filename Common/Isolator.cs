@@ -114,7 +114,9 @@ namespace QuantConnect
             var isolatorLimitResult = new IsolatorLimitResult(TimeSpan.Zero, string.Empty);
 
             //Convert to bytes
-            memoryCap *= 1024 * 1024;
+            memoryCap = memoryCap == 0 ? 1048576L * 1024 * 2 : memoryCap * 1024 * 1024;
+            if (memoryCap > 1048576L * 1024 * 4)
+                memoryCap = 1048576L * 1024 * 4;
             var spikeLimit = memoryCap*2;
 
             while (!task.IsCompleted && utcNow < end)

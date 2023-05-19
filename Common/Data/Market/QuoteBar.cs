@@ -577,7 +577,11 @@ namespace QuantConnect.Data.Market
             if (config.Resolution == Resolution.Daily || config.Resolution == Resolution.Hour)
             {
                 // hourly and daily have different time format, and can use slow, robust c# parser.
-                quoteBar.Time = streamReader.GetDateTime().ConvertTo(config.DataTimeZone, config.ExchangeTimeZone);
+                var time = streamReader.GetDateTime();
+                if (time != null)
+                    quoteBar.Time = time.Value.ConvertTo(config.DataTimeZone, config.ExchangeTimeZone);
+                else
+                    return null;
             }
             else
             {

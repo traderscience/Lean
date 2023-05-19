@@ -109,7 +109,7 @@ namespace QuantConnect.Lean.Engine
             return new LeanEngineSystemHandlers(
                 composer.GetExportedValueByTypeName<IJobQueueHandler>(Config.Get("job-queue-handler")),
                 composer.GetExportedValueByTypeName<IApi>(Config.Get("api-handler")),
-                composer.GetExportedValueByTypeName<IMessagingHandler>(Config.Get("messaging-handler")), 
+                composer.GetExportedValueByTypeName<IMessagingHandler>(Config.Get("messaging-handler"), useCachedInstance : false), 
                 composer.GetExportedValueByTypeName<ILeanManager>(Config.Get("lean-manager-type", "LocalLeanManager")));
         }
 

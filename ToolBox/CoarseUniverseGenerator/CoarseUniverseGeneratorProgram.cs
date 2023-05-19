@@ -332,7 +332,7 @@ namespace QuantConnect.ToolBox.CoarseUniverseGenerator
                 {
                     var tradeBar = new TradeBar
                     {
-                        Time = stream.GetDateTime(),
+                        Time = stream.GetDateTime().Value,
                         Open = stream.GetDecimal() * scaleFactor,
                         High = stream.GetDecimal() * scaleFactor,
                         Low = stream.GetDecimal() * scaleFactor,

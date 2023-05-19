@@ -54,7 +54,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuantConnect.Optimizer", "O
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuantConnect.Optimizer.Launcher", "Optimizer.Launcher\QuantConnect.Optimizer.Launcher.csproj", "{D46D2A8D-340C-4B40-8EE6-6BAA7B1198AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantConnect.Brokerages.Plugins", "QuantConnect.Brokerages.Plugins\QuantConnect.Brokerages.Plugins.csproj", "{FDD60054-265C-4260-8B18-896BB3D64C37}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuantConnect.Brokerages.Plugins", "QuantConnect.Brokerages.Plugins\QuantConnect.Brokerages.Plugins.csproj", "{FDD60054-265C-4260-8B18-896BB3D64C37}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuantConnect.IBAutomater", "IBAutomater\QuantConnect.IBAutomater\QuantConnect.IBAutomater.csproj", "{BF983E32-E22D-462A-BECB-BC56F7BEB8EA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IQFeed.CSharpApiClient", "..\IQFeed\IQFeed.CSharpApiClient\src\IQFeed.CSharpApiClient\IQFeed.CSharpApiClient.csproj", "{A6015AC8-6C03-430A-B77E-7618F507C79E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -152,6 +156,14 @@ Global
 		{FDD60054-265C-4260-8B18-896BB3D64C37}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FDD60054-265C-4260-8B18-896BB3D64C37}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FDD60054-265C-4260-8B18-896BB3D64C37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF983E32-E22D-462A-BECB-BC56F7BEB8EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF983E32-E22D-462A-BECB-BC56F7BEB8EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF983E32-E22D-462A-BECB-BC56F7BEB8EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF983E32-E22D-462A-BECB-BC56F7BEB8EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6015AC8-6C03-430A-B77E-7618F507C79E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6015AC8-6C03-430A-B77E-7618F507C79E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6015AC8-6C03-430A-B77E-7618F507C79E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6015AC8-6C03-430A-B77E-7618F507C79E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

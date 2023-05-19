@@ -45,7 +45,32 @@ namespace QuantConnect.Exceptions
         /// <param name="interpreters">The interpreters to use</param>
         public StackExceptionInterpreter(IEnumerable<IExceptionInterpreter> interpreters)
         {
-            _interpreters = interpreters.OrderBy(x => x.Order).ToList();
+            //_interpreters = interpreters.OrderBy(x => x.Order).ToList();
+            // Revised to allow enumeration to continue after an exception
+            bool more = true;
+            // declare a new list of interpreters
+            _interpreters = new List<IExceptionInterpreter>();
+
+            // sort the incoming list
+            var ienumList = interpreters.OrderBy(x => x.Order);
+
+            var scan = ienumList.GetEnumerator();
+            while (more)
+            {
+                try
+                {
+                    more = scan.MoveNext();
+                    if (more)
+                        _interpreters.Add(scan.Current);
+                }
+                catch (Exception ex)
+                {
+
+                }
+                finally 
+                { 
+                }
+            }
         }
 
         /// <summary>
@@ -108,6 +133,28 @@ namespace QuantConnect.Exceptions
             return string.Join(" ", InnersAndSelf(exception).Select(e => e.Message));
         }
 
+        private static string[] skipTypes = { "Google.Api", "Castle.Proxies.ObjectProxy" };
+
+        private static bool SkipCheck(Type type)
+        {
+            foreach (var name in skipTypes)
+            {
+                if (type.FullName.StartsWithInvariant(name))
+                    return true;
+            }
+            return false;
+        }
+
+        private static bool SkipAssembly(string name)
+        {
+            string[] skiplist = { "System", "Google", "Microsoft", "OpenFin", "OpenAI", "RestSharp", "Castle" };
+            foreach (var prefix in skiplist)
+                if (name.StartsWithInvariant(prefix))
+                    return true;
+            return false;
+        }
+
+
         /// <summary>
         /// Creates a new <see cref="StackExceptionInterpreter"/> by loading implementations with default constructors from the specified assemblies
         /// </summary>
@@ -116,14 +163,14 @@ namespace QuantConnect.Exceptions
         public static StackExceptionInterpreter CreateFromAssemblies(IEnumerable<Assembly> assemblies)
         {
             var interpreters =
-                from assembly in assemblies
+                from assembly in assemblies.Where(x => !SkipAssembly(x.FullName))
                 from type in assembly.GetTypes()
                 // ignore non-public and non-instantiable abstract types
                 where type.IsPublic && !type.IsAbstract
                 // type implements IExceptionInterpreter
                 where typeof(IExceptionInterpreter).IsAssignableFrom(type)
                 // type is not mocked with MOQ library
-                where type.FullName != null && !type.FullName.StartsWith("Castle.Proxies.ObjectProxy")
+                where type.FullName != null 
                 // type has default parameterless ctor
                 where type.GetConstructor(new Type[0]) != null
                 // provide guarantee of deterministic ordering

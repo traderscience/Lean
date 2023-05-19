@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace QuantConnect.Queues
 {
@@ -117,7 +118,7 @@ namespace QuantConnect.Queues
                 MinuteLimit = Config.GetInt("symbol-minute-limit", 10000),
                 SecondLimit = Config.GetInt("symbol-second-limit", 10000),
                 TickLimit = Config.GetInt("symbol-tick-limit", 10000),
-                RamAllocation = int.MaxValue,
+                RamAllocation = 0,
                 MaximumDataPointsPerChartSeries = Config.GetInt("maximum-data-points-per-chart-series", 4000),
                 StorageLimit = Config.GetValue("storage-limit", 10737418240L),
                 StorageFileCount = Config.GetInt("storage-file-count", 10000),
@@ -130,6 +131,7 @@ namespace QuantConnect.Queues
             if (_liveMode)
             {
                 var dataHandlers = Config.Get("data-queue-handler", DefaultDataQueueHandler);
+
                 var liveJob = new LiveNodePacket
                 {
                     Type = PacketType.LiveNode,
@@ -162,6 +164,7 @@ namespace QuantConnect.Queues
                 catch (Exception err)
                 {
                     Log.Error(err, $"Error resolving BrokerageData for live job for brokerage {liveJob.Brokerage}");
+                    return null;
                 }
 
                 foreach (var dataHandlerName in dataHandlers.DeserializeList())
@@ -190,7 +193,7 @@ namespace QuantConnect.Queues
                         }
                         else
                         {
-                            throw new ArgumentException($"JobQueue.NextJob(): Key already exists in BrokerageData -- {data.Key}");
+                            //throw new ArgumentException($"JobQueue.NextJob(): Key already exists in BrokerageData -- {data.Key}");
                         }
                     }
                 }

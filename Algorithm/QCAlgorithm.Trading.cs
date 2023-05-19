@@ -256,7 +256,7 @@ namespace QuantConnect.Algorithm
             // For futures and FOPs, market orders can be submitted on extended hours, so we let them through.
             if ((security.Type != SecurityType.Future && security.Type != SecurityType.FutureOption) && !security.Exchange.ExchangeOpen)
             {
-                var mooTicket = MarketOnOpenOrder(security.Symbol, quantity, tag);
+                var mooTicket = MarketOnOpenOrder(security.Symbol, quantity, tag, orderProperties);
                 if (!_isMarketOnOpenOrderWarningSent)
                 {
                     var anyNonDailySubscriptions = security.Subscriptions.Any(x => x.Resolution != Resolution.Daily);
@@ -1277,6 +1277,10 @@ namespace QuantConnect.Algorithm
                 }
 
                 //Check whether the exchange is open to send a market order. If not, send a market on open order instead
+                if (orderProperties == null)
+                    orderProperties = new OrderProperties();
+                orderProperties.Intent = OrderIntent.BTO;
+
                 if (security.Exchange.ExchangeOpen)
                 {
                     MarketOrder(symbol, quantity, false, tag, orderProperties);
@@ -1304,6 +1308,9 @@ namespace QuantConnect.Algorithm
                 {
                     //Go through all existing holdings [synchronously], market order the inverse quantity:
                     var liquidationQuantity = CalculateOrderQuantity(holdingSymbol, 0m);
+                    if (orderProperties == null)
+                        orderProperties = new OrderProperties();
+                    orderProperties.Intent = OrderIntent.STC;
                     Order(holdingSymbol, liquidationQuantity, false, tag, orderProperties);
                 }
             }

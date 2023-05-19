@@ -312,8 +312,11 @@ namespace QuantConnect.Orders
             Properties = properties ?? new OrderProperties();
             GroupOrderManager = groupOrderManager;
             ParentOrder = parentOrder;
-            OcaGroup = ocaGroup;
-            Intent = intent;
+            if (properties != null)
+            {
+                Intent = properties.Intent;
+                OcaGroup = properties.OcaGroup;
+            }
         }
 
         /// <summary>

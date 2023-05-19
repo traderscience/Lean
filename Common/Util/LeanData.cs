@@ -205,25 +205,41 @@ namespace QuantConnect.Util
 
                         case Resolution.Second:
                         case Resolution.Minute:
-                            var bar = data as QuoteBar;
-                            if (bar == null)
+                            if (data is QuoteBar)
                             {
-                                throw new ArgumentException("Expected data of type 'QuoteBar'", nameof(data));
+                                var bar = data as QuoteBar;
+                                if (bar == null)
+                                {
+                                    throw new ArgumentException("Expected data of type 'QuoteBar'", nameof(data));
+                                }
+                                return ToCsv(milliseconds,
+                                    ToNonScaledCsv(bar.Bid), bar.LastBidSize,
+                                    ToNonScaledCsv(bar.Ask), bar.LastAskSize);
                             }
-                            return ToCsv(milliseconds,
-                                ToNonScaledCsv(bar.Bid), bar.LastBidSize,
-                                ToNonScaledCsv(bar.Ask), bar.LastAskSize);
+                            else
+                            {
+                                var bar = data as TradeBar;
+                                return ToCsv(milliseconds, bar.Open, bar.High, bar.Low, bar.Close, bar.Volume);
+                            }
 
                         case Resolution.Hour:
                         case Resolution.Daily:
-                            var bigBar = data as QuoteBar;
-                            if (bigBar == null)
+                            if (data is QuoteBar)
                             {
-                                throw new ArgumentException("Expected data of type 'QuoteBar'", nameof(data));
+                                var bigBar = data as QuoteBar;
+                                if (bigBar == null)
+                                {
+                                    throw new ArgumentException("Expected data of type 'QuoteBar'", nameof(data));
+                                }
+                                return ToCsv(longTime,
+                                    ToNonScaledCsv(bigBar.Bid), bigBar.LastBidSize,
+                                    ToNonScaledCsv(bigBar.Ask), bigBar.LastAskSize);
                             }
-                            return ToCsv(longTime,
-                                ToNonScaledCsv(bigBar.Bid), bigBar.LastBidSize,
-                                ToNonScaledCsv(bigBar.Ask), bigBar.LastAskSize);
+                            else
+                            {
+                                var bar = data as TradeBar;
+                                return ToCsv(longTime, bar.Open, bar.High, bar.Low, bar.Close, bar.Volume);
+                            }
                     }
                     break;
 

@@ -1,12 +1,25 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="InteractiveBrokers\Toolbox\**" />
+    <EmbeddedResource Remove="InteractiveBrokers\Toolbox\**" />
+    <None Remove="InteractiveBrokers\Toolbox\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage.ToolBox\BaseDataDownloader.cs" Link="Toolbox\Binance\BaseDataDownloader.cs" />
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage.ToolBox\BinanceDataDownloader.cs" Link="Toolbox\Binance\BinanceDataDownloader.cs" />
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage.ToolBox\BinanceExchangeInfoDownloader.cs" Link="Toolbox\Binance\BinanceExchangeInfoDownloader.cs" />
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage.ToolBox\BinanceUSDataDownloader.cs" Link="Toolbox\Binance\BinanceUSDataDownloader.cs" />
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage.ToolBox\Models\ExchangeInfo.cs" Link="Toolbox\Binance\Models\ExchangeInfo.cs" />
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage.ToolBox\Models\Symbol.cs" Link="Toolbox\Binance\Models\Symbol.cs" />
+    <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage.ToolBox\Program.cs" Link="Toolbox\Binance\Program.cs" />
     <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\BinanceBaseRestApiClient.cs" Link="Binance\BinanceBaseRestApiClient.cs" />
     <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\BinanceBrokerage.cs" Link="Binance\BinanceBrokerage.cs" />
     <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\BinanceBrokerage.Messaging.cs" Link="Binance\BinanceBrokerage.Messaging.cs" />
@@ -27,6 +40,10 @@
     <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\Converters\FuturesAccountConverter.cs" Link="Binance\Converters\FuturesAccountConverter.cs" />
     <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\Converters\MarginAccountConverter.cs" Link="Binance\Converters\MarginAccountConverter.cs" />
     <Compile Include="..\Lean.Brokerages.Binance\QuantConnect.BinanceBrokerage\Converters\SpotAccountConverter.cs" Link="Binance\Converters\SpotAccountConverter.cs" />
+    <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage.ToolBox\BitfinexDataDownloader.cs" Link="Toolbox\Bitfinex\BitfinexDataDownloader.cs" />
+    <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage.ToolBox\BitfinexDownloaderProgram.cs" Link="Toolbox\Bitfinex\BitfinexDownloaderProgram.cs" />
+    <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage.ToolBox\BitfinexExchangeInfoDownloader.cs" Link="Toolbox\Bitfinex\BitfinexExchangeInfoDownloader.cs" />
+    <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage.ToolBox\Program.cs" Link="Toolbox\Bitfinex\Program.cs" />
     <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage\BitfinexBrokerage.cs" Link="Bitfinex\BitfinexBrokerage.cs" />
     <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage\BitfinexBrokerage.DataQueueHandler.cs" Link="Bitfinex\BitfinexBrokerage.DataQueueHandler.cs" />
     <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage\BitfinexBrokerage.Messaging.cs" Link="Bitfinex\BitfinexBrokerage.Messaging.cs" />
@@ -46,6 +63,11 @@
     <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage\Messages\Ticker.cs" Link="Bitfinex\Messages\Ticker.cs" />
     <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage\Messages\TradeExecutionUpdate.cs" Link="Bitfinex\Messages\TradeExecutionUpdate.cs" />
     <Compile Include="..\Lean.Brokerages.Bitfinex\QuantConnect.BitfinexBrokerage\Messages\Wallet.cs" Link="Bitfinex\Messages\Wallet.cs" />
+    <Compile Include="..\Lean.Brokerages.CoinbasePro\QuantConnect.GDAXBrokerage.ToolBox\GDAXDownloader.cs" Link="Toolbox\CoinbasePro\GDAXDownloader.cs" />
+    <Compile Include="..\Lean.Brokerages.CoinbasePro\QuantConnect.GDAXBrokerage.ToolBox\GDAXDownloaderProgram.cs" Link="Toolbox\CoinbasePro\GDAXDownloaderProgram.cs" />
+    <Compile Include="..\Lean.Brokerages.CoinbasePro\QuantConnect.GDAXBrokerage.ToolBox\GDAXExchangeInfoDownloader.cs" Link="Toolbox\CoinbasePro\GDAXExchangeInfoDownloader.cs" />
+    <Compile Include="..\Lean.Brokerages.CoinbasePro\QuantConnect.GDAXBrokerage.ToolBox\Models\Product.cs" Link="Toolbox\CoinbasePro\Models\Product.cs" />
+    <Compile Include="..\Lean.Brokerages.CoinbasePro\QuantConnect.GDAXBrokerage.ToolBox\Program.cs" Link="Toolbox\CoinbasePro\Program.cs" />
     <Compile Include="..\Lean.Brokerages.CoinbasePro\QuantConnect.GDAXBrokerage\AuthenticationToken.cs" Link="Coinbase\AuthenticationToken.cs" />
     <Compile Include="..\Lean.Brokerages.CoinbasePro\QuantConnect.GDAXBrokerage\GDAXBrokerage.cs" Link="Coinbase\GDAXBrokerage.cs" />
     <Compile Include="..\Lean.Brokerages.CoinbasePro\QuantConnect.GDAXBrokerage\GDAXBrokerage.Messaging.cs" Link="Coinbase\GDAXBrokerage.Messaging.cs" />
@@ -54,12 +76,16 @@
     <Compile Include="..\Lean.Brokerages.CoinbasePro\QuantConnect.GDAXBrokerage\GDAXDataQueueHandler.cs" Link="Coinbase\GDAXDataQueueHandler.cs" />
     <Compile Include="..\Lean.Brokerages.CoinbasePro\QuantConnect.GDAXBrokerage\GDAXFill.cs" Link="Coinbase\GDAXFill.cs" />
     <Compile Include="..\Lean.Brokerages.CoinbasePro\QuantConnect.GDAXBrokerage\Messages.cs" Link="Coinbase\Messages.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage.ToolBox\IBDataDownloader.cs" Link="Toolbox\InteractiveBrokers\IBDataDownloader.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage.ToolBox\IBDownloaderProgram.cs" Link="Toolbox\InteractiveBrokers\IBDownloaderProgram.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage.ToolBox\Program.cs" Link="Toolbox\InteractiveBrokers\Program.cs" />
     <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\AccountDownloadEndEventArgs.cs" Link="InteractiveBrokers\Client\AccountDownloadEndEventArgs.cs" />
     <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\AccountSummaryEventArgs.cs" Link="InteractiveBrokers\Client\AccountSummaryEventArgs.cs" />
     <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\ActionSide.cs" Link="InteractiveBrokers\Client\ActionSide.cs" />
     <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\AgentDescription.cs" Link="InteractiveBrokers\Client\AgentDescription.cs" />
     <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\BarSize.cs" Link="InteractiveBrokers\Client\BarSize.cs" />
     <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\CommissionReportEventArgs.cs" Link="InteractiveBrokers\Client\CommissionReportEventArgs.cs" />
+    <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\CompletedOrderEventArgs.cs" Link="InteractiveBrokers\Client\CompletedOrderEventArgs.cs" />
     <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\ContractDetailsEventArgs.cs" Link="InteractiveBrokers\Client\ContractDetailsEventArgs.cs" />
     <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\CurrentTimeUtcEventArgs.cs" Link="InteractiveBrokers\Client\CurrentTimeUtcEventArgs.cs" />
     <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\Client\ErrorEventArgs.cs" Link="InteractiveBrokers\Client\ErrorEventArgs.cs" />
@@ -96,6 +122,10 @@
     <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\InteractiveBrokersBrokerageFactory.cs" Link="InteractiveBrokers\Brokerage\InteractiveBrokersBrokerageFactory.cs" />
     <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\InteractiveBrokersStateManager.cs" Link="InteractiveBrokers\Brokerage\InteractiveBrokersStateManager.cs" />
     <Compile Include="..\Lean.Brokerages.InteractiveBrokers\QuantConnect.InteractiveBrokersBrokerage\InteractiveBrokersSymbolMapper.cs" Link="InteractiveBrokers\Brokerage\InteractiveBrokersSymbolMapper.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage.ToolBox\KrakenDataDownloader.cs" Link="Toolbox\Kraken\KrakenDataDownloader.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage.ToolBox\KrakenDownloaderProgram.cs" Link="Toolbox\Kraken\KrakenDownloaderProgram.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage.ToolBox\KrakenExchangeInfoDownloader.cs" Link="Toolbox\Kraken\KrakenExchangeInfoDownloader.cs" />
+    <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage.ToolBox\Program.cs" Link="Toolbox\Kraken\Program.cs" />
     <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\Converters\KrakenBidAskConverter.cs" Link="Kraken\Converters\KrakenBidAskConverter.cs" />
     <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\Converters\KrakenCandlesConverter.cs" Link="Kraken\Converters\KrakenCandlesConverter.cs" />
     <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\Converters\KrakenTradeConverter.cs" Link="Kraken\Converters\KrakenTradeConverter.cs" />
@@ -120,6 +150,9 @@
     <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\Models\KrakenTradeExecutionEvent.cs" Link="Kraken\Models\KrakenTradeExecutionEvent.cs" />
     <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\Models\KrakenWsAddOrderResponse.cs" Link="Kraken\Models\KrakenWsAddOrderResponse.cs" />
     <Compile Include="..\Lean.Brokerages.Kraken\QuantConnect.KrakenBrokerage\Models\KrakenWsOpenOrder.cs" Link="Kraken\Models\KrakenWsOpenOrder.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage.ToolBox\OandaDataDownloader.cs" Link="Toolbox\Oanda\OandaDataDownloader.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage.ToolBox\OandaDownloaderProgram.cs" Link="Toolbox\Oanda\OandaDownloaderProgram.cs" />
+    <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage.ToolBox\Program.cs" Link="Toolbox\Oanda\Program.cs" />
     <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\Environment.cs" Link="Oanda\Environment.cs" />
     <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\OandaBrokerage.cs" Link="Oanda\OandaBrokerage.cs" />
     <Compile Include="..\Lean.Brokerages.OANDA\QuantConnect.OandaBrokerage\OandaBrokerageFactory.cs" Link="Oanda\OandaBrokerageFactory.cs" />
@@ -341,7 +374,6 @@
     <Folder Include="Bitfinex\Messages\" />
     <Folder Include="InteractiveBrokers\Brokerage\FinancialAdvisor\" />
     <Folder Include="InteractiveBrokers\Client\" />
-    <Folder Include="InteractiveBrokers\Toolbox\" />
     <Folder Include="Coinbase\" />
     <Folder Include="Kraken\Converters\" />
     <Folder Include="Kraken\Models\" />
@@ -349,6 +381,12 @@
     <Folder Include="Oanda\RestV20\Client\" />
     <Folder Include="Oanda\RestV20\Model\" />
     <Folder Include="Oanda\RestV20\Session\" />
+    <Folder Include="Toolbox\Binance\Models\" />
+    <Folder Include="Toolbox\Bitfinex\" />
+    <Folder Include="Toolbox\CoinbasePro\Models\" />
+    <Folder Include="Toolbox\InteractiveBrokers\" />
+    <Folder Include="Toolbox\Kraken\" />
+    <Folder Include="Toolbox\Oanda\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -356,7 +394,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="QuantConnect.IBAutomater" Version="2.0.71" />
     <PackageReference Include="RestSharp" Version="109.0.1" />
   </ItemGroup>
 
@@ -364,7 +401,9 @@
     <ProjectReference Include="..\Api\QuantConnect.Api.csproj" />
     <ProjectReference Include="..\Brokerages\QuantConnect.Brokerages.csproj" />
     <ProjectReference Include="..\Common\QuantConnect.csproj" />
+    <ProjectReference Include="..\IBAutomater\QuantConnect.IBAutomater\QuantConnect.IBAutomater.csproj" />
     <ProjectReference Include="..\Logging\QuantConnect.Logging.csproj" />
+    <ProjectReference Include="..\ToolBox\QuantConnect.ToolBox.csproj" />
   </ItemGroup>
 
   <ItemGroup>

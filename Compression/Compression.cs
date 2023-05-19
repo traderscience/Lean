@@ -69,10 +69,13 @@ namespace QuantConnect
                         //Create the space in the zip file:
                         var entry = new ZipEntry(filename);
                         var data = filenamesAndData[filename];
-                        var bytes = Encoding.Default.GetBytes(data);
-                        stream.PutNextEntry(entry);
-                        stream.Write(bytes, 0, bytes.Length);
-                        stream.CloseEntry();
+                        if (data != null)
+                        {
+                            var bytes = Encoding.Default.GetBytes(data);
+                            stream.PutNextEntry(entry);
+                            stream.Write(bytes, 0, bytes.Length);
+                            stream.CloseEntry();
+                        }
                     } // End For Each File.
 
                     //Close stream:

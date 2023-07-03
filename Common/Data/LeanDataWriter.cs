@@ -60,11 +60,23 @@ namespace QuantConnect.Data
         {
             _symbol = symbol;
 
-            if (_securityType != SecurityType.Equity && _securityType != SecurityType.Forex && _securityType != SecurityType.Cfd && _securityType != SecurityType.Crypto
-                && _securityType != SecurityType.Future && _securityType != SecurityType.Option && _securityType != SecurityType.FutureOption
-                && _securityType != SecurityType.Index && _securityType != SecurityType.IndexOption && _securityType != SecurityType.CryptoFuture)
+            switch (symbol.ID.SecurityType)
             {
-                throw new NotImplementedException("Sorry this security type is not yet supported by the LEAN data writer: " + _securityType);
+                case SecurityType.Equity:
+                case SecurityType.Forex:
+                case SecurityType.Cfd:
+                case SecurityType.Crypto:
+                case SecurityType.Future:
+                case SecurityType.Option:
+                case SecurityType.FutureOption:
+                case SecurityType.Index:
+                case SecurityType.IndexOption:
+                case SecurityType.CryptoFuture:
+                case SecurityType.Auxiliary:
+                    break;
+                default:
+                    Log.Error($"LeanDataWriter(): SecurityType {symbol.ID.SecurityType.ToString()} is not supported");
+                    return;
             }
         }
 

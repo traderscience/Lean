@@ -131,6 +131,11 @@ namespace QuantConnect.ToolBox.AlphaVantageDownloader
             return data.Select(d => new TradeBar(d.Time, symbol, d.Open, d.High, d.Low, d.Close, d.Volume, period));
         }
 
+        public IEnumerable<string> GetColumnNames()
+        {
+            return null;
+        }
+
         /// <summary>
         /// Get data from daily API
         /// </summary>

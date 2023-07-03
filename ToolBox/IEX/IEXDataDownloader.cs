@@ -79,5 +79,10 @@ namespace QuantConnect.ToolBox.IEX
                 yield return slice[symbol];
             }
         }
+        public IEnumerable<string> GetColumnNames()
+        {
+            return null;
+        }
+
     }
 }

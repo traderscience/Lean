@@ -1,4 +1,4 @@
-﻿/*
+/*
  * QUANTCONNECT.COM - Democratizing Finance, Empowering Individuals.
  * Lean Algorithmic Trading Engine v2.0. Copyright 2014 QuantConnect Corporation.
  *
@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 
 namespace QuantConnect.Util
@@ -40,10 +41,10 @@ namespace QuantConnect.Util
 
             writer.WriteStartObject();
 
-            List<ChartPoint> values;
+            ObservableCollection<ChartPoint> values;
             if (series.SeriesType == SeriesType.Pie)
             {
-                values = new List<ChartPoint>();
+                values = new ObservableCollection<ChartPoint>();
                 var dataPoint = series.ConsolidateChartPoints();
                 if (dataPoint != null)
                 {

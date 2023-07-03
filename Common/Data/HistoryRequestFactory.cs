@@ -1,4 +1,4 @@
-﻿/*
+/*
  * QUANTCONNECT.COM - Democratizing Finance, Empowering Individuals.
  * Lean Algorithmic Trading Engine v2.0. Copyright 2014 QuantConnect Corporation.
  *
@@ -57,7 +57,8 @@ namespace QuantConnect.Data
             Resolution? resolution,
             DataMappingMode? dataMappingMode = null,
             DataNormalizationMode? dataNormalizationMode = null,
-            int? contractDepthOffset = null)
+            int? contractDepthOffset = null,
+            bool ignoreFrontier = false)
         {
             resolution ??= subscription.Resolution;
 
@@ -78,7 +79,8 @@ namespace QuantConnect.Data
                 DataType = dataType,
                 Resolution = resolution.Value,
                 FillForwardResolution = subscription.FillDataForward ? resolution : null,
-                TickType = subscription.TickType
+                TickType = subscription.TickType,
+                IgnoreFrontier = ignoreFrontier
             };
 
             if (dataMappingMode != null)

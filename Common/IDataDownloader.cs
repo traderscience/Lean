@@ -30,5 +30,12 @@ namespace QuantConnect
         /// <param name="dataDownloaderGetParameters">model class for passing in parameters for historical data</param>
         /// <returns>Enumerable of base data for this symbol</returns>
         IEnumerable<BaseData> Get(DataDownloaderGetParameters dataDownloaderGetParameters);
+        
+        /// <summary>
+        /// Get the available value columns for the requested symbol
+        /// (only meaningful for Auxiliary Data)
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<String> GetColumnNames();
     }
 }

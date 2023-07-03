@@ -39,8 +39,8 @@ namespace QuantConnect
         Oanda = 12,
         /// Polygon
         Polygon = 13,
-        /// Quandl Bitfinex
-        QuandlBitfinex = 14,
+        /// Quandl
+        Quandl = 14,
         /// Yahoo Finance
         Yahoo = 15,
         /// Zerodha

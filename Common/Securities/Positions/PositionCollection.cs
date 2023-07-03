@@ -72,7 +72,7 @@ namespace QuantConnect.Securities.Positions
 
                     var resultingPosition = existing.Deduct(position.Quantity);
                     // directly remove positions hows quantity is 0
-                    if(resultingPosition.Quantity == 0)
+                    if (resultingPosition.Quantity == 0)
                     {
                         _positions.Remove(position.Symbol);
                     }

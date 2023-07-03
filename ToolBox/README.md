@@ -30,14 +30,14 @@ Example: --app=YahooDownloader --tickers=SPY,AAPL --resolution=Daily --from-date
 	- IBDownloader or IBDL
 	- KrakenDownloader or KDL
 	- OandaDownloader or ODL
-	- QuandlBitfinexDownloader or QBDL
+	- QuandlDownloader or QDL
 	- YahooDownloader or YDL
 	- IEXDownloader or IEXDL
 	- BitfinexDownloader or BFXDL
 	- PolygonDownloader or PDL
 - **'--from-date=yyyyMMdd-HH:mm:ss'** required
-- **'--tickers=SPY,AAPL,etc'** required, except for QuandlBitfinexDownloader (QBDL)
-- **'--resolution=Tick/Second/Minute/Hour/Daily/All'** required, except for QuandlBitfinexDownloader (QBDL), CryptoiqDownloader (CDL). **Case sensitive. Not all downloaders support all resolutions**, send empty for more information.
+- **'--tickers=SPY,AAPL,etc'** required, except for QuandlDownloader (QDL)
+- **'--resolution=Tick/Second/Minute/Hour/Daily/All'** required, except for QuandlDownloader (QDL), CryptoiqDownloader (CDL). **Case sensitive. Not all downloaders support all resolutions**, send empty for more information.
 - **'--to-date=yyyyMMdd-HH:mm:ss'** optional. If not provided 'DateTime.UtcNow' will be used
 
 #### Available Converters

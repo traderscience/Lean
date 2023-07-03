@@ -532,7 +532,18 @@ namespace QuantConnect
         {
             return Generate(DefaultDate, symbol, SecurityType.MarketStats, market);
         }
-        
+
+        /// <summary>
+        /// Generate Auxiliary Data Symbol  
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="market"></param>
+        /// <returns></returns>
+        public static SecurityIdentifier GenerateAuxiliaryData(string symbol, string market)
+        {
+            return Generate(DefaultDate, symbol, SecurityType.Auxiliary, market);
+        }
+     
 
         /// <summary>
         /// Generates a new <see cref="SecurityIdentifier"/> for a <see cref="ConstituentsUniverseData"/>.
@@ -704,6 +715,7 @@ namespace QuantConnect
                 case SecurityType.Index:
                 case SecurityType.Strip:
                 case SecurityType.MarketStats:
+                case SecurityType.Auxiliary:
                     result._date = date;
                     break;
                 case SecurityType.Option:

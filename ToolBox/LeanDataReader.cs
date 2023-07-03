@@ -14,6 +14,7 @@
 */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -70,6 +71,7 @@ namespace QuantConnect.ToolBox
             string zipEntry = null;
 
             var isFutureOrOption = filepath.Contains("#");
+            var isAuxiliary = filepath.Contains("Auxiliary", StringComparison.InvariantCultureIgnoreCase);
 
             if (isFutureOrOption)
             {
@@ -78,6 +80,10 @@ namespace QuantConnect.ToolBox
             }
 
             var fileInfo = new FileInfo(filepath);
+            if (isAuxiliary)
+            {
+                resolution = Resolution.Daily;
+            }
             if (!LeanData.TryParsePath(fileInfo.FullName, out symbol, out date, out resolution, out var tickType, out var dataType))
             {
                 throw new ArgumentException($"File {filepath} cannot be parsed.");
@@ -133,6 +139,8 @@ namespace QuantConnect.ToolBox
                             while (!entryReader.EndOfStream)
                             {
                                 var dataPoint = factory.Reader(_config, entryReader, _date, false);
+                                if (dataPoint == null)
+                                    yield break;
                                 dataPoint.Symbol = symbol;
                                 yield return dataPoint;
                             }

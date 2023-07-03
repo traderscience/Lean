@@ -94,5 +94,9 @@ namespace QuantConnect.ToolBox.CryptoiqDownloader
             }
         }
 
+        public IEnumerable<string> GetColumnNames()
+        {
+            return null;
+        }
     }
 }

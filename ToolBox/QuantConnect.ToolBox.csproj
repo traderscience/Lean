@@ -39,6 +39,7 @@
     <Compile Include="..\Common\Properties\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Quandl.NET" Version="1.2.1" />
     <PackageReference Include="QuantConnect.pythonnet" Version="2.0.18" />
     <PackageReference Include="CoinAPI.WebSocket.V1" Version="2.0.1" />
     <PackageReference Include="Common.Logging" Version="3.4.1" />

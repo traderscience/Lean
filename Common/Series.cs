@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -50,7 +51,7 @@ namespace QuantConnect
         ///  Values for the series plot:
         /// These values are assumed to be in ascending time order (first points earliest, last points latest)
         /// </summary>
-        public List<ChartPoint> Values = new List<ChartPoint>();
+        public ObservableCollection<ChartPoint> Values = new ObservableCollection<ChartPoint>();
 
         /// <summary>
         /// Chart type for the series:
@@ -153,7 +154,7 @@ namespace QuantConnect
         public Series(string name, SeriesType type, string unit, Color color, ScatterMarkerSymbol symbol = ScatterMarkerSymbol.None)
         {
             Name = name;
-            Values = new List<ChartPoint>();
+            Values = new ObservableCollection<ChartPoint>();
             SeriesType = type;
             Unit = unit;
             Index = 0;
@@ -250,7 +251,7 @@ namespace QuantConnect
             var series = new Series
             {
                 Name = Name,
-                Values = new List<ChartPoint>(),
+                Values = new ObservableCollection<ChartPoint>(),
                 SeriesType = SeriesType,
                 Unit = Unit,
                 Index = Index,

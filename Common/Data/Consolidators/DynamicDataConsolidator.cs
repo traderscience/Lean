@@ -19,7 +19,7 @@ using QuantConnect.Data.Market;
 namespace QuantConnect.Data.Consolidators
 {
     /// <summary>
-    /// A data csolidator that can make trade bars from DynamicData derived types. This is useful for
+    /// A data consolidator that can make trade bars from DynamicData derived types. This is useful for
     /// aggregating Quandl and other highly flexible dynamic custom data types.
     /// </summary>
     public class DynamicDataConsolidator : TradeBarConsolidatorBase<DynamicData>

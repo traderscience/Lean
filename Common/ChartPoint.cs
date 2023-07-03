@@ -26,10 +26,18 @@ namespace QuantConnect
     public class ChartPoint
     {
         /// Time of this chart point: lower case for javascript encoding simplicty
-        public long x;
+        public long x { get; set; }
+
+        /// <summary>
+        /// DateTime representation of this chart point :  lower case for javascript encoding simplicty
+        /// </summary>
+        public DateTime time
+        {
+            get {return Time.UnixTimeStampToDateTime(x);}
+        }
 
         /// Value of this chart point:  lower case for javascript encoding simplicty
-        public decimal y;
+        public decimal y { get; set; }
 
         /// <summary>
         /// Default constructor. Using in SeriesSampler.

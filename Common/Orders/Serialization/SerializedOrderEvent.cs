@@ -27,8 +27,8 @@ namespace QuantConnect.Orders.Serialization
         /// <summary>
         /// The unique order event id
         /// </summary>
-        [JsonProperty("id")]
-        public virtual string Id => $"{AlgorithmId}-{OrderId}-{OrderEventId}";
+        [JsonProperty("unique-id")]
+        public virtual string UniqueId => $"{AlgorithmId}-{OrderId}-{OrderEventId}";
 
         /// <summary>
         /// Algorithm Id, BacktestId or DeployId
@@ -52,8 +52,13 @@ namespace QuantConnect.Orders.Serialization
         /// Easy access to the order symbol associated with this event.
         /// </summary>
         [JsonProperty("symbol")]
-        public string Symbol { get; set; }
+        public Symbol Symbol { get; set; }
 
+        /// <summary>
+        /// Security Type
+        /// </summary>
+        [JsonProperty("securitytype")]
+        public SecurityType SecurityType { get; set; }
         /// <summary>
         /// The time of this event in unix timestamp
         /// </summary>
@@ -153,7 +158,8 @@ namespace QuantConnect.Orders.Serialization
             AlgorithmId = algorithmId;
             OrderId = orderEvent.OrderId;
             OrderEventId = orderEvent.Id;
-            Symbol = orderEvent.Symbol.ID.ToString();
+            Symbol = orderEvent.Symbol;
+            SecurityType = orderEvent.Symbol.SecurityType;
             Time = QuantConnect.Time.DateTimeToUnixTimeStamp(orderEvent.UtcTime);
             Status = orderEvent.Status;
             if (orderEvent.OrderFee.Value.Currency != Currencies.NullCurrency)

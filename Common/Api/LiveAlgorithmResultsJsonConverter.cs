@@ -22,6 +22,7 @@ using QuantConnect.Packets;
 using QuantConnect.Securities;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Collections.ObjectModel;
 
 namespace QuantConnect.Api
 {
@@ -154,9 +155,9 @@ namespace QuantConnect.Api
         /// </summary>
         /// <param name="values">json array of x, y value pairs</param>
         /// <returns>List of ChartPoints</returns>
-        private static List<ChartPoint> GetSeriesValues(JToken values)
+        private static ObservableCollection<ChartPoint> GetSeriesValues(JToken values)
         {
-            var chartPoints = new List<ChartPoint>();
+            var chartPoints = new ObservableCollection<ChartPoint>();
 
             // Special ChartPoint that only represents time (only has x component)
             if (values.Children().Count() == 1)

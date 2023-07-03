@@ -214,6 +214,7 @@ namespace QuantConnect.Util
                 }
             );
             _exportedTypes.AddRange(exportedTypes);
+            //PrintTypes("C");
         }
 
         private CompositionContainer _compositionContainer;
@@ -221,6 +222,14 @@ namespace QuantConnect.Util
         private readonly Task<List<ComposablePartDefinition>> _composableParts;
         private readonly object _exportedValuesLockObject = new object();
         private readonly Dictionary<Type, IEnumerable> _exportedValues = new Dictionary<Type, IEnumerable>();
+
+        public void PrintTypes(string filter)
+        {
+            foreach (var type in _exportedTypes.Where(x => x.Name.StartsWith(filter)))
+            {
+                Log.Trace($"Composer(): {type.FullName}");
+            }
+        }
 
         /// <summary>
         /// Gets the export matching the predicate

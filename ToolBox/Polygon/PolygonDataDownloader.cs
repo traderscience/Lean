@@ -75,6 +75,11 @@ namespace QuantConnect.ToolBox.Polygon
             }
         }
 
+        public IEnumerable<string> GetColumnNames()
+        {
+            return null;
+        }
+
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>

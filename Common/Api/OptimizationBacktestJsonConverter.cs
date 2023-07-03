@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -181,9 +182,9 @@ namespace QuantConnect.Api
         /// </summary>
         /// <param name="values">json array of x, y value pairs</param>
         /// <returns>List of ChartPoints</returns>
-        private static List<ChartPoint> GetSeriesValues(JToken values)
+        private static ObservableCollection<ChartPoint> GetSeriesValues(JToken values)
         {
-            var chartPoints = new List<ChartPoint>();
+            var chartPoints = new ObservableCollection<ChartPoint>();
 
             foreach (var point in values.Children())
             {

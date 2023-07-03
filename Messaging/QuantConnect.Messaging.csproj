@@ -30,7 +30,6 @@
     <Message Text="SelectedOptimization $(SelectedOptimization)" Importance="high" />
   </Target>
   <ItemGroup>
-    <PackageReference Include="NetMQ" Version="4.0.1.12" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="RestSharp" Version="109.0.1" />
   </ItemGroup>
@@ -47,5 +46,10 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="NetMQ">
+      <HintPath>..\..\netmq\src\NetMQ\bin\Debug\netstandard2.1\NetMQ.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

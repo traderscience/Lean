@@ -73,7 +73,7 @@ namespace QuantConnect
             Tuple.Create(TradeStation, 103),
             Tuple.Create(Collective2, 104),
             Tuple.Create(ZuluTrade, 105),
-            Tuple.Create(QuandlBitfinex, 106)
+            Tuple.Create(Quandl, 106)
         };
 
         static Market()
@@ -266,7 +266,7 @@ namespace QuantConnect
         /// <summary>
         /// Quandl Bitfinex
         /// </summary>
-        public const string QuandlBitfinex = "quandlbitfinex";
+        public const string Quandl = "quandl";
 
         /// <summary>
         /// Adds the specified market to the map of available markets with the specified identifier.

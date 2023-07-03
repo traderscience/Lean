@@ -73,7 +73,7 @@ namespace QuantConnect.Lean.Engine.Setup
         /// </summary>
         public BacktestingSetupHandler()
         {
-            MaximumRuntime = TimeSpan.FromSeconds(300);
+            MaximumRuntime = TimeSpan.FromDays(2); //FromSeconds(300);
             Errors = new List<Exception>();
             StartingDate = new DateTime(1998, 01, 01);
         }

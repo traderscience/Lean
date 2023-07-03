@@ -149,7 +149,7 @@ namespace QuantConnect.Packets
             MinuteLimit = 500;
             SecondLimit = 100;
             TickLimit = 30;
-            RamAllocation = 1024;
+            RamAllocation = 0;
             BacktestLogLimit = 10000;
             BacktestingMaxOrders = int.MaxValue;
             DailyLogLimit = 3000000;

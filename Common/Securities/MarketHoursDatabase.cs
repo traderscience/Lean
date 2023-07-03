@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using Newtonsoft.Json;
 using NodaTime;
 using QuantConnect.Data;
@@ -297,6 +298,13 @@ namespace QuantConnect.Securities
                     case SecurityType.FutureOption:
                         stringSymbol = symbol.HasUnderlying ? symbol.ID.Symbol : string.Empty;
                         break;
+                    case SecurityType.Auxiliary:
+                        string[] symParts = symbol.Value.Split('/');
+                        if (symParts.Length == 2)
+                            stringSymbol = symParts[1];
+                        else
+                            stringSymbol = symbol.ID.Symbol;
+                        break;
                     case SecurityType.Base:
                     case SecurityType.Future:
                         stringSymbol = symbol.ID.Symbol;
@@ -306,7 +314,6 @@ namespace QuantConnect.Securities
                         break;
                 }
             }
-
             return stringSymbol;
         }
 

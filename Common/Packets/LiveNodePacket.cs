@@ -1,4 +1,4 @@
-﻿/*
+/*
  * QUANTCONNECT.COM - Democratizing Finance, Empowering Individuals.
  * Lean Algorithmic Trading Engine v2.0. Copyright 2014 QuantConnect Corporation.
  *
@@ -90,7 +90,7 @@ namespace QuantConnect.Packets
                 MinuteLimit = 100,
                 SecondLimit = 50,
                 TickLimit = 25,
-                RamAllocation = 512
+                RamAllocation = 0
             };
         }
     }

@@ -170,6 +170,8 @@ namespace QuantConnect.Indicators
             Current = new IndicatorDataPoint(DateTime.MinValue, 0m);
         }
 
+        private bool forwardErrorSuppress = false;
+
         /// <summary>
         /// Updates the state of this indicator with the given value and returns true
         /// if this indicator is ready, false otherwise
@@ -182,9 +184,15 @@ namespace QuantConnect.Indicators
             if (_previousInput.TryGetValue(input.Symbol.ID, out _previousSymbolInput) && input.EndTime < _previousSymbolInput.EndTime)
             {
                 // if we receive a time in the past, log and return
-                Log.Error($"This is a forward only indicator: {Name} Input: {input.EndTime:u} Previous: {_previousSymbolInput.EndTime:u}. It will not be updated with this input.");
+                if (forwardErrorSuppress == false)
+                {
+                    Log.Error($"This is a forward only indicator: {Name} Input: {input.EndTime:u} Previous: {_previousSymbolInput.EndTime:u}. It will not be updated with this input.");
+                    forwardErrorSuppress = true;
+                }
                 return IsReady;
             }
+
+            forwardErrorSuppress = false;
             if (!ReferenceEquals(input, _previousSymbolInput))
             {
                 // compute a new value and update our previous time

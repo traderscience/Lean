@@ -27,6 +27,7 @@ using QuantConnect.Configuration;
 using QuantConnect.Data.Auxiliary;
 using QuantConnect.Data.Custom.Tiingo;
 using QuantConnect.Lean.Engine.DataFeeds.Enumerators;
+using QuantConnect.Data.Custom;
 
 namespace QuantConnect.Lean.Engine.DataFeeds
 {
@@ -177,6 +178,17 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                 _endOfStream = true;
                 return;
             }
+
+            //If its quandl set the access token in data factory:
+            var quandl = _dataFactory as Quandl;
+            if (quandl != null)
+            {
+                if (!Quandl.IsAuthCodeSet)
+                {
+                    Quandl.SetAuthCode(Config.Get("quandl-auth-token"));
+                }
+            }
+
 
             // If Tiingo data, set the access token in data factory
             var tiingo = _dataFactory as TiingoPrice;

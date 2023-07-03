@@ -572,14 +572,14 @@ namespace QuantConnect
                     }
                     catch (Exception err)
                     {
-                        Log.Error(err, "Inner try/catch");
+                        Log.Error(err, $"UnZip: inner exception {err.ToString()}");
                         if (zip != null) zip.Dispose();
                         if (reader != null) reader.Close();
                     }
                 }
                 else
                 {
-                    Log.Error($"Data.UnZip(2): File doesn\'t exist: {filename}");
+                    Log.Error($"Data.UnZip: File doesn\'t exist: {filename}");
                 }
             }
             catch (Exception err)

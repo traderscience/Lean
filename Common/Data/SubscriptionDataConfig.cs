@@ -178,6 +178,11 @@ namespace QuantConnect.Data
         public bool IsFilteredSubscription { get; }
 
         /// <summary>
+        /// Special flag to ignore frontier time for historical data subscriptions
+        /// </summary>
+        public bool IgnoreFrontier { get; internal set; }
+
+        /// <summary>
         /// Constructor for Data Subscriptions
         /// </summary>
         /// <param name="objectType">Type of the data objects.</param>

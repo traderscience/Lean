@@ -28,7 +28,7 @@ namespace QuantConnect.Algorithm.Framework.Portfolio
     {
         private List<IPortfolioTarget> _enumerable;
         private List<KeyValuePair<Symbol, IPortfolioTarget>> _kvpEnumerable;
-        private readonly Dictionary<Symbol, IPortfolioTarget> _targets = new ();
+        private readonly Dictionary<Symbol, IPortfolioTarget> _targets = new();
 
         /// <summary>
         /// Gets the number of targets in this collection

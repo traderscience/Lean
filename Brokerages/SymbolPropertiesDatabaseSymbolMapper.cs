@@ -16,7 +16,9 @@
 using System;
 using System.Linq;
 using QuantConnect.Securities;
+using QuantConnect.Logging;
 using System.Collections.Generic;
+//using System.Runtime.Remoting.Messaging;
 
 namespace QuantConnect.Brokerages
 {
@@ -72,18 +74,21 @@ namespace QuantConnect.Brokerages
         {
             if (symbol == null || string.IsNullOrWhiteSpace(symbol.Value))
             {
-                throw new ArgumentException($"Invalid symbol: {(symbol == null ? "null" : symbol.Value)}");
+                Log.Error($"GetBrokerageSymbol: Invalid symbol: {(symbol == null ? "null" : symbol.Value)}");
+                return null;
             }
 
             if (symbol.ID.Market != _market)
             {
-                throw new ArgumentException($"Invalid market: {symbol.ID.Market}");
+                Log.Error($"GetBrokerageSymbol: Invalid market: {symbol.ID.Market}");
+                return null;
             }
 
             SymbolProperties symbolProperties;
             if (!_symbolPropertiesMap.TryGetValue(symbol, out symbolProperties) )
             {
-                throw new ArgumentException($"Unknown symbol: {symbol.Value}/{symbol.SecurityType}/{symbol.ID.Market}");
+                Log.Error($"Unknown symbol: {symbol.Value}/{symbol.SecurityType}/{symbol.ID.Market}");
+                return null;
             }
 
             if (string.IsNullOrWhiteSpace(symbolProperties.MarketTicker))

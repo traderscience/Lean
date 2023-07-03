@@ -19,6 +19,7 @@ using ProtoBuf;
 using Newtonsoft.Json;
 
 using QuantConnect.Securities;
+using System.Linq;
 
 namespace QuantConnect
 {
@@ -91,6 +92,14 @@ namespace QuantConnect
                     ticker = tickerParts[0];
                     securityType = SecurityType.Future;
                     market = Market.USA;
+                }
+                else
+                if (IsAuxiliaryDataSymbol(symParts[0]))
+                {
+                    // auxiliary data symbol
+                    ticker = symParts[0];
+                    securityType = SecurityType.Base;
+                    market = Market.Quandl;
                 }
                 else
                 if (symParts.Length > 1)
@@ -192,6 +201,10 @@ namespace QuantConnect
                 case SecurityType.FutureOption:
                     throw new NotImplementedException(Messages.Symbol.InsufficientInformationToCreateFutureOptionSymbol);
 
+                case SecurityType.Auxiliary:
+                    sid = SecurityIdentifier.GenerateAuxiliaryData(ticker, market);
+                    break;
+
                 case SecurityType.Commodity:
                 default:
                     throw new NotImplementedException(Messages.Symbol.SecurityTypeNotImplementedYet(securityType));
@@ -200,6 +213,18 @@ namespace QuantConnect
             return new Symbol(sid, alias ?? ticker);
         }
 
+        private static readonly string[] customDataPrefixes = new string[] { "BP", "CFTC", "EIA","FED", "FINRA", "FRED","HKEX", "LBMA","ML", "MULTPL", "ODA", "OPEC", "UMICH", "ISM","USTREASURY", "WB", "WASDE","ZILLOW"   };
+
+        /// <summary>
+        /// Check if the symbol is a custom data symbol (eg. Quandl, FRED, FINRA, etc.)   
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <returns></returns>
+        public static bool IsAuxiliaryDataSymbol(string symbol)
+        {
+            return symbol.Contains('/', StringComparison.InvariantCulture);
+            //return customDataPrefixes.Any(prefix => symbol.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
+        }
         /// <summary>
         /// Creates a new Symbol for custom data. This method allows for the creation of a new Base Symbol
         /// using the first ticker and the first traded date from the provided underlying Symbol. This avoids

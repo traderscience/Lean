@@ -478,6 +478,14 @@ namespace QuantConnect.Util
                     }
                     break;
 
+                case SecurityType.Auxiliary:
+                    var auxData = data as AuxiliaryData;
+                    if (auxData != null)
+                    {
+                        return $"{longTime},{string.Join(',', auxData.Values.Cast<double>())}";
+                    }
+                    break;
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(securityType), securityType, null);
             }
@@ -498,6 +506,7 @@ namespace QuantConnect.Util
             if (resolution == Resolution.Tick) return typeof(Tick);
             if (tickType == TickType.OpenInterest) return typeof(OpenInterest);
             if (tickType == TickType.Quote) return typeof(QuoteBar);
+            if (tickType == TickType.Auxiliary) return typeof(AuxiliaryData);
             return typeof(TradeBar);
         }
 
@@ -514,7 +523,8 @@ namespace QuantConnect.Util
             if (baseDataType == typeof(Tick) ||
                 baseDataType == typeof(TradeBar) ||
                 baseDataType == typeof(QuoteBar) ||
-                baseDataType == typeof(OpenInterest))
+                baseDataType == typeof(OpenInterest) || 
+                baseDataType == typeof(AuxiliaryData))
             {
                 return true;
             }
@@ -592,6 +602,15 @@ namespace QuantConnect.Util
                 case SecurityType.Future:
                 case SecurityType.CryptoFuture:
                     return !isHourOrDaily ? Path.Combine(directory, symbol.ID.Symbol.ToLowerInvariant()) : directory;
+
+                case SecurityType.Auxiliary:
+                    string[] symParts = symbol.Value.Split('/');
+                    if (symParts.Length != 2)
+                    {
+                        throw new ArgumentException($"Invalid auxiliary symbol: {symbol.Value}");
+                    }   
+                    // return the path for a Quandl dataset "quandl/FRED"
+                    return Path.Combine(directory, symParts[0]);
 
                 case SecurityType.Commodity:
                 default:
@@ -753,6 +772,14 @@ namespace QuantConnect.Util
                         expirationTag
                         ) + ".csv";
 
+                case SecurityType.Auxiliary:
+                    string[] symParts = symbol.Value.Split('/');
+                    if (symParts.Length != 2)
+                    {
+                        throw new ArgumentException($"Invalid symbol format for auxiliary symbol: {symbol.Value}");
+                    }
+                    return $"{symParts[1].ToLowerInvariant()}.csv";
+
                 case SecurityType.Commodity:
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -818,6 +845,14 @@ namespace QuantConnect.Util
 
                     return $"{formattedDate}_{tickTypeString}.zip";
 
+                case SecurityType.Auxiliary:
+                    string[] symParts = symbol.Value.Split('/');    
+                    if (symParts.Length != 2)
+                    {
+                        throw new ArgumentException($"Invalid symbol format for auxiliary symbol: {symbol.Value}");
+                    }
+                    return $"{symParts[1].ToLowerInvariant()}.zip";
+
                 case SecurityType.Commodity:
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -862,7 +897,11 @@ namespace QuantConnect.Util
             {
                 return TickType.Quote;
             }
-            return TickType.Trade;
+            else
+            if (securityType == SecurityType.Auxiliary)
+                return TickType.Auxiliary;
+            else
+                return TickType.Trade;
         }
 
         /// <summary>
@@ -1084,7 +1123,7 @@ namespace QuantConnect.Util
 
                 tickType = GetCommonTickType(symbol.SecurityType);
                 var fileName = Path.GetFileNameWithoutExtension(filePath);
-                if (fileName.Contains("_"))
+                if (tickType != TickType.Auxiliary && fileName.Contains("_"))
                 {
                     // example: 20140606_openinterest_american.zip
                     var tickTypePosition = 1;
@@ -1163,9 +1202,11 @@ namespace QuantConnect.Util
                     // Gather components used to create the security
                     market = info[startIndex + 1];
                     ticker = info[startIndex + 3];
-                    
-                    // Remove the ticktype from the ticker (Only exists in Crypto and Future data but causes no issues)
-                    ticker = ticker.Split('_').First();
+                    if (securityType == SecurityType.Auxiliary)
+                        ticker += "/" + info[startIndex + 4];
+                    else
+                        // Remove the ticktype from the ticker (Only exists in Crypto and Future data but causes no issues)
+                        ticker = ticker.Split('_').First();
 
                     // If resolution is Daily or Hour, we do not need to set the date
                     if (resolution < Resolution.Hour)

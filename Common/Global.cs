@@ -320,7 +320,12 @@ namespace QuantConnect
         /// <summary>
         /// Strips
         /// </summary>
-        Strip
+        Strip,
+
+        /// <summary>
+        /// Auxiliary Data (eg. Quandl, FRED, etc.)
+        /// </summary>
+        Auxiliary
     }
 
     /// <summary>
@@ -398,7 +403,9 @@ namespace QuantConnect
         /// Quote type tick object (1)
         Quote,
         /// Open Interest type tick object (for options, futures) (2)
-        OpenInterest
+        OpenInterest,
+        /// Auxiliary data type tick object (3) 
+        Auxiliary
     }
 
     /// <summary>

@@ -63,5 +63,10 @@ namespace QuantConnect.ToolBox.IQFeedDownloader
                     tickType));
 
         }
+        public IEnumerable<string> GetColumnNames()
+        {
+            return null;
+        }
+
     }
 }

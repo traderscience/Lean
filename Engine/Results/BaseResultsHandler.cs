@@ -77,6 +77,11 @@ namespace QuantConnect.Lean.Engine.Results
         protected int LastDeltaOrderEventsPosition;
 
         /// <summary>
+        /// The last position consumed from Algorithm.Transactions.TransactionRecord while determining delta account portfolio transactions
+        /// </summary>
+        protected int LastDeltaTransactionPosition;
+
+        /// <summary>
         /// The task in charge of running the <see cref="Run"/> update method
         /// </summary>
         private Thread _updateRunner;
@@ -339,9 +344,9 @@ namespace QuantConnect.Lean.Engine.Results
         /// Gets the orders generated starting from the provided <see cref="ITransactionHandler.OrderEvents"/> position
         /// </summary>
         /// <returns>The delta orders</returns>
-        protected virtual Dictionary<int, Order> GetDeltaOrders(int orderEventsStartPosition, Func<int, bool> shouldStop)
+        protected virtual SortedDictionary<int, Order> GetDeltaOrders(int orderEventsStartPosition, Func<int, bool> shouldStop)
         {
-            var deltaOrders = new Dictionary<int, Order>();
+            var deltaOrders = new SortedDictionary<int, Order>();
 
             foreach (var orderId in TransactionHandler.OrderEvents.Skip(orderEventsStartPosition).Select(orderEvent => orderEvent.OrderId))
             {

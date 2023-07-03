@@ -173,7 +173,7 @@ namespace QuantConnect.Lean.Engine.Results
             {
                 try
                 {
-                    Dictionary<int, Order> deltaOrders;
+                    SortedDictionary<int, Order> deltaOrders;
                     {
                         var stopwatch = Stopwatch.StartNew();
                         deltaOrders = GetDeltaOrders(LastDeltaOrderPosition, shouldStop: orderCount => stopwatch.ElapsedMilliseconds > 15);
@@ -335,9 +335,9 @@ namespace QuantConnect.Lean.Engine.Results
                                 {
                                     // trim data that's older than 2 days
                                     series.Value.Values =
-                                        (from v in series.Value.Values
+                                        ((System.Collections.ObjectModel.ObservableCollection<ChartPoint>)(from v in series.Value.Values
                                          where v.x > timeLimitUtc
-                                         select v).ToList();
+                                         select v));
                                 }
                             }
                         }
@@ -447,14 +447,16 @@ namespace QuantConnect.Lean.Engine.Results
         /// <summary>
         /// Run over all the data and break it into smaller packets to ensure they all arrive at the terminal
         /// </summary>
-        private IEnumerable<LiveResultPacket> SplitPackets(Dictionary<string, Chart> deltaCharts,
-            Dictionary<int, Order> deltaOrders,
+        private IEnumerable<LiveResultPacket> SplitPackets(
+            Dictionary<string, Chart> deltaCharts,
+            SortedDictionary<int, Order> deltaOrders,
             Dictionary<string, Holding> holdings,
             CashBook cashbook,
             Dictionary<string, string> deltaStatistics,
             SortedDictionary<string, string> runtimeStatistics,
             Dictionary<string, string> serverStatistics,
-            List<OrderEvent> deltaOrderEvents)
+            List<OrderEvent> deltaOrderEvents,
+            SortedDictionary<DateTime, decimal> deltaProfitLoss = null)
         {
             // break the charts into groups
             var current = new Dictionary<string, Chart>();
@@ -507,7 +509,12 @@ namespace QuantConnect.Lean.Engine.Results
             // only send order and order event packet if there is actually any update
             if (deltaOrders.Count > 0 || deltaOrderEvents.Count > 0)
             {
-                result= result.Concat(new []{ new LiveResultPacket(_job, new LiveResult { Orders = deltaOrders, OrderEvents = deltaOrderEvents }) });
+                result = result.Concat(new []{ new LiveResultPacket(_job, new LiveResult { Orders = deltaOrders, OrderEvents = deltaOrderEvents }) });
+            }
+
+            if (deltaProfitLoss.Any())
+            {
+                result = result.Concat(new[] { new LiveResultPacket(_job, new LiveResult() { ProfitLoss = deltaProfitLoss }) });
             }
 
             return result;
@@ -701,7 +708,8 @@ namespace QuantConnect.Lean.Engine.Results
                             else
                             {
                                 //We already have this record, so just the new samples to the end:
-                                thisSeries.Values.AddRange(series.Values);
+                                foreach (var item in series.Values)
+                                    thisSeries.Values.Add(item);
                             }
                         }
                     }

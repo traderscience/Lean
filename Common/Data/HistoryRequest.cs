@@ -1,4 +1,4 @@
-﻿/*
+/*
  * QUANTCONNECT.COM - Democratizing Finance, Empowering Individuals.
  * Lean Algorithmic Trading Engine v2.0. Copyright 2014 QuantConnect Corporation.
  *
@@ -96,6 +96,12 @@ namespace QuantConnect.Data
         public uint ContractDepthOffset { get; set; }
 
         /// <summary>
+        /// Unfiltered requests will return all historical data up to the current date, without
+        /// filtering by the frontier date
+        /// </summary>
+        public bool IgnoreFrontier { get; set; }
+
+        /// <summary>
         /// Gets the tradable days specified by this request, in the security's data time zone
         /// </summary>
         public override IEnumerable<DateTime> TradableDaysInDataTimeZone => Time.EachTradeableDayInTimeZone(ExchangeHours,
@@ -122,6 +128,7 @@ namespace QuantConnect.Data
         /// <param name="dataMappingMode">The contract mapping mode to use for the security</param>
         /// <param name="contractDepthOffset">The continuous contract desired offset from the current front month.
         /// For example, 0 (default) will use the front month, 1 will use the back month contract</param>
+        /// <param name="ignoreFrontier">True specifies that all available history, up to the current time will be returned</param>
         public HistoryRequest(DateTime startTimeUtc,
             DateTime endTimeUtc,
             Type dataType,
@@ -135,7 +142,8 @@ namespace QuantConnect.Data
             DataNormalizationMode dataNormalizationMode,
             TickType tickType,
             DataMappingMode dataMappingMode = DataMappingMode.OpenInterest,
-            uint contractDepthOffset = 0)
+            uint contractDepthOffset = 0,
+            bool ignoreFrontier = false)
             : base(startTimeUtc, endTimeUtc, exchangeHours, tickType)
         {
             Symbol = symbol;
@@ -149,6 +157,7 @@ namespace QuantConnect.Data
             TickType = tickType;
             DataMappingMode = dataMappingMode;
             ContractDepthOffset = contractDepthOffset;
+            IgnoreFrontier = ignoreFrontier;    // useful for labelling training data
         }
 
         /// <summary>
@@ -159,9 +168,18 @@ namespace QuantConnect.Data
         /// <param name="startTimeUtc">The start time for this request,</param>
         /// <param name="endTimeUtc">The start time for this request</param>
         public HistoryRequest(SubscriptionDataConfig config, SecurityExchangeHours hours, DateTime startTimeUtc, DateTime endTimeUtc)
-            : this(startTimeUtc, endTimeUtc, config.Type, config.Symbol, config.Resolution,
-                hours, config.DataTimeZone, config.FillDataForward ? config.Resolution : (Resolution?)null,
-                config.ExtendedMarketHours, config.IsCustomData, config.DataNormalizationMode, config.TickType, config.DataMappingMode, config.ContractDepthOffset)
+            : this(startTimeUtc, endTimeUtc, 
+                config.Type, config.Symbol, config.Resolution,
+                hours, 
+                config.DataTimeZone, 
+                config.FillDataForward ? config.Resolution : (Resolution?)null,
+                config.ExtendedMarketHours, 
+                config.IsCustomData, 
+                config.DataNormalizationMode, 
+                config.TickType, 
+                config.DataMappingMode, 
+                config.ContractDepthOffset,
+                config.IgnoreFrontier)
         {
         }
     }

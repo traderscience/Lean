@@ -58,6 +58,7 @@ using QuantConnect.Exceptions;
 using QuantConnect.Securities.Future;
 using QuantConnect.Securities.FutureOption;
 using QuantConnect.Securities.Option;
+using System.Collections.ObjectModel;
 
 namespace QuantConnect
 {
@@ -2044,6 +2045,7 @@ namespace QuantConnect
                 case SecurityType.CryptoFuture:
                 case SecurityType.Index:
                 case SecurityType.IndexOption:
+                case SecurityType.Auxiliary:
                     return true;
                 default:
                     return false;
@@ -3777,6 +3779,13 @@ namespace QuantConnect
                 b = remainder;
             }
             return Math.Abs(a);
+        }
+
+        // Observable Collection Extensions
+        public static void AddRange<T>(this ObservableCollection<T> collection, IEnumerable<T> items)
+        {
+            foreach (var item in items)
+                collection.Add(item);
         }
     }
 }

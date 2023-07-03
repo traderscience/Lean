@@ -160,5 +160,10 @@ namespace QuantConnect.ToolBox.KrakenDownloader
                 }
             }
         }
+        public IEnumerable<string> GetColumnNames()
+        {
+            return null;
+        }
+
     }
 }

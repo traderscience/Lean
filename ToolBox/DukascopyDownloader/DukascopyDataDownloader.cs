@@ -113,6 +113,11 @@ namespace QuantConnect.ToolBox.DukascopyDownloader
             }
         }
 
+        public IEnumerable<string> GetColumnNames()
+        {
+            return null;
+        }
+
         /// <summary>
         /// Downloads all ticks for the specified date
         /// </summary>

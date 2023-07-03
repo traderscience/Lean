@@ -122,18 +122,22 @@ namespace QuantConnect.Brokerages
                 {
                     try
                     {
-                        _client?.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "", _cts.Token).SynchronouslyAwaitTask();
+                        if (_client != null && _cts != null)
+                            _client.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "", _cts.Token).SynchronouslyAwaitTask();
                     }
                     catch
                     {
                         // ignored
                     }
 
-                    _cts?.Cancel();
+                    if (_cts != null)
+                    {
+                        _cts.Cancel();
 
-                    _taskConnect?.Wait(TimeSpan.FromSeconds(5));
+                        _taskConnect?.Wait(TimeSpan.FromSeconds(5));
 
-                    _cts.DisposeSafely();
+                        _cts.DisposeSafely();
+                    }
                 }
                 catch (Exception e)
                 {

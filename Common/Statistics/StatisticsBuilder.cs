@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using QuantConnect.Util;
 
@@ -42,10 +43,10 @@ namespace QuantConnect.Statistics
         public static StatisticsResults Generate(
             List<Trade> trades,
             SortedDictionary<DateTime, decimal> profitLoss,
-            List<ChartPoint> pointsEquity,
-            List<ChartPoint> pointsPerformance,
-            List<ChartPoint> pointsBenchmark,
-            List<ChartPoint> pointsPortfolioTurnover,
+            ObservableCollection<ChartPoint> pointsEquity,
+            ObservableCollection<ChartPoint> pointsPerformance,
+            ObservableCollection<ChartPoint> pointsBenchmark,
+            ObservableCollection<ChartPoint> pointsPortfolioTurnover,
             decimal startingCapital,
             decimal totalFees,
             int totalTransactions,
@@ -83,9 +84,9 @@ namespace QuantConnect.Statistics
             List<Trade> trades,
             SortedDictionary<DateTime, decimal> profitLoss,
             SortedDictionary<DateTime, decimal> equity,
-            List<ChartPoint> pointsPerformance,
-            List<ChartPoint> pointsBenchmark,
-            List<ChartPoint> pointsPortfolioTurnover,
+            ObservableCollection<ChartPoint> pointsPerformance,
+            ObservableCollection<ChartPoint> pointsBenchmark,
+            ObservableCollection<ChartPoint> pointsPortfolioTurnover,
             decimal startingCapital)
         {
             var periodEquity = new SortedDictionary<DateTime, decimal>(equity.Where(x => x.Key.Date >= fromDate && x.Key.Date < toDate.AddDays(1)).ToDictionary(x => x.Key, y => y.Value));
@@ -144,9 +145,9 @@ namespace QuantConnect.Statistics
             List<Trade> trades,
             SortedDictionary<DateTime, decimal> profitLoss,
             SortedDictionary<DateTime, decimal> equity,
-            List<ChartPoint> pointsPerformance,
-            List<ChartPoint> pointsBenchmark,
-            List<ChartPoint> pointsPortfolioTurnover,
+            ObservableCollection<ChartPoint> pointsPerformance,
+            ObservableCollection<ChartPoint> pointsBenchmark,
+            ObservableCollection<ChartPoint> pointsPortfolioTurnover,
             decimal startingCapital)
         {
             var rollingPerformances = new Dictionary<string, AlgorithmPerformance>();

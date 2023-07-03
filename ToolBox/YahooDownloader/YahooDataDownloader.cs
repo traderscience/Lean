@@ -60,6 +60,10 @@ namespace QuantConnect.ToolBox.YahooDownloader
 
             return GetEnumerator(symbol, startUtc, endUtc);
         }
+        public IEnumerable<string> GetColumnNames()
+        {
+            return null;
+        }
 
         private static IEnumerable<BaseData> GetEnumerator(Symbol symbol, DateTime startDateTime, DateTime endDateTime)
         {

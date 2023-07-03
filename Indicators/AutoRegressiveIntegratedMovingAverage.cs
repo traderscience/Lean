@@ -257,17 +257,18 @@ namespace QuantConnect.Indicators
             {
                 var appendedData = new List<double[]>();
                 var laggedErrors = LaggedSeries(_maOrder, _residuals.ToArray());
-                for (var i = 0; i < laggedErrors.Length; i++)
+                for (var i = 0; i < lags.Length; i++)
                 {
                     var doubles = lags[i].ToList();
-                    doubles.AddRange(laggedErrors[i]);
+                    if (i < laggedErrors.Length)
+                        doubles.AddRange(laggedErrors[i]);
                     appendedData.Add(doubles.ToArray());
                 }
-
-                var maFits = Fit.MultiDim(appendedData.ToArray(), data.Skip(_maOrder).ToArray(),
+                int len = Math.Min(appendedData.Count, data.Length - _maOrder);
+                var maFits = Fit.MultiDim(appendedData.Take(len).ToArray(), data.Skip(_maOrder).Take(len).ToArray(),
                     method: DirectRegressionMethod.NormalEquations, intercept: _intercept);
 
-                for (var i = _maOrder; i < data.Length; i++) // Calculate the error assoc. with model.
+                for (var i = _maOrder; i < len; i++) // Calculate the error assoc. with model.
                 {
                     var paramVector = _intercept
                         ? Vector.Build.Dense(maFits.Skip(1).ToArray())
@@ -279,13 +280,13 @@ namespace QuantConnect.Indicators
                 switch (_intercept)
                 {
                     case true:
-                        MaResidualError = errorMa / (data.Length - Math.Max(_arOrder, _maOrder) - 1);
+                        MaResidualError = errorMa / (len - Math.Max(_arOrder, _maOrder) - 1);
                         MaParameters = maFits.Skip(1 + _arOrder).ToArray();
                         ArParameters = maFits.Skip(1).Take(_arOrder).ToArray();
                         Intercept = maFits[0];
                         break;
                     default:
-                        MaResidualError = errorMa / (data.Length - Math.Max(_arOrder, _maOrder) - 1);
+                        MaResidualError = errorMa / (len - Math.Max(_arOrder, _maOrder) - 1);
                         MaParameters = maFits.Skip(_arOrder).ToArray();
                         ArParameters = maFits.Take(_arOrder).ToArray();
                         break;

@@ -241,7 +241,7 @@ namespace QuantConnect.Lean.Engine.Results
         /// <summary>
         /// Run over all the data and break it into smaller packets to ensure they all arrive at the terminal
         /// </summary>
-        public virtual IEnumerable<BacktestResultPacket> SplitPackets(Dictionary<string, Chart> deltaCharts, Dictionary<int, Order> deltaOrders, SortedDictionary<string, string> runtimeStatistics, decimal progress, Dictionary<string, string> serverStatistics)
+        public virtual IEnumerable<BacktestResultPacket> SplitPackets(Dictionary<string, Chart> deltaCharts, SortedDictionary<int, Order> deltaOrders, SortedDictionary<string, string> runtimeStatistics, decimal progress, Dictionary<string, string> serverStatistics)
         {
             // break the charts into groups
             var splitPackets = new List<BacktestResultPacket>();
@@ -607,7 +607,8 @@ namespace QuantConnect.Lean.Engine.Results
                                 if ((values.Count + series.Values.Count) <= _job.Controls.MaximumDataPointsPerChartSeries) // check chart data point limit first
                                 {
                                     //We already have this record, so just the new samples to the end:
-                                    values.AddRange(series.Values);
+                                    foreach (var item in series.Values)
+                                        values.Add(item);
                                 }
                                 else if (!_chartSeriesExceededDataPoints.Contains(chart.Name + series.Name))
                                 {

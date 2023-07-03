@@ -68,8 +68,8 @@ class CustomChartingAlgorithm(QCAlgorithm):
 
         # On the 5th days when not invested buy:
         if not self.Portfolio.Invested and self.Time.day % 13 == 0:
-        	self.Order("SPY", (int)(self.Portfolio.MarginRemaining / self.lastPrice))
-        	self.Plot("Trade Plot", "Buy", self.lastPrice)
+            self.Order("SPY", (int)(self.Portfolio.MarginRemaining / self.lastPrice))
+            self.Plot("Trade Plot", "Buy", self.lastPrice)
         elif self.Time.day % 21 == 0 and self.Portfolio.Invested:
             self.Plot("Trade Plot", "Sell", self.lastPrice)
             self.Liquidate()
@@ -77,3 +77,4 @@ class CustomChartingAlgorithm(QCAlgorithm):
     def OnEndOfDay(self, symbol):
        #Log the end of day prices:
        self.Plot("Trade Plot", "Price", self.lastPrice)
+

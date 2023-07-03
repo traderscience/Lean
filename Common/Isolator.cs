@@ -99,8 +99,8 @@ namespace QuantConnect
         private bool MonitorTask(Task task,
             TimeSpan timeSpan,
             Func<IsolatorLimitResult> withinCustomLimits,
-            long memoryCap = 1024,
-            int sleepIntervalMillis = 1000)
+            long memoryCap = 0,
+            int sleepIntervalMillis = 1000*10)
         {
             // default to always within custom limits
             withinCustomLimits = withinCustomLimits ?? (() => new IsolatorLimitResult(TimeSpan.Zero, string.Empty));
@@ -113,22 +113,21 @@ namespace QuantConnect
             var memoryLogger = utcNow + Time.OneMinute;
             var isolatorLimitResult = new IsolatorLimitResult(TimeSpan.Zero, string.Empty);
 
-            //Convert to bytes
-            memoryCap = memoryCap == 0 ? 1048576L * 1024 * 2 : memoryCap * 1024 * 1024;
-            if (memoryCap > 1048576L * 1024 * 4)
-                memoryCap = 1048576L * 1024 * 4;
+            //Convert MB to bytes
+            memoryCap = memoryCap * 1024 * 1024;
+
             var spikeLimit = memoryCap*2;
 
             while (!task.IsCompleted && utcNow < end)
             {
                 // if over 80% allocation force GC then sample
-                var sample = Convert.ToDouble(GC.GetTotalMemory(memoryUsed > memoryCap * 0.8));
+                var sample = Convert.ToDouble(GC.GetTotalMemory(memoryCap > 0 && memoryUsed > memoryCap * 0.8));
 
                 // find the EMA of the memory used to prevent spikes killing stategy
                 memoryUsed = Convert.ToInt64((emaPeriod-1)/emaPeriod * memoryUsed + (1/emaPeriod)*sample);
 
                 // if the rolling EMA > cap; or the spike is more than 2x the allocation.
-                if (memoryUsed > memoryCap || sample > spikeLimit)
+                if (memoryCap > 0 && (memoryUsed > memoryCap || sample > spikeLimit))
                 {
                     message = Messages.Isolator.MemoryUsageMaxedOut(PrettyFormatRam(memoryCap), PrettyFormatRam((long)sample));
                     break;
@@ -136,7 +135,7 @@ namespace QuantConnect
 
                 if (utcNow > memoryLogger)
                 {
-                    if (memoryUsed > memoryCap * 0.8)
+                    if (memoryCap > 0 && memoryUsed > memoryCap * 0.8)
                     {
                         Log.Error(Messages.Isolator.MemoryUsageOver80Percent(sample));
                     }
@@ -156,8 +155,8 @@ namespace QuantConnect
                 isolatorLimitResult = withinCustomLimits();
                 if (!isolatorLimitResult.IsWithinCustomLimits)
                 {
-                    message = isolatorLimitResult.ErrorMessage;
-                    break;
+                    //message = isolatorLimitResult.ErrorMessage;
+                    //break;
                 }
 
                 if (task.Wait(utcNow.GetSecondUnevenWait(sleepIntervalMillis)))

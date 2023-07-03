@@ -35,7 +35,10 @@ namespace QuantConnect
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static string InvalidQuantity(decimal quantity, IEnumerable<IPosition> positions)
             {
-                return Invariant($@"The given quantity {quantity} must be equal to the ratio between the quantity and unit quantity for each position. Quantities were {string.Join(", ", positions.Select(position => position.Quantity))}. Unit quantities were {string.Join(", ", positions.Select(position => position.UnitQuantity))}.");
+                return Invariant($@"The given quantity {quantity
+                    } must be equal to the ratio between the quantity and unit quantity for each position. Quantities were {
+                    string.Join(", ", positions.Select(position => position.Quantity))}. Unit quantities were {
+                    string.Join(", ", positions.Select(position => position.UnitQuantity))}.");
             }
         }
     }

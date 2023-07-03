@@ -90,9 +90,10 @@ namespace QuantConnect.Lean.Engine.Results
         /// <param name="transactionHandler">The transaction handler used to get the algorithms <see cref="Order"/> information</param>
         public override void Initialize(AlgorithmNodePacket job, IMessagingHandler messagingHandler, IApi api, ITransactionHandler transactionHandler)
         {
+            _job = (BacktestNodePacket)job;
+            State["Name"] = _job.Name;
             _algorithmId = job.AlgorithmId;
             _projectId = job.ProjectId;
-            _job = (BacktestNodePacket)job;
             if (_job == null) throw new Exception("BacktestingResultHandler.Constructor(): Submitted Job type invalid.");
             base.Initialize(job, messagingHandler, api, transactionHandler);
         }
@@ -328,6 +329,7 @@ namespace QuantConnect.Lean.Engine.Results
         {
             try
             {
+                var endTime = DateTime.UtcNow;
                 BacktestResultPacket result;
                 // could happen if algorithm failed to init
                 if (Algorithm != null)
@@ -351,17 +353,16 @@ namespace QuantConnect.Lean.Engine.Results
                     result = new BacktestResultPacket(_job,
                         new BacktestResult(new BacktestResultParameters(charts, orders, profitLoss, statisticsResults.Summary, runtime,
                             statisticsResults.RollingPerformances, orderEvents, statisticsResults.TotalPerformance,
-                            AlgorithmConfiguration.Create(Algorithm), GetAlgorithmState(DateTime.UtcNow.ToStringInvariant()))),
+                            AlgorithmConfiguration.Create(Algorithm), GetAlgorithmState(endTime))),
                         Algorithm.EndDate, Algorithm.StartDate);
                 }
                 else
                 {
                     result = BacktestResultPacket.CreateEmpty(_job);
-                    result.Results.State = GetAlgorithmState(DateTime.UtcNow.ToStringInvariant());
+                    result.Results.State = GetAlgorithmState(endTime);
                 }
 
-                var utcNow = DateTime.UtcNow;
-                result.ProcessingTime = (utcNow - StartTime).TotalSeconds;
+                result.ProcessingTime = (endTime - StartTime).TotalSeconds;
                 result.DateFinished = DateTime.Now;
                 result.Progress = 1;
 
@@ -370,7 +371,7 @@ namespace QuantConnect.Lean.Engine.Results
                 //Place result into storage.
                 StoreResult(result);
 
-                result.Results.ServerStatistics = GetServerStatistics(utcNow);
+                result.Results.ServerStatistics = GetServerStatistics(endTime);
                 //Second, send the truncated packet:
                 MessagingHandler.Send(result);
 
@@ -391,6 +392,7 @@ namespace QuantConnect.Lean.Engine.Results
         public virtual void SetAlgorithm(IAlgorithm algorithm, decimal startingPortfolioValue)
         {
             Algorithm = algorithm;
+            Algorithm.SetStatisticsService(this);
             StartingPortfolioValue = startingPortfolioValue;
             DailyPortfolioValue = StartingPortfolioValue;
             CumulativeMaxPortfolioValue = StartingPortfolioValue;
@@ -453,14 +455,11 @@ namespace QuantConnect.Lean.Engine.Results
         /// <param name="message">Message to add</param>
         protected override void AddToLogStore(string message)
         {
-            lock (LogStore)
-            {
-                var messageToLog = Algorithm != null
-                    ? new LogEntry(Algorithm.Time.ToStringInvariant(DateFormat.UI) + " " + message)
-                    : new LogEntry("Algorithm Initialization: " + message);
+            var messageToLog = Algorithm != null
+                ? Algorithm.Time.ToStringInvariant(DateFormat.UI) + " " + message
+                : "Algorithm Initialization: " + message;
 
-                LogStore.Add(messageToLog);
-            }
+            base.AddToLogStore(messageToLog);
         }
 
         /// <summary>
@@ -746,6 +745,25 @@ namespace QuantConnect.Lean.Engine.Results
                 Console.SetOut(new FuncTextWriter(msg => Log.Trace(msg)));
                 Console.SetError(new FuncTextWriter(msg => Log.Error(msg)));
             }
+        }
+
+        /// <summary>
+        /// Calculates and gets the current statistics for the algorithm
+        /// </summary>
+        /// <returns>The current statistics</returns>
+        public StatisticsResults StatisticsResults()
+        {
+            return GenerateStatisticsResults(_capacityEstimate);
+        }
+
+        /// <summary>
+        /// Sets or updates a custom summary statistic
+        /// </summary>
+        /// <param name="name">The statistic name</param>
+        /// <param name="value">The statistic value</param>
+        public void SetSummaryStatistic(string name, string value)
+        {
+            SummaryStatistic(name, value);
         }
     }
 }

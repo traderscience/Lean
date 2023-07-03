@@ -53,9 +53,8 @@ namespace QuantConnect.Orders
         public ComboLimitOrder(Symbol symbol, decimal quantity, decimal limitPrice, DateTime time, GroupOrderManager groupOrderManager,
             string tag = "", IOrderProperties properties = null,
                                 int parentOrder = 0, string ocaGroup = null, OrderIntent intent = OrderIntent.Unknown)
-            : base(symbol, quantity, time, tag, properties, parentOrder, ocaGroup, intent)
+            : base(symbol, quantity, time, groupOrderManager, tag, properties, parentOrder, ocaGroup, intent)
         {
-            GroupOrderManager = groupOrderManager;
             GroupOrderManager.LimitPrice = limitPrice;
         }
 
@@ -68,13 +67,13 @@ namespace QuantConnect.Orders
             // selling, so higher price will be used
             if (Quantity < 0)
             {
-                return Quantity * Math.Max(GroupOrderManager.LimitPrice, security.Price) * GroupOrderManager.Quantity;
+                return Quantity * Math.Max(GroupOrderManager.LimitPrice, security.Price);
             }
 
             // buying, so lower price will be used
             if (Quantity > 0)
             {
-                return Quantity * Math.Min(GroupOrderManager.LimitPrice, security.Price) * GroupOrderManager.Quantity;
+                return Quantity * Math.Min(GroupOrderManager.LimitPrice, security.Price);
             }
 
             return 0m;

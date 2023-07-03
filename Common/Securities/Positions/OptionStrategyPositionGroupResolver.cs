@@ -176,7 +176,7 @@ namespace QuantConnect.Securities.Positions
         {
             foreach (var positionsByUnderlying in positions
                 .Where(position => position.Symbol.SecurityType.HasOptions() || position.Symbol.SecurityType.IsOption())
-                .GroupBy(position => position.Symbol.HasUnderlying ? position.Symbol.Underlying : position.Symbol)
+                .GroupBy(position => position.Symbol.HasUnderlying? position.Symbol.Underlying : position.Symbol)
                 .Select(x => x.ToList()))
             {
                 var optionPosition = positionsByUnderlying.FirstOrDefault(position => position.Symbol.SecurityType.IsOption());

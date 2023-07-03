@@ -80,6 +80,18 @@ namespace QuantConnect.Packets
         public HashSet<string> LiveDataTypes;
 
         /// <summary>
+        /// Algorithm running mode.
+        /// </summary>
+        [JsonIgnore]
+        public override AlgorithmMode AlgorithmMode
+        {
+            get
+            {
+                return AlgorithmMode.Live;
+            }
+        }
+
+        /// <summary>
         /// Default constructor for JSON of the Live Task Packet
         /// </summary>
         public LiveNodePacket()

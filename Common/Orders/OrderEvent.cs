@@ -193,6 +193,12 @@ namespace QuantConnect.Orders
         public bool IsInTheMoney { get; set; }
 
         /// <summary>
+        /// The order ticket associated to the order
+        /// </summary>
+        [JsonIgnore]
+        public OrderTicket Ticket { get; set; }
+
+        /// <summary>
         /// Order Event empty constructor required for json converter
         /// </summary>
         /// 

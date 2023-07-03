@@ -189,7 +189,8 @@ namespace QuantConnect.Securities.Positions
                 return parameters.Sufficient();
             }
 
-            return parameters.Insufficient(Invariant($@"Id: {string.Join(",", parameters.Orders.Select(o => o.Id))}, Maintenance Margin Delta: {deltaBuyingPower.Normalize()}, Free Margin: {availableBuyingPower.Normalize()}"
+            return parameters.Insufficient(Invariant($@"Id: {string.Join(",", parameters.Orders.Select(o => o.Id))}, Maintenance Margin Delta: {
+                deltaBuyingPower.Normalize()}, Free Margin: {availableBuyingPower.Normalize()}"
             ));
         }
 

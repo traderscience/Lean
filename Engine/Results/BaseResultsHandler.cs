@@ -42,6 +42,8 @@ namespace QuantConnect.Lean.Engine.Results
         private RollingWindow<decimal> _previousSalesVolume;
         private DateTime _previousPortfolioTurnoverSample;
         private bool _packetDroppedWarning;
+        private int _logCount;
+        private ConcurrentDictionary<string, string> _customSummaryStatistics;
         // used for resetting out/error upon completion
         private static readonly TextWriter StandardOut = Console.Out;
         private static readonly TextWriter StandardError = Console.Error;
@@ -254,12 +256,17 @@ namespace QuantConnect.Lean.Engine.Results
             ResultsDestinationFolder = Config.Get("results-destination-folder", Directory.GetCurrentDirectory());
             State = new Dictionary<string, string>
             {
-                ["StartTime"] = StartTime.ToStringInvariant(),
-                ["RuntimeError"] = String.Empty,
-                ["StackTrace"] = String.Empty
+                ["StartTime"] = StartTime.ToStringInvariant(DateFormat.UI),
+                ["EndTime"] = string.Empty,
+                ["RuntimeError"] = string.Empty,
+                ["StackTrace"] = string.Empty,
+                ["LogCount"] = "0",
+                ["OrderCount"] = "0",
+                ["InsightCount"] = "0"
             };
             _previousSalesVolume = new (2);
             _previousSalesVolume.Add(0);
+            _customSummaryStatistics = new();
         }
 
         /// <summary>
@@ -791,10 +798,25 @@ namespace QuantConnect.Lean.Engine.Results
         /// <summary>
         /// Gets the algorithm state data
         /// </summary>
-        protected Dictionary<string, string> GetAlgorithmState(string endTime = "")
+        protected Dictionary<string, string> GetAlgorithmState(DateTime? endTime = null)
         {
-            State["Status"] = Algorithm != null ? Algorithm.Status.ToStringInvariant() : AlgorithmStatus.RuntimeError.ToStringInvariant();
-            State["EndTime"] = endTime;
+            if(Algorithm == null || !string.IsNullOrEmpty(State["RuntimeError"]))
+            {
+                State["Status"] = AlgorithmStatus.RuntimeError.ToStringInvariant();
+            }
+            else
+            {
+                State["Status"] = Algorithm.Status.ToStringInvariant();
+            }
+            State["EndTime"] = endTime != null ? endTime.ToStringInvariant(DateFormat.UI) : string.Empty;
+
+            lock (LogStore)
+            {
+                State["LogCount"] = _logCount.ToStringInvariant();
+            }
+            State["OrderCount"] = Algorithm?.Transactions?.OrdersCount.ToStringInvariant() ?? "0";
+            State["InsightCount"] = Algorithm?.Insights.TotalCount.ToStringInvariant() ?? "0";
+
             return State;
         }
 
@@ -837,6 +859,8 @@ namespace QuantConnect.Lean.Engine.Results
                     statisticsResults = StatisticsBuilder.Generate(trades, profitLoss, equity.Values, performance.Values, benchmark.Values, portfolioTurnover.Values,
                         StartingPortfolioValue, Algorithm.Portfolio.TotalFees, totalTransactions, estimatedStrategyCapacity, AlgorithmCurrencySymbol);
                 }
+
+                statisticsResults.AddCustomSummaryStatistics(_customSummaryStatistics);
             }
             catch (Exception err)
             {
@@ -847,10 +871,41 @@ namespace QuantConnect.Lean.Engine.Results
         }
 
         /// <summary>
+        /// Calculates and gets the current statistics for the algorithm.
+        /// It will use the current <see cref="Charts"/> and profit loss information calculated from the current transaction record
+        /// to generate the results.
+        /// </summary>
+        /// <returns>The current statistics</returns>
+        protected StatisticsResults GenerateStatisticsResults(CapacityEstimate estimatedStrategyCapacity = null)
+        {
+            // could happen if algorithm failed to init
+            if (Algorithm == null)
+            {
+                return new StatisticsResults();
+            }
+
+            Dictionary<string, Chart> charts;
+            lock (ChartLock)
+            {
+                charts = new(Charts);
+            }
+            var profitLoss = new SortedDictionary<DateTime, decimal>(Algorithm.Transactions.TransactionRecord);
+
+            return GenerateStatisticsResults(charts, profitLoss, estimatedStrategyCapacity);
+        }
+
+        /// <summary>
         /// Save an algorithm message to the log store. Uses a different timestamped method of adding messaging to interweve debug and logging messages.
         /// </summary>
         /// <param name="message">String message to store</param>
-        protected abstract void AddToLogStore(string message);
+        protected virtual void AddToLogStore(string message)
+        {
+            lock (LogStore)
+            {
+                LogStore.Add(new LogEntry(message));
+                _logCount++;
+            }
+        }
 
         /// <summary>
         /// Processes algorithm logs.
@@ -911,6 +966,16 @@ namespace QuantConnect.Lean.Engine.Results
                 // increase count after we add
                 currentMessageCount++;
             }
+        }
+
+        /// <summary>
+        /// Sets or updates a custom summary statistic
+        /// </summary>
+        /// <param name="name">The statistic name</param>
+        /// <param name="value">The statistic value</param>
+        protected void SummaryStatistic(string name, string value)
+        {
+            _customSummaryStatistics.AddOrUpdate(name, value);
         }
     }
 }

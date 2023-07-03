@@ -76,7 +76,7 @@ namespace QuantConnect.Securities
                 if (security.Type == SecurityType.Forex || security.Type == SecurityType.Crypto)
                 {
                     // model forex fills as currency swaps
-                    var forex = (IBaseCurrencySymbol)security;
+                    var forex = (IBaseCurrencySymbol) security;
                     security.SettlementModel.ApplyFunds(new ApplyFundsSettlementModelParameters(portfolio, security, fill.UtcTime, new CashAmount(fill.FillQuantity, forex.BaseCurrency.Symbol), fill));
                 }
 

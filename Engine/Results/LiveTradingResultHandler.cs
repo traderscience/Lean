@@ -61,7 +61,7 @@ namespace QuantConnect.Lean.Engine.Results
         /// <summary>
         /// The earliest time of next dump to the status file
         /// </summary>
-        protected DateTime NextStatusUpdate;
+        private DateTime _nextStatusUpdate;
 
         //Log Message Store:
         private DateTime _nextSample;
@@ -87,7 +87,6 @@ namespace QuantConnect.Lean.Engine.Results
             ResamplePeriod = TimeSpan.FromSeconds(2);
             NotificationPeriod = TimeSpan.FromSeconds(1);
             _storeInsightPeriod = TimeSpan.FromMinutes(10);
-            SetNextStatusUpdate();
             _streamedChartLimit = Config.GetInt("streamed-chart-limit", 12);
             _streamedChartGroupSize = Config.GetInt("streamed-chart-group-size", 3);
 
@@ -293,7 +292,7 @@ namespace QuantConnect.Lean.Engine.Results
                         _nextStatisticsUpdate = utcNow.AddMinutes(1);
                     }
 
-                    if (utcNow > NextStatusUpdate)
+                    if (utcNow > _nextStatusUpdate)
                     {
                         var chartComplete = new Dictionary<string, Chart>();
                         lock (ChartLock)
@@ -310,6 +309,7 @@ namespace QuantConnect.Lean.Engine.Results
                             // only store holdings we are invested in
                             holdings.Where(pair => pair.Value.Quantity != 0).ToDictionary(pair => pair.Key, pair => pair.Value),
                             chartComplete,
+                            GetAlgorithmState(),
                             new SortedDictionary<DateTime, decimal>(Algorithm.Transactions.TransactionRecord),
                             serverStatistics);
 
@@ -368,8 +368,8 @@ namespace QuantConnect.Lean.Engine.Results
         /// </summary>
         protected virtual void SetNextStatusUpdate()
         {
-            // Update the status json file every hour
-            NextStatusUpdate = DateTime.UtcNow.AddHours(1);
+            // Update the status json file every X
+            _nextStatusUpdate = DateTime.UtcNow.AddMinutes(10);
         }
 
         /// <summary>
@@ -408,6 +408,7 @@ namespace QuantConnect.Lean.Engine.Results
         private void StoreStatusFile(SortedDictionary<string, string> runtimeStatistics,
             Dictionary<string, Holding> holdings,
             Dictionary<string, Chart> chartComplete,
+            Dictionary<string, string> algorithmState,
             SortedDictionary<DateTime, decimal> profitLoss,
             Dictionary<string, string> serverStatistics = null,
             StatisticsResults statistics = null)
@@ -427,13 +428,14 @@ namespace QuantConnect.Lean.Engine.Results
 
                 var result = new LiveResult(new LiveResultParameters(chartComplete,
                     new Dictionary<int, Order>(TransactionHandler.Orders),
-                    Algorithm.Transactions.TransactionRecord,
+                    Algorithm?.Transactions.TransactionRecord ?? new(),
                     holdings,
-                    Algorithm.Portfolio.CashBook,
+                    Algorithm?.Portfolio.CashBook ?? new(),
                     statistics: statistics.Summary,
                     runtimeStatistics: runtimeStatistics,
                     orderEvents: null, // we stored order events separately
-                    serverStatistics: serverStatistics));
+                    serverStatistics: serverStatistics,
+                    state: algorithmState));
 
                 SaveResults($"{AlgorithmId}.json", result);
                 Log.Debug("LiveTradingResultHandler.Update(): status update end.");
@@ -564,10 +566,7 @@ namespace QuantConnect.Lean.Engine.Results
         protected override void AddToLogStore(string message)
         {
             Log.Debug("LiveTradingResultHandler.AddToLogStore(): Adding");
-            lock (LogStore)
-            {
-                LogStore.Add(new LogEntry(DateTime.Now.ToStringInvariant(DateFormat.UI) + " " + message));
-            }
+            base.AddToLogStore(DateTime.Now.ToStringInvariant(DateFormat.UI) + " " + message);
             Log.Debug("LiveTradingResultHandler.AddToLogStore(): Finished adding");
         }
 
@@ -726,6 +725,7 @@ namespace QuantConnect.Lean.Engine.Results
         public virtual void SetAlgorithm(IAlgorithm algorithm, decimal startingPortfolioValue)
         {
             Algorithm = algorithm;
+            Algorithm.SetStatisticsService(this);
             DailyPortfolioValue = StartingPortfolioValue = startingPortfolioValue;
             _portfolioValue = new ReferenceWrapper<decimal>(startingPortfolioValue);
             CumulativeMaxPortfolioValue = StartingPortfolioValue;
@@ -790,6 +790,8 @@ namespace QuantConnect.Lean.Engine.Results
             Log.Trace("LiveTradingResultHandler.SendFinalResult(): Starting...");
             try
             {
+                var endTime = DateTime.UtcNow;
+                var endState = GetAlgorithmState(endTime);
                 LiveResultPacket result;
                 // could happen if algorithm failed to init
                 if (Algorithm != null)
@@ -810,20 +812,22 @@ namespace QuantConnect.Lean.Engine.Results
                     var statisticsResults = GenerateStatisticsResults(charts, profitLoss);
                     var runtime = GetAlgorithmRuntimeStatistics(statisticsResults.Summary);
 
-                    StoreStatusFile(runtime, holdings, charts, profitLoss, statistics: statisticsResults);
+                    StoreStatusFile(runtime, holdings, charts, endState, profitLoss, statistics: statisticsResults);
 
                     //Create a packet:
                     result = new LiveResultPacket(_job,
                         new LiveResult(new LiveResultParameters(charts, orders, profitLoss, new Dictionary<string, Holding>(),
                             Algorithm.Portfolio.CashBook, statisticsResults.Summary, runtime, GetOrderEventsToStore(),
-                            algorithmConfiguration: AlgorithmConfiguration.Create(Algorithm), state: GetAlgorithmState(DateTime.UtcNow.ToStringInvariant()))));
+                            algorithmConfiguration: AlgorithmConfiguration.Create(Algorithm), state: endState)));
                 }
                 else
                 {
+                    StoreStatusFile(new(), new(), new(), endState, new());
+
                     result = LiveResultPacket.CreateEmpty(_job);
-                    result.Results.State = GetAlgorithmState(DateTime.UtcNow.ToStringInvariant());
+                    result.Results.State = endState;
                 }
-                result.ProcessingTime = (DateTime.UtcNow - StartTime).TotalSeconds;
+                result.ProcessingTime = (endTime - StartTime).TotalSeconds;
 
                 StoreInsights();
 
@@ -1100,6 +1104,7 @@ namespace QuantConnect.Lean.Engine.Results
                     }
                     catch (Exception err)
                     {
+                        Algorithm.Debug(err.Message);
                         Log.Error(err, "Sending notification: " + message.GetType().FullName);
                     }
                 }
@@ -1274,6 +1279,25 @@ namespace QuantConnect.Lean.Engine.Results
             }
 
             return holdings;
+        }
+
+        /// <summary>
+        /// Calculates and gets the current statistics for the algorithm
+        /// </summary>
+        /// <returns>The current statistics</returns>
+        public StatisticsResults StatisticsResults()
+        {
+            return GenerateStatisticsResults();
+        }
+
+        /// <summary>
+        /// Sets or updates a custom summary statistic
+        /// </summary>
+        /// <param name="name">The statistic name</param>
+        /// <param name="value">The statistic value</param>
+        public void SetSummaryStatistic(string name, string value)
+        {
+            SummaryStatistic(name, value);
         }
     }
 }

@@ -150,7 +150,8 @@ namespace QuantConnect.Queues
                     Parameters = parameters,
                     Language = Language,
                     Controls = controls,
-                    PythonVirtualEnvironment = Config.Get("python-venv")
+                    PythonVirtualEnvironment = Config.Get("python-venv"),
+                    DeploymentTarget = DeploymentTarget.LocalPlatform,
                 };
 
                 Type brokerageName = null;
@@ -182,9 +183,9 @@ namespace QuantConnect.Queues
                     }
                     foreach (var data in brokerageFactoryForDataHandler.BrokerageData)
                     {
-                        if (data.Key == "live-holdings")
+                        if (data.Key == "live-holdings" || data.Key == "live-cash-balance")
                         {
-                            //live-holdings not required for data handler
+                            //live holdings & cash balance not required for data handler
                             continue;
                         }
                         else if (!liveJob.BrokerageData.ContainsKey(data.Key))
@@ -200,6 +201,7 @@ namespace QuantConnect.Queues
                 return liveJob;
             }
 
+            var optimizationId = Config.Get("optimization-id");
             //Default run a backtesting job.
             var backtestJob = new BacktestNodePacket(0, 0, "", new byte[] { }, Config.Get("backtest-name", "local"))
             {
@@ -216,8 +218,14 @@ namespace QuantConnect.Queues
                 Language = Language,
                 Parameters = parameters,
                 Controls = controls,
-                PythonVirtualEnvironment = Config.Get("python-venv")
+                PythonVirtualEnvironment = Config.Get("python-venv"),
+                DeploymentTarget = DeploymentTarget.LocalPlatform,
             };
+            // Only set optimization id when backtest is for optimization
+            if (!optimizationId.IsNullOrEmpty())
+            {
+                backtestJob.OptimizationId = optimizationId;
+            }
 
             return backtestJob;
         }

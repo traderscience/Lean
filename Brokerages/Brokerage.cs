@@ -63,6 +63,11 @@ namespace QuantConnect.Brokerages
         public event EventHandler<OptionNotificationEventArgs> OptionNotification;
 
         /// <summary>
+        /// Event that fires each time there's a brokerage side generated order
+        /// </summary>
+        public event EventHandler<NewBrokerageOrderNotificationEventArgs> NewBrokerageOrderNotification;
+
+        /// <summary>
         /// Event that fires each time a delisting occurs
         /// </summary>
         public event EventHandler<DelistingNotificationEventArgs> DelistingNotification;
@@ -242,6 +247,24 @@ namespace QuantConnect.Brokerages
                 Log.Debug("Brokerage.OnOptionNotification(): " + e);
 
                 OptionNotification?.Invoke(this, e);
+            }
+            catch (Exception err)
+            {
+                Log.Error(err);
+            }
+        }
+
+        /// <summary>
+        /// Event invocator for the NewBrokerageOrderNotification event
+        /// </summary>
+        /// <param name="e">The NewBrokerageOrderNotification event arguments</param>
+        protected virtual void OnNewBrokerageOrderNotification(NewBrokerageOrderNotificationEventArgs e)
+        {
+            try
+            {
+                Log.Debug("Brokerage.OnNewBrokerageOrderNotification(): " + e);
+
+                NewBrokerageOrderNotification?.Invoke(this, e);
             }
             catch (Exception err)
             {

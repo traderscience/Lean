@@ -27,6 +27,7 @@ using QuantConnect.Data.Auxiliary;
 using QuantConnect.Exceptions;
 using QuantConnect.Interfaces;
 using QuantConnect.Lean.Engine.DataFeeds;
+using QuantConnect.Lean.Engine.DataFeeds.WorkScheduling;
 using QuantConnect.Lean.Engine.HistoricalData;
 using QuantConnect.Lean.Engine.Setup;
 using QuantConnect.Logging;
@@ -384,13 +385,51 @@ namespace QuantConnect.Lean.Engine
                     }
 
                     //Before we return, send terminate commands to close up the threads
-                    AlgorithmHandlers.Transactions.Exit();
-                    AlgorithmHandlers.RealTime.Exit();
-                    dataManager?.RemoveAllSubscriptions();
-                    workerThread?.Dispose();
+                    try
+                    {
+                        AlgorithmHandlers.Transactions.Exit();
+                    }
+                    catch (Exception err)
+                    {
+                        Log.Error(err, "Error terminating transaction handler");
+                    }
+                    try
+                    {
+                        AlgorithmHandlers.RealTime.Exit();
+                    }
+                    catch (Exception err)
+                    {
+                        Log.Error(err, "Error terminating real time handler");
+                    }
+                    try
+                    {
+                        AlgorithmHandlers.Results.Exit();
+                    }
+                    catch (Exception err)
+                    {
+                        Log.Error(err, "Error terminating results handler");
+                    }
+                    try
+                    {
+                        dataManager?.RemoveAllSubscriptions();
+                    }
+                    catch (Exception err)
+                    {
+                        Log.Error(err, "Error terminating data manager");
+                    }
+                    try
+                    {
+                        WeightedWorkScheduler.Instance.Dispose();
+                        workerThread?.Dispose();
+                    }
+                    catch (Exception err)
+                    {
+                        Log.Error(err, "Error terminating worker thread");
+                    }
                 }
 
                 synchronizer.DisposeSafely();
+
                 // Close data feed, alphas. Could be running even if algorithm initialization failed
                 AlgorithmHandlers.DataFeed.Exit();
 

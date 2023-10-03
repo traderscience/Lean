@@ -189,14 +189,14 @@ namespace QuantConnect.Data
                 _requestRates);
 
             Logging.Log.Trace($"DataMonitor.GenerateReport():{Environment.NewLine}" +
-                $"DATA USAGE:: Total data requests {report.TotalRequestsCount}{Environment.NewLine}" +
-                $"DATA USAGE:: Succeeded data requests {report.SucceededDataRequestsCount}{Environment.NewLine}" +
-                $"DATA USAGE:: Failed data requests {report.FailedDataRequestsCount}{Environment.NewLine}" +
-                $"DATA USAGE:: Failed data requests percentage {report.FailedDataRequestsPercentage}%{Environment.NewLine}" +
-                $"DATA USAGE:: Total universe data requests {report.TotalUniverseDataRequestsCount}{Environment.NewLine}" +
-                $"DATA USAGE:: Succeeded universe data requests {report.SucceededUniverseDataRequestsCount}{Environment.NewLine}" +
-                $"DATA USAGE:: Failed universe data requests {report.FailedUniverseDataRequestsCount}{Environment.NewLine}" +
-                $"DATA USAGE:: Failed universe data requests percentage {report.FailedUniverseDataRequestsPercentage}%");
+                $"         DATA USAGE: Total data requests {report.TotalRequestsCount}{Environment.NewLine}" +
+                $"         DATA USAGE: Succeeded data requests {report.SucceededDataRequestsCount}{Environment.NewLine}" +
+                $"         DATA USAGE: Failed data requests {report.FailedDataRequestsCount}{Environment.NewLine}" +
+                $"         DATA USAGE: Failed data requests percentage {report.FailedDataRequestsPercentage}%{Environment.NewLine}" +
+                $"         DATA USAGE: Total universe data requests {report.TotalUniverseDataRequestsCount}{Environment.NewLine}" +
+                $"         DATA USAGE: Succeeded universe data requests {report.SucceededUniverseDataRequestsCount}{Environment.NewLine}" +
+                $"         DATA USAGE: Failed universe data requests {report.FailedUniverseDataRequestsCount}{Environment.NewLine}" +
+                $"         DATA USAGE: Failed universe data requests percentage {report.FailedUniverseDataRequestsPercentage}%");
 
             return report;
         }
@@ -226,7 +226,7 @@ namespace QuantConnect.Data
         /// <summary>
         /// Stores the data monitor report
         /// </summary>
-        /// <param name="report">The data monitor report to be stored<param>
+        /// <param name="report">The data monitor report to store</param>
         private void StoreDataMonitorReport(DataMonitorReport report)
         {
             if (report == null)

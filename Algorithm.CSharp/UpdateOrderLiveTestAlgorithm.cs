@@ -1,4 +1,4 @@
-﻿/*
+/*
  * QUANTCONNECT.COM - Democratizing Finance, Empowering Individuals.
  * Lean Algorithmic Trading Engine v2.0. Copyright 2014 QuantConnect Corporation.
  *
@@ -58,7 +58,7 @@ namespace QuantConnect.Algorithm.CSharp
 
         private readonly List<OrderTicket> _tickets = new List<OrderTicket>();
 
-        private readonly HashSet<int> _immediateCancellations = new HashSet<int>();
+        private readonly HashSet<long> _immediateCancellations = new HashSet<long>();
 
         /// <summary>
         /// Initialise the data and resolution required, as well as the cash and start-end dates for your algorithm. All algorithms must initialized.

@@ -67,6 +67,10 @@ namespace QuantConnect.Lean.Engine.HistoricalData
                 // let's make sure no one tries to change our parameters values
                 throw new InvalidOperationException("BrokerageHistoryProvider can only be initialized once");
             }
+            if (parameters == null)
+            {
+                throw new InvalidOperationException("BrokerageHistoryProvider: required parameters are null");
+            }
             _initialized = true;
 
             var dataProvidersList = parameters.Job?.HistoryProvider.DeserializeList() ?? new List<string>();
@@ -103,12 +107,12 @@ namespace QuantConnect.Lean.Engine.HistoricalData
         public override IEnumerable<Slice> GetHistory(IEnumerable<HistoryRequest> requests, DateTimeZone sliceTimeZone)
         {
             List<IEnumerator<Slice>> historyEnumerators = new(_historyProviders.Count);
-            var historyRequets = requests.ToList();
+            var historyRequests = requests.ToList();
             foreach (var historyProvider in _historyProviders)
             {
                 try
                 {
-                    var history = historyProvider.GetHistory(historyRequets, sliceTimeZone);
+                    var history = historyProvider.GetHistory(historyRequests, sliceTimeZone);
                     historyEnumerators.Add(history.GetEnumerator());
                 }
                 catch (Exception e)

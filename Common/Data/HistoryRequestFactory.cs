@@ -62,7 +62,8 @@ namespace QuantConnect.Data
             DataMappingMode? dataMappingMode = null,
             DataNormalizationMode? dataNormalizationMode = null,
             int? contractDepthOffset = null,
-            bool ignoreFrontier = false)
+            bool ignoreFrontier = false,
+            string columnName = "Value")
         {
             resolution ??= subscription.Resolution;
 
@@ -90,7 +91,8 @@ namespace QuantConnect.Data
                 Resolution = resolution.Value,
                 FillForwardResolution = subscription.FillDataForward ? resolution : null,
                 TickType = subscription.TickType,
-                IgnoreFrontier = ignoreFrontier
+                IgnoreFrontier = ignoreFrontier,
+                CustomDataColumnName = columnName
             };
 
             if (extendedMarketHours != null)

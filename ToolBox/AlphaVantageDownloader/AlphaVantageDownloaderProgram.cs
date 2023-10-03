@@ -40,11 +40,12 @@ namespace QuantConnect.ToolBox.AlphaVantageDownloader
                 var castResolution = (Resolution)Enum.Parse(typeof(Resolution), resolution);
                 var startDate = fromDate.ConvertToUtc(TimeZones.NewYork);
                 var endDate = toDate.ConvertToUtc(TimeZones.NewYork);
+                int rateLimit = 5;
 
                 // fix end date
                 endDate = new DateTime(Math.Min(endDate.Ticks, DateTime.Now.AddDays(-1).Ticks));
 
-                using (var downloader = new AlphaVantageDataDownloader(apiKey))
+                using (var downloader = new AlphaVantageDataDownloader(apiKey, rateLimit))
                 {
                     foreach (var ticker in tickers)
                     {

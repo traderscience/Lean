@@ -9,9 +9,9 @@ using Python.Runtime;
 namespace QuantConnect.Data.Consolidators
 {
     /// <summary>
-    /// A data consolidator that can make bigger bars from smaller ones
-    /// until a user specified event occurs
-    ///
+    /// A data consolidator that consolidates when a user specified event occurs.
+    /// Usage:
+    ///     
     /// Use this Event Based consolidator to aggregate data until a user specified event is triggered
     /// </summary>
 
@@ -27,6 +27,26 @@ namespace QuantConnect.Data.Consolidators
 
         public object CreateContext(Symbol symbol, object indicator);
     }
+
+    /// <summary>
+    /// Context base class for EventBasedConsolidatorChecker
+    /// </summary>
+    public class EventConsolidatorContext
+    {
+        public object EventIndicator;
+        public object LastState = 0;
+
+        public EventConsolidatorContext()
+        {
+
+        }
+        public EventConsolidatorContext(object indicator, object state)
+        {
+            EventIndicator = indicator;
+            LastState = state;
+        }
+    }
+
 
     /// <summary>
     /// TradeBarEventConsolidator

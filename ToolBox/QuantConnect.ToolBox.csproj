@@ -95,4 +95,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="NetMQ">
+      <HintPath>..\..\netmq\src\NetMQ\bin\Debug\netstandard2.1\NetMQ.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>

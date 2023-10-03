@@ -179,7 +179,7 @@ namespace QuantConnect.Data.Auxiliary
         /// <returns>The file path to the requested map file</returns>
         public static string GetRelativeMapFilePath(string market, SecurityType securityType)
         {
-            return Invariant($"{securityType.SecurityTypeToLower()}/{market}/map_files");
+            return Path.Combine(securityType.SecurityTypeToLower(), market, "map_files");
         }
 
         #region Implementation of IEnumerable

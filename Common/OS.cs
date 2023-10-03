@@ -164,6 +164,7 @@ namespace QuantConnect
         /// </summary>
         public static void Dispose()
         {
+            
             CpuPerformanceCounter.DisposeSafely();
         }
 
@@ -223,6 +224,7 @@ namespace QuantConnect
             /// </summary>
             public void Dispose()
             {
+                _cancellationToken.Cancel();
                 _cpuThread.StopSafely(TimeSpan.FromSeconds(5), _cancellationToken);
                 _cancellationToken.DisposeSafely();
             }

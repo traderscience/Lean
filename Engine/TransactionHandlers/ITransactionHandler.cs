@@ -43,7 +43,7 @@ namespace QuantConnect.Lean.Engine.TransactionHandlers
         /// <summary>
         /// Gets the permanent storage for all orders
         /// </summary>
-        ConcurrentDictionary<int, Order> Orders
+        ConcurrentDictionary<long, Order> Orders
         {
             get;
         }
@@ -56,7 +56,7 @@ namespace QuantConnect.Lean.Engine.TransactionHandlers
         /// <summary>
         /// Gets the permanent storage for all order tickets
         /// </summary>
-        ConcurrentDictionary<int, OrderTicket> OrderTickets
+        ConcurrentDictionary<long, OrderTicket> OrderTickets
         {
             get;
         }

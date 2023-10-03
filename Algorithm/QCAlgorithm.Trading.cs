@@ -1084,9 +1084,9 @@ namespace QuantConnect.Algorithm
         /// <returns>Array of order ids for liquidated symbols</returns>
         /// <seealso cref="MarketOrder(QuantConnect.Symbol,decimal,bool,string)"/>
         [DocumentationAttribute(TradingAndOrders)]
-        public List<int> Liquidate(Symbol symbolToLiquidate = null, string tag = "Liquidated")
+        public List<long> Liquidate(Symbol symbolToLiquidate = null, string tag = "Liquidated")
         {
-            var orderIdList = new List<int>();
+            var orderIdList = new List<long>();
             if (!Settings.LiquidateEnabled)
             {
                 Debug("Liquidate() is currently disabled by settings. To re-enable please set 'Settings.LiquidateEnabled' to true");

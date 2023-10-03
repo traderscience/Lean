@@ -270,7 +270,7 @@ namespace QuantConnect.Data.UniverseSelection
         /// <param name="security">The security to be removed</param>
         /// <returns>True if the security was successfully removed, false if
         /// we're not allowed to remove or if the security didn't exist</returns>
-        internal override bool RemoveMember(DateTime utcTime, Security security)
+        public override bool RemoveMember(DateTime utcTime, Security security)
         {
             if (base.RemoveMember(utcTime, security))
             {

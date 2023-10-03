@@ -58,6 +58,8 @@ namespace QuantConnect.Algorithm.Framework.Risk
                 }
 
                 var position = security.Holdings.IsLong ? PositionSide.Long : PositionSide.Short;
+                var marketPrice = security.Holdings.Price;
+
                 var absoluteHoldingsValue = security.Holdings.AbsoluteHoldingsValue;
                 HoldingsState trailingAbsoluteHoldingsState;
 
@@ -65,20 +67,30 @@ namespace QuantConnect.Algorithm.Framework.Risk
                 if (!_trailingAbsoluteHoldingsState.TryGetValue(symbol, out trailingAbsoluteHoldingsState) ||
                     position != trailingAbsoluteHoldingsState.Position)
                 {
-                    _trailingAbsoluteHoldingsState[symbol] = trailingAbsoluteHoldingsState = new HoldingsState(position, security.Holdings.AbsoluteHoldingsCost);
+                    //_trailingAbsoluteHoldingsState[symbol] = trailingAbsoluteHoldingsState = new HoldingsState(position, security.Holdings.AbsoluteHoldingsCost);
+                    _trailingAbsoluteHoldingsState[symbol] = trailingAbsoluteHoldingsState = new HoldingsState(position, security.Holdings.Price);
                 }
 
-                var trailingAbsoluteHoldingsValue = trailingAbsoluteHoldingsState.AbsoluteHoldingsValue;
+                //var trailingAbsoluteHoldingsValue = trailingAbsoluteHoldingsState.AbsoluteHoldingsValue;
+                var trailingPrice = trailingAbsoluteHoldingsState.AbsoluteHoldingsValue;
 
                 // Check for new max (for long position) or min (for short position) absolute holdings value
+                if ((position == PositionSide.Long && trailingPrice < marketPrice) ||
+                    (position == PositionSide.Short && trailingPrice > marketPrice))
+                {
+                    trailingAbsoluteHoldingsState.AbsoluteHoldingsValue = marketPrice;
+                    continue;
+                }
+                var drawdown = Math.Abs((trailingPrice - marketPrice) / trailingPrice);
+                /*
                 if ((position == PositionSide.Long && trailingAbsoluteHoldingsValue < absoluteHoldingsValue) ||
                     (position == PositionSide.Short && trailingAbsoluteHoldingsValue > absoluteHoldingsValue))
                 {
                     trailingAbsoluteHoldingsState.AbsoluteHoldingsValue = absoluteHoldingsValue;
                     continue;
                 }
-
                 var drawdown = Math.Abs((trailingAbsoluteHoldingsValue - absoluteHoldingsValue) / trailingAbsoluteHoldingsValue);
+                */
 
                 if (_maximumDrawdownPercent < drawdown)
                 {
@@ -87,6 +99,8 @@ namespace QuantConnect.Algorithm.Framework.Risk
 
                     _trailingAbsoluteHoldingsState.Remove(symbol);
                     // liquidate
+                    string datefmt = "yyyy-MM-dd HH:mm:ss";
+                    QuantConnect.Logging.Log.Trace($"{algorithm.Time.ToString(datefmt)} TrailingStop: liquidating {symbol.Value} Quantity: {security.Holdings.Quantity:F2}");
                     yield return new PortfolioTarget(symbol, 0);
                 }
             }

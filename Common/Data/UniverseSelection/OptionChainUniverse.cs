@@ -103,7 +103,7 @@ namespace QuantConnect.Data.UniverseSelection
         /// <param name="isInternal">True if internal member</param>
         /// <returns>True if the security was successfully added,
         /// false if the security was already in the universe</returns>
-        internal override bool AddMember(DateTime utcTime, Security security, bool isInternal)
+        public override bool AddMember(DateTime utcTime, Security security, bool isInternal)
         {
             // never add members to disposed universes
             if (DisposeRequested)

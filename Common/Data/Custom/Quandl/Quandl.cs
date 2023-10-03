@@ -29,7 +29,7 @@ namespace QuantConnect.Data.Custom
     {
         private bool _isInitialized;
         private readonly List<string> _propertyNames = new List<string>();
-        private readonly string _valueColumn;
+        private string _valueColumn;
         private static string _authCode = "";
 
         /// <summary>
@@ -103,6 +103,7 @@ namespace QuantConnect.Data.Custom
             if (!_isInitialized)
             {
                 _isInitialized = true;
+                _valueColumn = config.CustomValueColumnName;
                 foreach (var propertyName in csv)
                 {
                     var property = propertyName.Trim();

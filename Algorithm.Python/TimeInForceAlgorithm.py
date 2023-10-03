@@ -28,7 +28,7 @@ class TimeInForceAlgorithm(QCAlgorithm):
         self.SetEndDate(2013,10,11)
         self.SetCash(100000)
 
-        # The default time in force setting for all orders is GoodTilCancelled (GTC),
+        # The default time in force setting for all orders is GoodTilCanceled (GTC),
         # uncomment this line to set a different time in force.
         # We currently only support GTC and DAY.
         # self.DefaultOrderProperties.TimeInForce = TimeInForce.Day

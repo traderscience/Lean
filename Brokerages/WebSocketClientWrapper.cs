@@ -233,6 +233,7 @@ namespace QuantConnect.Brokerages
                         {
                             _client.DisposeSafely();
                             _client = new ClientWebSocket();
+                            _client.Options.KeepAliveInterval = TimeSpan.FromSeconds(5);
                             if (_sessionToken != null)
                             {
                                 _client.Options.SetRequestHeader("x-session-token", _sessionToken);

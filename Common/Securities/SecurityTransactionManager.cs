@@ -176,7 +176,7 @@ namespace QuantConnect.Securities
         /// </summary>
         /// <param name="orderId">Order id we wish to cancel</param>
         /// <param name="orderTag">Tag to indicate from where this method was called</param>
-        public OrderTicket CancelOrder(int orderId, string orderTag = null)
+        public OrderTicket CancelOrder(long orderId, string orderTag = null)
         {
             return RemoveOrder(orderId, orderTag);
         }
@@ -228,7 +228,7 @@ namespace QuantConnect.Securities
         /// </summary>
         /// <param name="orderId">Specific order id to remove</param>
         /// <param name="tag">Tag request</param>
-        public OrderTicket RemoveOrder(int orderId, string tag = null)
+        public OrderTicket RemoveOrder(long orderId, string tag = null)
         {
             return ProcessRequest(new CancelOrderRequest(_securities.UtcTime, orderId, tag ?? string.Empty));
         }
@@ -337,7 +337,7 @@ namespace QuantConnect.Securities
         /// </summary>
         /// <param name="orderId">The order's id</param>
         /// <returns>The order ticket with the specified id, or null if not found</returns>
-        public OrderTicket GetOrderTicket(int orderId)
+        public OrderTicket GetOrderTicket(long orderId)
         {
             return _orderProcessor.GetOrderTicket(orderId);
         }
@@ -349,7 +349,7 @@ namespace QuantConnect.Securities
         /// <returns>True if we successfully wait for the fill, false if we were unable
         /// to wait. This may be because it is not a market order or because the timeout
         /// was reached</returns>
-        public bool WaitForOrder(int orderId)
+        public bool WaitForOrder(long orderId)
         {
             var orderTicket = GetOrderTicket(orderId);
             if (orderTicket == null)
@@ -427,7 +427,7 @@ namespace QuantConnect.Securities
         /// </summary>
         /// <param name="orderId">Order id to fetch</param>
         /// <returns>A clone of the order with the specified id, or null if no match is found</returns>
-        public Order GetOrderById(int orderId)
+        public Order GetOrderById(long orderId)
         {
             return _orderProcessor.GetOrderById(orderId);
         }

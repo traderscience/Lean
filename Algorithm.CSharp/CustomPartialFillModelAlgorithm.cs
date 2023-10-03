@@ -67,13 +67,13 @@ namespace QuantConnect.Algorithm.CSharp
         internal class CustomPartialFillModel : FillModel
         {
             private readonly QCAlgorithm _algorithm;
-            private readonly Dictionary<int, decimal> _absoluteRemainingByOrderId;
+            private readonly Dictionary<long, decimal> _absoluteRemainingByOrderId;
 
             public CustomPartialFillModel(QCAlgorithm algorithm)
                 : base()
             {
                 _algorithm = algorithm;
-                _absoluteRemainingByOrderId = new Dictionary<int, decimal>();
+                _absoluteRemainingByOrderId = new Dictionary<long, decimal>();
             }
 
             public override OrderEvent MarketFill(Security asset, MarketOrder order)

@@ -40,8 +40,9 @@ namespace QuantConnect.Brokerages
         private static readonly TimeSpan LiveBrokerageCashSyncTime = new TimeSpan(7, 45, 0);
 
         private readonly object _performCashSyncReentranceGuard = new object();
-        private bool _syncedLiveBrokerageCashToday = true;
-        private long _lastSyncTimeTicks = DateTime.UtcNow.Ticks;
+        private bool _syncedLiveBrokerageCashToday = false;
+        private long _lastSyncTimeTicks = DateTime.UtcNow.
+            Ticks;
 
         /// <summary>
         /// Event that fires each time the brokerage order id changes

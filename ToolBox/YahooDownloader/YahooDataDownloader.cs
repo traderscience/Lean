@@ -60,10 +60,6 @@ namespace QuantConnect.ToolBox.YahooDownloader
 
             return GetEnumerator(symbol, startUtc, endUtc);
         }
-        public IEnumerable<string> GetColumnNames()
-        {
-            return null;
-        }
 
         private static IEnumerable<BaseData> GetEnumerator(Symbol symbol, DateTime startDateTime, DateTime endDateTime)
         {
@@ -73,6 +69,79 @@ namespace QuantConnect.ToolBox.YahooDownloader
             {
                 yield return new TradeBar(item.Date, symbol, item.Open, item.High, item.Low, item.Close, (long)item.Volume, TimeSpan.FromDays(1));
             }
+        }
+
+
+        /// <summary>
+        /// Download Dividend and Split data from Yahoo
+        /// </summary>
+        /// <param name="symbol">Symbol of the data to download</param>
+        /// <param name="startUtc">Get data after this time</param>
+        /// <param name="endUtc">Get data before this time</param>
+        /// <returns></returns>
+        public Queue<BaseData> DownloadSplitAndDividendData(Symbol symbol, DateTime startUtc, DateTime endUtc)
+        {
+            var split = Historical.GetRaw(symbol.Value, startUtc, endUtc, "split");
+            var dividend = Historical.GetRaw(symbol.Value, startUtc, endUtc, "dividend");
+            var parsed = new List<BaseData>();
+
+            foreach (var data in new[] { split, dividend })
+            {
+
+                bool isSplit = false;
+
+                foreach (var item in data.Split('\n'))
+                {
+                    if (String.IsNullOrEmpty(item))
+                    {
+                        break;
+                    }
+                    if (item == "Date,Stock Splits")
+                    {
+                        isSplit = true;
+                        continue;
+                    }
+                    if (item == "Date,Dividends")
+                    {
+                        continue;
+                    }
+
+                    string[] values = item.Split(',');
+                    decimal value = 1.0m;
+
+                    if (isSplit)
+                    {
+                        var time = Parse.DateTimeExact(values[0].Replace("-", string.Empty), DateFormat.EightCharacter);
+                        var splitFactor = ParseAmount(values[1]);
+                        value = splitFactor;
+                        parsed.Add(new Split { Time = time, Value = splitFactor });
+                    }
+                    else
+                    {
+                        var time = Parse.DateTimeExact(values[0].Replace("-", string.Empty), DateFormat.EightCharacter);
+                        var distribution = Decimal.Parse(values[1]);
+                        parsed.Add(new Dividend { Time = time, Value = distribution});
+                    }
+                }
+            }
+
+            return new Queue<BaseData>(parsed.OrderByDescending(x => x.Time));
+        }
+
+        /// <summary>
+        /// Put the split ratio into a decimal format
+        /// </summary>
+        /// <param name="splitFactor">Split ratio</param>
+        /// <returns>Decimal representing the split ratio</returns>
+        private decimal ParseAmount(string splitFactor)
+        {
+            var factors = splitFactor.Split(':');
+            return Parse.Decimal(factors[0]) / Parse.Decimal(factors[1]);
+        }
+
+        public IEnumerable<string> GetColumnNames()
+        {
+            return null;
         }
     }
 }

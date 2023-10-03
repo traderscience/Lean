@@ -52,11 +52,11 @@ namespace QuantConnect.Lean.Engine.DataFeeds.WorkScheduling
         /// This is the worker thread loop.
         /// It will first try to take a work item from the new work queue else will check his own queue.
         /// </summary>
-        public void WorkerThread(ConcurrentQueue<WorkItem> newWork, AutoResetEvent newWorkEvent)
+        public void WorkerThread(ConcurrentQueue<WorkItem> newWork, AutoResetEvent newWorkEvent, CancellationTokenSource tokenSource)
         {
             var waitHandles = new WaitHandle[] { _workAvailableEvent, newWorkEvent };
             var waitedPreviousLoop = 0;
-            while (true)
+            while (!tokenSource.IsCancellationRequested)
             {
                 WorkItem workItem;
                 if (!newWork.TryDequeue(out workItem))

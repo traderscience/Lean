@@ -14,6 +14,7 @@
 */
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using QuantConnect.Configuration;
 using QuantConnect.Data;
 using QuantConnect.Logging;
@@ -42,21 +43,38 @@ namespace QuantConnect.ToolBox.YahooDownloader
                 var castResolution = (Resolution)Enum.Parse(typeof(Resolution), resolution);
 
                 // Load settings from config.json
-                var dataDirectory = Globals.DataFolder;
+                var dataDirectory = Config.Get("data-folder", "../../../Data");
 
                 // Create an instance of the downloader
                 const string market = Market.USA;
                 var downloader = new YahooDataDownloader();
 
+                DateTime splitStart = new DateTime(1980, 1, 1);  // always request the entire split/dividend history
+                DateTime splitEnd = DateTime.Today.AddDays(1);
+
                 foreach (var ticker in tickers)
                 {
-                    // Download the data
-                    var symbolObject = Symbol.Create(ticker, SecurityType.Equity, market);
-                    var data = downloader.Get(new DataDownloaderGetParameters(symbolObject, castResolution, startDate, endDate));
+                    try
+                    {
+                        // Download the data
+                        var symbolObject = Symbol.Create(ticker, SecurityType.Equity, market);
+                        var data = downloader.Get(new DataDownloaderGetParameters(symbolObject, castResolution, startDate, endDate));
 
-                    // Save the data
-                    var writer = new LeanDataWriter(castResolution, symbolObject, dataDirectory);
-                    writer.Write(data);
+                        // Save the data
+                        var writer = new LeanDataWriter(castResolution, symbolObject, dataDirectory);
+                        writer.Write(data);
+
+                        // Get the entire split and dividend history
+                        var splitDivData = downloader.DownloadSplitAndDividendData(symbolObject, splitStart, splitEnd);
+                        // Create/overwrite existing factor files for this ticker
+                        string dataDir = $"{dataDirectory}\\Equity\\{symbolObject.ID.Market}\\daily\\{symbolObject.Value}.zip";
+                        var factorGen = new FactorFileGenerator(symbolObject, dataDir);
+                        factorGen.CreateFactorFile(splitDivData.ToList()).WriteToFile(symbolObject);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error($"YahooDownloaderProgram: ticker {ticker} error {ex.ToString()}");
+                    }
                 }
             }
             catch (Exception err)

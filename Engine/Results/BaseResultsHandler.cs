@@ -351,9 +351,9 @@ namespace QuantConnect.Lean.Engine.Results
         /// Gets the orders generated starting from the provided <see cref="ITransactionHandler.OrderEvents"/> position
         /// </summary>
         /// <returns>The delta orders</returns>
-        protected virtual SortedDictionary<int, Order> GetDeltaOrders(int orderEventsStartPosition, Func<int, bool> shouldStop)
+        protected virtual SortedDictionary<long, Order> GetDeltaOrders(int orderEventsStartPosition, Func<int, bool> shouldStop)
         {
-            var deltaOrders = new SortedDictionary<int, Order>();
+            var deltaOrders = new SortedDictionary<long, Order>();
 
             foreach (var orderId in TransactionHandler.OrderEvents.Skip(orderEventsStartPosition).Select(orderEvent => orderEvent.OrderId))
             {

@@ -34,7 +34,7 @@ namespace QuantConnect.Securities
         /// </summary>
         /// <param name="orderId">Order id to fetch</param>
         /// <returns>A clone of the order with the specified id, or null if no match is found</returns>
-        Order GetOrderById(int orderId);
+        Order GetOrderById(long orderId);
 
         /// <summary>
         /// Gets the Lean orders by its brokerage id
@@ -62,7 +62,7 @@ namespace QuantConnect.Securities
         /// </summary>
         /// <param name="orderId">The order's id</param>
         /// <returns>The order ticket with the specified id, or null if not found</returns>
-        OrderTicket GetOrderTicket(int orderId);
+        OrderTicket GetOrderTicket(long orderId);
 
         /// <summary>
         /// Gets all orders matching the specified filter. Specifying null will return an enumerable

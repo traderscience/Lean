@@ -38,7 +38,7 @@ namespace QuantConnect
         /// Order updates since the last result packet
         /// </summary>
         [JsonProperty(PropertyName = "Orders", NullValueHandling = NullValueHandling.Ignore)]
-        public IDictionary<int, Order> Orders;
+        public IDictionary<long, Order> Orders;
 
         /// <summary>
         /// OrderEvent updates since the last result packet

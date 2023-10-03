@@ -49,7 +49,7 @@ namespace QuantConnect.Orders
         /// <summary>
         /// Gets the order id the request acts on
         /// </summary>
-        public int OrderId
+        public long OrderId
         {
             get; protected set;
         }
@@ -77,7 +77,7 @@ namespace QuantConnect.Orders
         /// <param name="time">The time this request was created</param>
         /// <param name="orderId">The order id this request acts on, specify zero for <see cref="SubmitOrderRequest"/></param>
         /// <param name="tag">A custom tag for the request</param>
-        protected OrderRequest(DateTime time, int orderId, string tag)
+        protected OrderRequest(DateTime time, long orderId, string tag)
         {
             Time = time;
             OrderId = orderId;

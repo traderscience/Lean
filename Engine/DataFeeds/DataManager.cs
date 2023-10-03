@@ -479,12 +479,13 @@ namespace QuantConnect.Lean.Engine.DataFeeds
             bool isCustomData = false,
             DataNormalizationMode dataNormalizationMode = DataNormalizationMode.Adjusted,
             DataMappingMode dataMappingMode = DataMappingMode.OpenInterest,
-            uint contractDepthOffset = 0
+            uint contractDepthOffset = 0,
+            string columnName = "Value"
             )
         {
             return Add(symbol, resolution, fillForward, extendedMarketHours, isFilteredSubscription, isInternalFeed, isCustomData,
                 new List<Tuple<Type, TickType>> { new Tuple<Type, TickType>(dataType, LeanData.GetCommonTickTypeForCommonDataTypes(dataType, symbol.SecurityType))},
-                dataNormalizationMode, dataMappingMode, contractDepthOffset)
+                dataNormalizationMode, dataMappingMode, contractDepthOffset, columnName)
                 .First();
         }
 
@@ -504,7 +505,8 @@ namespace QuantConnect.Lean.Engine.DataFeeds
             List<Tuple<Type, TickType>> subscriptionDataTypes = null,
             DataNormalizationMode dataNormalizationMode = DataNormalizationMode.Adjusted,
             DataMappingMode dataMappingMode = DataMappingMode.OpenInterest,
-            uint contractDepthOffset = 0
+            uint contractDepthOffset = 0,
+            string columnName = "Value"
             )
         {
             var dataTypes = subscriptionDataTypes;
@@ -601,7 +603,8 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                     tickType: tickType,
                     dataNormalizationMode: dataNormalizationMode,
                     dataMappingMode: dataMappingMode,
-                    contractDepthOffset: contractDepthOffset)).ToList();
+                    contractDepthOffset: contractDepthOffset,
+                    customDataColumnName: columnName)).ToList();
 
             for (int i = 0; i < result.Count; i++)
             {

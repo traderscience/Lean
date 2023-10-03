@@ -172,7 +172,7 @@ namespace QuantConnect.Lean.Engine.Results
             {
                 try
                 {
-                    SortedDictionary<int, Order> deltaOrders;
+                    SortedDictionary<long, Order> deltaOrders;
                     {
                         var stopwatch = Stopwatch.StartNew();
                         deltaOrders = GetDeltaOrders(LastDeltaOrderPosition, shouldStop: orderCount => stopwatch.ElapsedMilliseconds > 15);
@@ -245,7 +245,7 @@ namespace QuantConnect.Lean.Engine.Results
 
                         var orderEvents = GetOrderEventsToStore();
 
-                        var orders = new Dictionary<int, Order>(TransactionHandler.Orders);
+                        var orders = new Dictionary<long, Order>(TransactionHandler.Orders);
                         var complete = new LiveResultPacket(_job, new LiveResult(new LiveResultParameters(chartComplete, orders, Algorithm.Transactions.TransactionRecord, holdings, Algorithm.Portfolio.CashBook, deltaStatistics, runtimeStatistics, orderEvents, serverStatistics, state: GetAlgorithmState())));
                         StoreResult(complete);
                         _nextChartsUpdate = DateTime.UtcNow.Add(ChartUpdateInterval);
@@ -427,7 +427,7 @@ namespace QuantConnect.Lean.Engine.Results
                 chartComplete = dailySampler.SampleCharts(chartComplete, Time.BeginningOfTime, Time.EndOfTime);
 
                 var result = new LiveResult(new LiveResultParameters(chartComplete,
-                    new Dictionary<int, Order>(TransactionHandler.Orders),
+                    new Dictionary<long, Order>(TransactionHandler.Orders),
                     Algorithm?.Transactions.TransactionRecord ?? new(),
                     holdings,
                     Algorithm?.Portfolio.CashBook ?? new(),
@@ -451,7 +451,7 @@ namespace QuantConnect.Lean.Engine.Results
         /// </summary>
         private IEnumerable<LiveResultPacket> SplitPackets(
             Dictionary<string, Chart> deltaCharts,
-            SortedDictionary<int, Order> deltaOrders,
+            SortedDictionary<long, Order> deltaOrders,
             Dictionary<string, Holding> holdings,
             CashBook cashbook,
             Dictionary<string, string> deltaStatistics,
@@ -806,7 +806,7 @@ namespace QuantConnect.Lean.Engine.Results
                         }
                     }
 
-                    var orders = new Dictionary<int, Order>(TransactionHandler.Orders);
+                    var orders = new Dictionary<long, Order>(TransactionHandler.Orders);
                     var profitLoss = new SortedDictionary<DateTime, decimal>(Algorithm.Transactions.TransactionRecord);
                     var holdings = GetHoldings(Algorithm.Securities.Values, Algorithm.SubscriptionManager.SubscriptionDataConfigService, onlyInvested: true);
                     var statisticsResults = GenerateStatisticsResults(charts, profitLoss);
@@ -931,7 +931,7 @@ namespace QuantConnect.Lean.Engine.Results
                     {
                         var result = new LiveResult
                         {
-                            Orders = new Dictionary<int, Order>(live.Results.Orders),
+                            Orders = new Dictionary<long, Order>(live.Results.Orders),
                             Holdings = new Dictionary<string, Holding>(live.Results.Holdings),
                             Charts = new Dictionary<string, Chart> { { name, live.Results.Charts[name] } }
                         };

@@ -48,7 +48,7 @@ namespace QuantConnect.Orders
         /// The order Ids in this group
         /// </summary>
         /// <remarks>In live trading we process orders in a dedicated thread so we need to be thread safe</remarks>
-        public HashSet<int> OrderIds { get; }
+        public HashSet<long> OrderIds { get; }
 
         /// <summary>
         /// Order Direction Property based off Quantity.

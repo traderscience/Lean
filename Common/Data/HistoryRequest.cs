@@ -80,6 +80,11 @@ namespace QuantConnect.Data
         public bool IsCustomData { get; set; }
 
         /// <summary>
+        /// For custom data, return data for this column
+        /// </summary>
+        public string CustomDataColumnName { get; set; }    
+
+        /// <summary>
         /// Gets the normalization mode used for this subscription
         /// </summary>
         public DataNormalizationMode DataNormalizationMode { get; set; }

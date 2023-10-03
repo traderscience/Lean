@@ -87,6 +87,11 @@ namespace QuantConnect.Data
         public bool IsCustomData { get; }
 
         /// <summary>
+        /// For Custom Data, the specific column requested. Default is "Value"
+        /// </summary>
+        public string CustomValueColumnName { get; } = "Value";
+
+        /// <summary>
         /// The sum of dividends accrued in this subscription, used for scaling total return prices
         /// </summary>
         public decimal SumOfDividends{ get; set; }
@@ -202,6 +207,8 @@ namespace QuantConnect.Data
         /// <param name="dataMappingMode">The contract mapping mode to use for the security</param>
         /// <param name="contractDepthOffset">The continuous contract desired offset from the current front month.
         /// For example, 0 (default) will use the front month, 1 will use the back month contract</param>
+        /// <param name="mappedConfig"></param>
+        /// <param name="CustomDataColumnName">For custom data types, the value column to return</param>
         public SubscriptionDataConfig(Type objectType,
             Symbol symbol,
             Resolution resolution,
@@ -216,7 +223,8 @@ namespace QuantConnect.Data
             DataNormalizationMode dataNormalizationMode = DataNormalizationMode.Adjusted,
             DataMappingMode dataMappingMode = DataMappingMode.OpenInterest,
             uint contractDepthOffset = 0,
-            bool mappedConfig = false)
+            bool mappedConfig = false,
+            string customDataColumnName = "Value")
         {
             if (objectType == null) throw new ArgumentNullException(nameof(objectType));
             if (symbol == null) throw new ArgumentNullException(nameof(symbol));
@@ -231,6 +239,7 @@ namespace QuantConnect.Data
             PriceScaleFactor = 1;
             IsInternalFeed = isInternalFeed;
             IsCustomData = isCustom;
+            CustomValueColumnName = customDataColumnName;
             DataTimeZone = dataTimeZone;
             _mappedConfig = mappedConfig;
             DataMappingMode = dataMappingMode;
@@ -245,6 +254,7 @@ namespace QuantConnect.Data
             Increment = resolution.ToTimeSpan();
             //Ticks are individual sales and fillforward doesn't apply.
             FillDataForward = resolution == Resolution.Tick ? false : fillForward;
+
         }
 
         /// <summary>
@@ -285,7 +295,8 @@ namespace QuantConnect.Data
             DataNormalizationMode? dataNormalizationMode = null,
             DataMappingMode? dataMappingMode = null,
             uint? contractDepthOffset = null,
-            bool? mappedConfig = null)
+            bool? mappedConfig = null,
+            string customDataColumnName = "Value")
             : this(
             objectType ?? config.Type,
             symbol ?? config.Symbol,
@@ -301,7 +312,8 @@ namespace QuantConnect.Data
             dataNormalizationMode ?? config.DataNormalizationMode,
             dataMappingMode ?? config.DataMappingMode,
             contractDepthOffset ?? config.ContractDepthOffset,
-            mappedConfig ?? false
+            mappedConfig ?? false,
+            customDataColumnName ?? config.CustomValueColumnName
             )
         {
             PriceScaleFactor = config.PriceScaleFactor;
@@ -374,6 +386,7 @@ namespace QuantConnect.Data
                 hashCode = (hashCode*397) ^ ContractDepthOffset.GetHashCode();
                 hashCode = (hashCode*397) ^ IsFilteredSubscription.GetHashCode();
                 hashCode = (hashCode*397) ^ _mappedConfig.GetHashCode();
+                hashCode = (hashCode*397) ^ CustomValueColumnName.GetHashCode();
                 return hashCode;
             }
         }

@@ -289,7 +289,7 @@ namespace QuantConnect.Data.UniverseSelection
         /// <param name="isInternal">True if internal member</param>
         /// <returns>True if the security was successfully added,
         /// false if the security was already in the universe</returns>
-        internal virtual bool AddMember(DateTime utcTime, Security security, bool isInternal)
+        public virtual bool AddMember(DateTime utcTime, Security security, bool isInternal)
         {
             // never add members to disposed universes
             if (DisposeRequested)
@@ -314,7 +314,7 @@ namespace QuantConnect.Data.UniverseSelection
         /// <param name="security">The security to be removed</param>
         /// <returns>True if the security was successfully removed, false if
         /// we're not allowed to remove or if the security didn't exist</returns>
-        internal virtual bool RemoveMember(DateTime utcTime, Security security)
+        public virtual bool RemoveMember(DateTime utcTime, Security security)
         {
             if (CanRemoveMember(utcTime, security))
             {

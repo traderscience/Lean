@@ -56,7 +56,7 @@ namespace QuantConnect.Orders
         /// <param name="time">The time the request was submitted</param>
         /// <param name="orderId">The order id to be updated</param>
         /// <param name="fields">The fields defining what should be updated</param>
-        public UpdateOrderRequest(DateTime time, int orderId, UpdateOrderFields fields)
+        public UpdateOrderRequest(DateTime time, long orderId, UpdateOrderFields fields)
             : base(time, orderId, fields.Tag)
         {
             Quantity = fields.Quantity;

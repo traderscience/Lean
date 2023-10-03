@@ -1,4 +1,4 @@
-﻿/*
+/*
  * QUANTCONNECT.COM - Democratizing Finance, Empowering Individuals.
  * Lean Algorithmic Trading Engine v2.0. Copyright 2014 QuantConnect Corporation.
  *
@@ -51,6 +51,17 @@ namespace QuantConnect.Orders
         /// Parent order (if any)
         /// </summary>
         public long ParentOrder { get; set; }
+
+
+        /// <summary>
+        /// Parent Order at Broker
+        /// </summary>
+        public long BrokerParentOrderId { get; set; }
+
+        /// <summary>
+        /// Broker Order Id
+        /// </summary>
+        public long BrokerOrderId { get; set; }
         /// <summary>
         /// One Cancels All order group
         /// </summary>

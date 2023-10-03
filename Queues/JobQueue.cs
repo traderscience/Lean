@@ -23,6 +23,7 @@ using QuantConnect.Packets;
 using QuantConnect.Python;
 using QuantConnect.Util;
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -49,8 +50,10 @@ namespace QuantConnect.Queues
         private static readonly string OrganizationId = Config.Get("job-organization-id");
         private static readonly int UserId = Config.GetInt("job-user-id", 0);
         private static readonly int ProjectId = Config.GetInt("job-project-id", 0);
-        private readonly string AlgorithmTypeName = Config.Get("algorithm-type-name");
-        private readonly Language Language = (Language)Enum.Parse(typeof(Language), Config.Get("algorithm-language"), ignoreCase: true);
+        private readonly string AlgorithmTypeName = Config.Get("algorithm-type-name",null);
+        private readonly Language Language = (Language)Enum.Parse(typeof(Language), 
+                                Config.Get("algorithm-language","CSharp"),
+                                ignoreCase: true);
 
         /// <summary>
         /// Physical location of Algorithm DLL.

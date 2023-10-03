@@ -34,7 +34,19 @@ namespace QuantConnect.Orders
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public Exchange Exchange { get; set; }
 
+        /// <summary>
+        /// Parent Order
+        /// </summary>
         public long ParentOrder { get; set; }
+
+        /// <summary>
+        /// Parent Order at Broker
+        /// </summary>
+        public long BrokerParentOrderId { get; set; }
+        /// <summary>
+        /// OrderId at Broker
+        /// </summary>
+        public long BrokerOrderId { get; set; }
         public string OcaGroup { get; set; }
         public OrderIntent Intent { get; set; }
 

@@ -38,7 +38,7 @@ namespace QuantConnect.Packets
         /// <summary>
         /// Order updates since the last result packet
         /// </summary>
-        public IDictionary<int, Order> Orders { get; set; }
+        public IDictionary<long, Order> Orders { get; set; }
 
         /// <summary>
         /// Order events updates since the last result packet

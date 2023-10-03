@@ -39,7 +39,7 @@ namespace QuantConnect.Orders
         private decimal _quantityFilled;
         private decimal _averageFillPrice;
 
-        private readonly int _orderId;
+        private readonly long _orderId;
         private readonly List<OrderEvent> _orderEvents;
         private readonly SubmitOrderRequest _submitRequest;
         private readonly ManualResetEvent _orderStatusClosedEvent;
@@ -52,7 +52,7 @@ namespace QuantConnect.Orders
         /// <summary>
         /// Gets the order id of this ticket
         /// </summary>
-        public int OrderId
+        public long OrderId
         {
             get { return _orderId; }
         }
@@ -622,7 +622,7 @@ namespace QuantConnect.Orders
         /// an error, where it will return the integer value of the <see cref="OrderResponseErrorCode"/> from
         /// the most recent response
         /// </summary>
-        public static implicit operator int(OrderTicket ticket)
+        public static implicit operator long(OrderTicket ticket)
         {
             var response = ticket.GetMostRecentOrderResponse();
             if (response != null && response.IsError)

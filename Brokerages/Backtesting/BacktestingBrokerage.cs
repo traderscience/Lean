@@ -43,7 +43,7 @@ namespace QuantConnect.Brokerages.Backtesting
         // time loop
         private bool _needsScan;
         private DateTime _nextOptionAssignmentTime;
-        private readonly ConcurrentDictionary<int, Order> _pending;
+        private readonly ConcurrentDictionary<long, Order> _pending;
         private readonly object _needsScanLock = new object();
         private readonly HashSet<Symbol> _pendingOptionAssignments = new HashSet<Symbol>();
 
@@ -70,7 +70,7 @@ namespace QuantConnect.Brokerages.Backtesting
             : base(name)
         {
             Algorithm = algorithm;
-            _pending = new ConcurrentDictionary<int, Order>();
+            _pending = new ConcurrentDictionary<long, Order>();
         }
 
         /// <summary>
@@ -622,7 +622,7 @@ namespace QuantConnect.Brokerages.Backtesting
             return result;
         }
 
-        private Order TryGetOrder(int orderId)
+        private Order TryGetOrder(long orderId)
         {
             _pending.TryGetValue(orderId, out var order);
             return order;

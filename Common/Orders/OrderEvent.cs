@@ -41,13 +41,13 @@ namespace QuantConnect.Orders
         /// Id of the order this event comes from.
         /// </summary>
         [ProtoMember(1)]
-        public int OrderId { get; set; }
+        public long OrderId { get; set; }
 
         /// <summary>
         /// The unique order event id for each order
         /// </summary>
         [ProtoMember(2)]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// Easy access to the order symbol associated with this event.
@@ -279,7 +279,7 @@ namespace QuantConnect.Orders
         /// <param name="fillQuantity">Fill quantity</param>
         /// <param name="orderFee">The order fee</param>
         /// <param name="message">Message from the exchange</param>
-        public OrderEvent(int orderId,
+        public OrderEvent(long orderId,
             Symbol symbol,
             DateTime utcTime,
             OrderStatus status,
@@ -369,7 +369,7 @@ namespace QuantConnect.Orders
         /// </summary>
         public static OrderEvent FromSerialized(SerializedOrderEvent serializedOrderEvent)
         {
-            var sid = SecurityIdentifier.Parse(serializedOrderEvent.Symbol);
+            var sid = SecurityIdentifier.Parse(serializedOrderEvent.Symbol.ID.ToString());
             var symbol = new Symbol(sid, sid.Symbol);
 
             var orderFee = OrderFee.Zero;

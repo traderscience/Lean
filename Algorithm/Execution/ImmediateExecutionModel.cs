@@ -50,7 +50,23 @@ namespace QuantConnect.Algorithm.Framework.Execution
                         if (security.BuyingPowerModel.AboveMinimumOrderMarginPortfolioPercentage(security, quantity,
                             algorithm.Portfolio, algorithm.Settings.MinimumOrderMarginPortfolioPercentage))
                         {
-                            algorithm.MarketOrder(security, quantity);
+                            var currentQty = algorithm.Portfolio[security.Symbol].Quantity;
+                            OrderIntent intent = OrderIntent.Undefined;
+                            if (currentQty == 0)
+                                intent = quantity > 0 ? OrderIntent.BTO : OrderIntent.STO;
+                            else
+                            {
+                                if (currentQty > 0)
+                                   intent = quantity < 0 ? OrderIntent.STC : OrderIntent.BTO;
+                                else
+                                    intent = quantity > 0 ? OrderIntent.BTC : OrderIntent.STO;
+                            }
+                            var orderProps = new OrderProperties()
+                            {
+                                Intent = intent
+                            };
+
+                            algorithm.MarketOrder(security, quantity, orderProperties: orderProps);
                         }
                         else if (!PortfolioTarget.MinimumOrderMarginPercentageWarningSent.HasValue)
                         {

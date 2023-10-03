@@ -457,7 +457,7 @@ namespace QuantConnect
         /// </summary>
         /// <param name="orders">The order collection</param>
         /// <returns>The hash value</returns>
-        public static string GetHash(this IDictionary<int, Order> orders)
+        public static string GetHash(this IDictionary<long, Order> orders)
         {
             var joinedOrders = string.Join(
                 ",",
@@ -3622,7 +3622,8 @@ namespace QuantConnect
                 isFilteredSubscription,
                 request.DataNormalizationMode,
                 request.DataMappingMode,
-                request.ContractDepthOffset
+                request.ContractDepthOffset,
+                customDataColumnName: request.CustomDataColumnName
             );
         }
 

@@ -25,7 +25,7 @@ namespace QuantConnect.Orders
         /// <summary>
         /// The order ID.
         /// </summary>
-        public int OrderId { get; set; }
+        public long OrderId { get; set; }
 
         /// <summary>
         /// Brokerage Id for this order

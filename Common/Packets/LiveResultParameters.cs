@@ -45,7 +45,7 @@ namespace QuantConnect.Packets
         /// Creates a new instance
         /// </summary>
         public LiveResultParameters(IDictionary<string, Chart> charts,
-            IDictionary<int, Order> orders,
+            IDictionary<long, Order> orders,
             IDictionary<DateTime, decimal> profitLoss,
             IDictionary<string, Holding> holdings,
             CashBook cashBook,

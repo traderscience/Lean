@@ -203,7 +203,7 @@ namespace QuantConnect.Packets
         public static BacktestResultPacket CreateEmpty(BacktestNodePacket job)
         {
             return new BacktestResultPacket(job, new BacktestResult(new BacktestResultParameters(
-                new Dictionary<string, Chart>(), new Dictionary<int, Order>(), new Dictionary<DateTime, decimal>(),
+                new Dictionary<string, Chart>(), new Dictionary<long, Order>(), new Dictionary<DateTime, decimal>(),
                 new Dictionary<string, string>(), new SortedDictionary<string, string>(), new Dictionary<string, AlgorithmPerformance>(),
                 new List<OrderEvent>(), new AlgorithmPerformance(), new AlgorithmConfiguration(), new Dictionary<string, string>()
             )), DateTime.UtcNow, DateTime.UtcNow);

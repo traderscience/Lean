@@ -233,7 +233,8 @@ namespace QuantConnect.Algorithm
         /// <param name="ignoreFrontier">Specified if frontier timestamp should be ignored so all history can be returned</param>
         [DocumentationAttribute(HistoricalData)]
         public IEnumerable<Slice> History(TimeSpan span, Resolution? resolution = null, bool? fillForward = null, bool? extendedMarketHours = null,
-            DataMappingMode? dataMappingMode = null, DataNormalizationMode? dataNormalizationMode = null, int? contractDepthOffset = null, bool ignoreFrontier = false)
+            DataMappingMode? dataMappingMode = null, DataNormalizationMode? dataNormalizationMode = null, 
+            int? contractDepthOffset = null, bool ignoreFrontier = false)
         {
             return History(Securities.Keys, Time - span, Time, resolution, fillForward, extendedMarketHours, dataMappingMode,
                 dataNormalizationMode, contractDepthOffset, ignoreFrontier).Memoize();
@@ -304,11 +305,11 @@ namespace QuantConnect.Algorithm
         [DocumentationAttribute(HistoricalData)]
         public IEnumerable<DataDictionary<T>> History<T>(IEnumerable<Symbol> symbols, TimeSpan span, Resolution? resolution = null,
             bool? fillForward = null, bool? extendedMarketHours = null, DataMappingMode? dataMappingMode = null,
-            DataNormalizationMode? dataNormalizationMode = null, int? contractDepthOffset = null, bool ignoreFrontier = false)
+            DataNormalizationMode? dataNormalizationMode = null, int? contractDepthOffset = null, bool ignoreFrontier = false, string columnName = "Value")
             where T : IBaseData
         {
             return History<T>(symbols, Time - span, Time, resolution, fillForward, extendedMarketHours, dataMappingMode,
-                dataNormalizationMode, contractDepthOffset, ignoreFrontier).Memoize();
+                dataNormalizationMode, contractDepthOffset, ignoreFrontier, columnName).Memoize();
         }
 
         /// <summary>
@@ -330,12 +331,13 @@ namespace QuantConnect.Algorithm
         [DocumentationAttribute(HistoricalData)]
         public IEnumerable<DataDictionary<T>> History<T>(IEnumerable<Symbol> symbols, int periods, Resolution? resolution = null,
             bool? fillForward = null, bool? extendedMarketHours = null, DataMappingMode? dataMappingMode = null,
-            DataNormalizationMode? dataNormalizationMode = null, int? contractDepthOffset = null, bool ignoreFrontier = false)
+            DataNormalizationMode? dataNormalizationMode = null, int? contractDepthOffset = null, 
+            bool ignoreFrontier = false, string columnName = "Value")
             where T : IBaseData
         {
             CheckPeriodBasedHistoryRequestResolution(symbols, resolution);
             var requests = CreateBarCountHistoryRequests(symbols, typeof(T), periods, resolution, fillForward, extendedMarketHours, dataMappingMode,
-                dataNormalizationMode, contractDepthOffset, ignoreFrontier);
+                dataNormalizationMode, contractDepthOffset, ignoreFrontier, columnName);
             return GetDataTypedHistory<T>(requests);
         }
 
@@ -357,11 +359,12 @@ namespace QuantConnect.Algorithm
         [DocumentationAttribute(HistoricalData)]
         public IEnumerable<DataDictionary<T>> History<T>(IEnumerable<Symbol> symbols, DateTime start, DateTime end, Resolution? resolution = null,
             bool? fillForward = null, bool? extendedMarketHours = null, DataMappingMode? dataMappingMode = null,
-            DataNormalizationMode? dataNormalizationMode = null, int? contractDepthOffset = null, bool ignoreFrontier = false)
+            DataNormalizationMode? dataNormalizationMode = null, int? contractDepthOffset = null, 
+            bool ignoreFrontier = false, string columnName = "Value")
             where T : IBaseData
         {
             var requests = CreateDateRangeHistoryRequests(symbols, typeof(T), start, end, resolution, fillForward, extendedMarketHours,
-                dataMappingMode, dataNormalizationMode, contractDepthOffset, ignoreFrontier);
+                dataMappingMode, dataNormalizationMode, contractDepthOffset, ignoreFrontier, columnName);
             return GetDataTypedHistory<T>(requests);
         }
 
@@ -378,15 +381,17 @@ namespace QuantConnect.Algorithm
         /// <param name="dataNormalizationMode">The price scaling mode to use for the securities history</param>
         /// <param name="contractDepthOffset">The continuous contract desired offset from the current front month.
         /// For example, 0 will use the front month, 1 will use the back month contract</param>
+        /// <param name="ignoreFrontier"></param>
+        /// <param name="columnName">For custom data, return data for this column</param>
         /// <returns>An enumerable of slice containing the requested historical data</returns>
         [DocumentationAttribute(HistoricalData)]
         public IEnumerable<T> History<T>(Symbol symbol, TimeSpan span, Resolution? resolution = null, bool? fillForward = null,
             bool? extendedMarketHours = null, DataMappingMode? dataMappingMode = null, DataNormalizationMode? dataNormalizationMode = null,
-            int? contractDepthOffset = null, bool ignoreFrontier = false)
+            int? contractDepthOffset = null, bool ignoreFrontier = false, string columnName = "Value")
             where T : IBaseData
         {
             return History<T>(symbol, Time - span, Time, resolution, fillForward, extendedMarketHours, dataMappingMode,
-                dataNormalizationMode, contractDepthOffset, ignoreFrontier).Memoize();
+                dataNormalizationMode, contractDepthOffset, ignoreFrontier, columnName).Memoize();
         }
 
         /// <summary>
@@ -402,11 +407,13 @@ namespace QuantConnect.Algorithm
         /// <param name="dataNormalizationMode">The price scaling mode to use for the securities history</param>
         /// <param name="contractDepthOffset">The continuous contract desired offset from the current front month.
         /// For example, 0 will use the front month, 1 will use the back month contract</param>
+        /// <param name="ignoreFrontier">True means return all data to the present time, ignoring the time cursor</param>
+        /// <param name="columnName">For custom data, return data for this column</param>
         /// <returns>An enumerable of slice containing the requested historical data</returns>
         [DocumentationAttribute(HistoricalData)]
         public IEnumerable<TradeBar> History(Symbol symbol, int periods, Resolution? resolution = null, bool? fillForward = null,
             bool? extendedMarketHours = null, DataMappingMode? dataMappingMode = null, DataNormalizationMode? dataNormalizationMode = null,
-            int? contractDepthOffset = null, bool ignoreFrontier = false)
+            int? contractDepthOffset = null, bool ignoreFrontier = false, string columnName = "Value")
         {
             if (symbol == null) throw new ArgumentException(_symbolEmptyErrorMessage);
 
@@ -417,7 +424,7 @@ namespace QuantConnect.Algorithm
                 marketHours.DataTimeZone, extendedMarketHours);
 
             return History(symbol, start, Time, resolution, fillForward, extendedMarketHours, dataMappingMode, dataNormalizationMode,
-                contractDepthOffset, ignoreFrontier);
+                contractDepthOffset, ignoreFrontier, columnName);
         }
 
         /// <summary>
@@ -438,13 +445,13 @@ namespace QuantConnect.Algorithm
         [DocumentationAttribute(HistoricalData)]
         public IEnumerable<T> History<T>(Symbol symbol, int periods, Resolution? resolution = null, bool? fillForward = null,
             bool? extendedMarketHours = null, DataMappingMode? dataMappingMode = null, DataNormalizationMode? dataNormalizationMode = null,
-            int? contractDepthOffset = null, bool ignoreFrontier = false)
+            int? contractDepthOffset = null, bool ignoreFrontier = false, string columnName = "Value")
             where T : IBaseData
         {
             resolution = GetResolution(symbol, resolution);
             CheckPeriodBasedHistoryRequestResolution(new[] { symbol }, resolution);
             var requests = CreateBarCountHistoryRequests(new [] { symbol }, typeof(T), periods, resolution, fillForward, extendedMarketHours,
-                dataMappingMode, dataNormalizationMode, contractDepthOffset, ignoreFrontier);
+                dataMappingMode, dataNormalizationMode, contractDepthOffset, ignoreFrontier, columnName);
             return GetDataTypedHistory<T>(requests, symbol);
         }
 
@@ -465,11 +472,11 @@ namespace QuantConnect.Algorithm
         [DocumentationAttribute(HistoricalData)]
         public IEnumerable<T> History<T>(Symbol symbol, DateTime start, DateTime end, Resolution? resolution = null, bool? fillForward = null,
             bool? extendedMarketHours = null, DataMappingMode? dataMappingMode = null, DataNormalizationMode? dataNormalizationMode = null,
-            int? contractDepthOffset = null, bool ignoreFrontier = false)
+            int? contractDepthOffset = null, bool ignoreFrontier = false, string columnName = "Value")
             where T : IBaseData
         {
             var requests = CreateDateRangeHistoryRequests(new[] { symbol }, typeof(T), start, end, resolution, fillForward, extendedMarketHours,
-                dataMappingMode, dataNormalizationMode, contractDepthOffset, ignoreFrontier);
+                dataMappingMode, dataNormalizationMode, contractDepthOffset, ignoreFrontier, columnName);
             return GetDataTypedHistory<T>(requests, symbol);
         }
 
@@ -489,10 +496,10 @@ namespace QuantConnect.Algorithm
         [DocumentationAttribute(HistoricalData)]
         public IEnumerable<TradeBar> History(Symbol symbol, TimeSpan span, Resolution? resolution = null, bool? fillForward = null,
             bool? extendedMarketHours = null, DataMappingMode? dataMappingMode = null, DataNormalizationMode? dataNormalizationMode = null,
-            int? contractDepthOffset = null, bool ignoreFrontier = false)
+            int? contractDepthOffset = null, bool ignoreFrontier = false, string columnName = "Value")
         {
             return History(symbol, Time - span, Time, resolution, fillForward, extendedMarketHours, dataMappingMode, dataNormalizationMode,
-                contractDepthOffset, ignoreFrontier);
+                contractDepthOffset, ignoreFrontier, columnName);
         }
 
         /// <summary>
@@ -512,7 +519,7 @@ namespace QuantConnect.Algorithm
         [DocumentationAttribute(HistoricalData)]
         public IEnumerable<TradeBar> History(Symbol symbol, DateTime start, DateTime end, Resolution? resolution = null, bool? fillForward = null,
             bool? extendedMarketHours = null, DataMappingMode? dataMappingMode = null, DataNormalizationMode? dataNormalizationMode = null,
-            int? contractDepthOffset = null, bool ignoreFrontier = false)
+            int? contractDepthOffset = null, bool ignoreFrontier = false, string columnName = "Value")
         {
             var securityType = symbol.ID.SecurityType;
             if (securityType == SecurityType.Forex || securityType == SecurityType.Cfd)
@@ -527,8 +534,10 @@ namespace QuantConnect.Algorithm
                                                     " Please use the generic version with Tick type parameter or provide a list of Symbols to use the Slice history request API.");
             }
 
-            return History(new[] { symbol }, start, end, resolutionToUse, fillForward, extendedMarketHours, dataMappingMode, dataNormalizationMode,
-                contractDepthOffset, ignoreFrontier).Get(symbol).Memoize();
+            return History(new[] { symbol }, start, end, resolutionToUse, 
+                            fillForward, extendedMarketHours, 
+                            dataMappingMode, dataNormalizationMode,
+                            contractDepthOffset, ignoreFrontier, columnName).Get(symbol).Memoize();
         }
 
         /// <summary>
@@ -549,10 +558,10 @@ namespace QuantConnect.Algorithm
         [DocumentationAttribute(HistoricalData)]
         public IEnumerable<Slice> History(IEnumerable<Symbol> symbols, TimeSpan span, Resolution? resolution = null, bool? fillForward = null,
             bool? extendedMarketHours = null, DataMappingMode? dataMappingMode = null, DataNormalizationMode? dataNormalizationMode = null,
-            int? contractDepthOffset = null, bool ignoreFrontier = false)
+            int? contractDepthOffset = null, bool ignoreFrontier = false, string columnName = "Value")
         {
             return History(symbols, Time - span, Time, resolution, fillForward, extendedMarketHours, dataMappingMode,
-                dataNormalizationMode, contractDepthOffset, ignoreFrontier).Memoize();
+                dataNormalizationMode, contractDepthOffset, ignoreFrontier, columnName).Memoize();
         }
 
         /// <summary>
@@ -573,11 +582,11 @@ namespace QuantConnect.Algorithm
         [DocumentationAttribute(HistoricalData)]
         public IEnumerable<Slice> History(IEnumerable<Symbol> symbols, int periods, Resolution? resolution = null, bool? fillForward = null,
             bool? extendedMarketHours = null, DataMappingMode? dataMappingMode = null, DataNormalizationMode? dataNormalizationMode = null,
-            int? contractDepthOffset = null, bool ignoreFrontier = false)
+            int? contractDepthOffset = null, bool ignoreFrontier = false, string columnName = "Value")
         {
             CheckPeriodBasedHistoryRequestResolution(symbols, resolution);
             return History(CreateBarCountHistoryRequests(symbols, periods, resolution, fillForward, extendedMarketHours, dataMappingMode,
-                dataNormalizationMode, contractDepthOffset, ignoreFrontier)).Memoize();
+                dataNormalizationMode, contractDepthOffset, ignoreFrontier, columnName)).Memoize();
         }
 
         /// <summary>
@@ -598,10 +607,11 @@ namespace QuantConnect.Algorithm
         [DocumentationAttribute(HistoricalData)]
         public IEnumerable<Slice> History(IEnumerable<Symbol> symbols, DateTime start, DateTime end, Resolution? resolution = null,
             bool? fillForward = null, bool? extendedMarketHours = null, DataMappingMode? dataMappingMode = null,
-            DataNormalizationMode? dataNormalizationMode = null, int? contractDepthOffset = null, bool ignoreFrontier = false)
+            DataNormalizationMode? dataNormalizationMode = null, 
+            int? contractDepthOffset = null, bool ignoreFrontier = false, string columnName = "Value")
         {
             return History(CreateDateRangeHistoryRequests(symbols, start, end, resolution, fillForward, extendedMarketHours, dataMappingMode,
-                dataNormalizationMode, contractDepthOffset, ignoreFrontier)).Memoize();
+                dataNormalizationMode, contractDepthOffset, ignoreFrontier, columnName)).Memoize();
         }
 
         /// <summary>
@@ -863,10 +873,10 @@ namespace QuantConnect.Algorithm
         /// </summary>
         private IEnumerable<HistoryRequest> CreateDateRangeHistoryRequests(IEnumerable<Symbol> symbols, DateTime startAlgoTz, DateTime endAlgoTz,
             Resolution? resolution = null, bool? fillForward = null, bool? extendedMarketHours = null, DataMappingMode? dataMappingMode = null,
-            DataNormalizationMode? dataNormalizationMode = null, int? contractDepthOffset = null, bool ignoreFrontier = false)
+            DataNormalizationMode? dataNormalizationMode = null, int? contractDepthOffset = null, bool ignoreFrontier = false, string columnName = "Value")
         {
             return CreateDateRangeHistoryRequests(symbols, typeof(BaseData), startAlgoTz, endAlgoTz, resolution, fillForward, extendedMarketHours,
-                dataMappingMode, dataNormalizationMode, contractDepthOffset, ignoreFrontier);
+                dataMappingMode, dataNormalizationMode, contractDepthOffset, ignoreFrontier, columnName);
         }
 
         /// <summary>
@@ -874,7 +884,7 @@ namespace QuantConnect.Algorithm
         /// </summary>
         private IEnumerable<HistoryRequest> CreateDateRangeHistoryRequests(IEnumerable<Symbol> symbols, Type requestedType, DateTime startAlgoTz, DateTime endAlgoTz,
             Resolution? resolution = null, bool? fillForward = null, bool? extendedMarketHours = null, DataMappingMode? dataMappingMode = null,
-            DataNormalizationMode? dataNormalizationMode = null, int? contractDepthOffset = null, bool ignoreFrontier = false)
+            DataNormalizationMode? dataNormalizationMode = null, int? contractDepthOffset = null, bool ignoreFrontier = false, string columnName = "Value")
         {
             return symbols.Where(HistoryRequestValid).SelectMany(x =>
             {
@@ -883,7 +893,7 @@ namespace QuantConnect.Algorithm
                 foreach (var config in GetMatchingSubscriptions(x, requestedType, resolution))
                 {
                     var request = _historyRequestFactory.CreateHistoryRequest(config, startAlgoTz, endAlgoTz, GetExchangeHours(x), resolution,
-                        fillForward, extendedMarketHours, dataMappingMode, dataNormalizationMode, contractDepthOffset, ignoreFrontier);
+                        fillForward, extendedMarketHours, dataMappingMode, dataNormalizationMode, contractDepthOffset, ignoreFrontier, columnName);
                     requests.Add(request);
                 }
 
@@ -896,10 +906,11 @@ namespace QuantConnect.Algorithm
         /// </summary>
         private IEnumerable<HistoryRequest> CreateBarCountHistoryRequests(IEnumerable<Symbol> symbols, int periods, Resolution? resolution = null,
             bool? fillForward = null, bool? extendedMarketHours = null, DataMappingMode? dataMappingMode = null,
-            DataNormalizationMode? dataNormalizationMode = null, int? contractDepthOffset = null, bool ignoreFrontier = false)
+            DataNormalizationMode? dataNormalizationMode = null, int? contractDepthOffset = null, 
+            bool ignoreFrontier = false, string columnName = "Value")
         {
             return CreateBarCountHistoryRequests(symbols, typeof(BaseData), periods, resolution, fillForward, extendedMarketHours, dataMappingMode,
-                dataNormalizationMode, contractDepthOffset, ignoreFrontier);
+                dataNormalizationMode, contractDepthOffset, ignoreFrontier, columnName);
         }
 
         /// <summary>
@@ -907,7 +918,7 @@ namespace QuantConnect.Algorithm
         /// </summary>
         private IEnumerable<HistoryRequest> CreateBarCountHistoryRequests(IEnumerable<Symbol> symbols, Type requestedType, int periods,
             Resolution? resolution = null, bool? fillForward = null, bool? extendedMarketHours = null, DataMappingMode? dataMappingMode = null,
-            DataNormalizationMode? dataNormalizationMode = null, int? contractDepthOffset = null, bool ignoreFrontier = false)
+            DataNormalizationMode? dataNormalizationMode = null, int? contractDepthOffset = null, bool ignoreFrontier = false, string columnName = "Value")
         {
             return symbols.Where(HistoryRequestValid).SelectMany(symbol =>
             {
@@ -923,7 +934,7 @@ namespace QuantConnect.Algorithm
                 var end = Time;
 
                 return configs.Select(config => _historyRequestFactory.CreateHistoryRequest(config, start, end, exchange, res, fillForward,
-                    extendedMarketHours, dataMappingMode, dataNormalizationMode, contractDepthOffset, ignoreFrontier));
+                    extendedMarketHours, dataMappingMode, dataNormalizationMode, contractDepthOffset, ignoreFrontier, columnName));
             });
         }
 

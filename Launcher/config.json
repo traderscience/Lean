@@ -212,7 +212,7 @@
 
   // Required to access data from Tiingo
   // To get your access token go to https://www.tiingo.com
-  "tiingo-auth-token": "",
+  "tiingo-api-key": "",
 
   // Required to access data from US Energy Information Administration
   // To get your access token go to https://www.eia.gov/opendata

@@ -23,6 +23,8 @@ using QuantConnect.Data.UniverseSelection;
 using QuantConnect.Indicators;
 using QuantConnect.Securities;
 using QuantConnect.Orders;
+using static QuantConnect.Messages;
+using QuantConnect.Algorithm.Framework.Alphas;
 
 namespace QuantConnect.Algorithm.Framework.Execution
 {
@@ -42,6 +44,11 @@ namespace QuantConnect.Algorithm.Framework.Execution
         public decimal MaximumOrderQuantityPercentVolume { get; set; } = 0.01m;
 
         /// <summary>
+        /// Determines if orders can be place in extended hours trading
+        /// </summary>
+        public bool ExtendedHours = false;
+
+        /// <summary>
         /// Submit orders for the specified portfolio targets.
         /// This model is free to delay or spread out these orders as it sees fit
         /// </summary>
@@ -59,26 +66,82 @@ namespace QuantConnect.Algorithm.Framework.Execution
                 {
                     var symbol = target.Symbol;
 
+
                     // calculate remaining quantity to be ordered
                     var unorderedQuantity = OrderSizing.GetUnorderedQuantity(algorithm, target);
-
+                    if (unorderedQuantity == 0)
+                        continue;
                     // fetch our symbol data containing our VWAP indicator
                     SymbolData data;
                     if (!_symbolData.TryGetValue(symbol, out data))
                     {
                         continue;
                     }
+                    var lastData = data.Security.GetLastData();
+
+                    // If ExtendedHours is false, then we need to check if we are in extended hours
+                    if (!ExtendedHours)
+                    {
+                        var sec = algorithm.Securities[symbol];
+                        var regularHours = data.Security.Exchange.Hours.IsOpen(lastData.EndTime, false);
+                        var extendedHours = !regularHours && data.Security.Exchange.Hours.IsOpen(lastData.EndTime, true);
+                        if (extendedHours)
+                            continue;
+                    }
 
                     // check order entry conditions
+                    // TraderScience fix - check if target is 0 (eg trailing stop)
+                    // if so, then we need to close the position immediately
+                    if (target.Quantity == 0)
+                    {
+                        OrderIntent intent = OrderIntent.Undefined;
+                        intent = unorderedQuantity < 0 ? OrderIntent.STC : OrderIntent.BTC;
+                        var orderProps = new OrderProperties()
+                        {
+                            Intent = intent
+                        };
+                        algorithm.MarketOrder(data.Security, unorderedQuantity,tag:"VWAP Closing Position (target=0)", orderProperties: orderProps);
+
+                    }
+                    else
                     if (PriceIsFavorable(data, unorderedQuantity))
                     {
                         // adjust order size to respect maximum order size based on a percentage of current volume
-                        var orderSize = OrderSizing.GetOrderSizeForPercentVolume(
+                        var quantity = OrderSizing.GetOrderSizeForPercentVolume(
                             data.Security, MaximumOrderQuantityPercentVolume, unorderedQuantity);
+                        quantity = Math.Round(quantity, 3);
+                        if (quantity == 0)
+                            continue;
+                        // Check if there is sufficient cash/margin to complete the order
+                        var orderMargin = data.Security.BuyingPowerModel.GetReservedBuyingPowerForPosition(
+                                                       new ReservedBuyingPowerForPositionParameters(data.Security)).AbsoluteUsedBuyingPower;
+                        orderMargin = Math.Round(orderMargin, 0);
 
-                        if (orderSize != 0)
+                        // Check if we can complete an order for this amount
+                        if (orderMargin != 0 && orderMargin > algorithm.Portfolio.MarginRemaining)
                         {
-                            algorithm.MarketOrder(data.Security.Symbol, orderSize);
+                            // If we can't, then we need to reduce the order size
+                            quantity = Math.Round(algorithm.Portfolio.MarginRemaining / orderMargin * quantity, 3);
+                        }
+                        if (quantity != 0)
+                        {
+                            var currentQty = algorithm.Portfolio[data.Security.Symbol].Quantity;
+                            OrderIntent intent = OrderIntent.Undefined;
+                            if (currentQty == 0)
+                                intent = quantity > 0 ? OrderIntent.BTO : OrderIntent.STO;
+                            else
+                            {
+                                if (currentQty > 0)
+                                    intent = quantity < 0 ? OrderIntent.STC : OrderIntent.BTO;
+                                else
+                                    intent = quantity > 0 ? OrderIntent.BTC : OrderIntent.STO;
+                            }
+                            var orderProps = new OrderProperties()
+                            {
+                                Intent = intent
+                            };
+
+                            algorithm.MarketOrder(data.Security, quantity, tag:"VWAP Order", orderProperties: orderProps);
                         }
                     }
                 }
@@ -157,7 +220,7 @@ namespace QuantConnect.Algorithm.Framework.Execution
             /// <summary>
             /// Security
             /// </summary>
-            public Security Security { get; }
+            public QuantConnect.Securities.Security Security { get; }
 
             /// <summary>
             /// VWAP Indicator
@@ -172,7 +235,7 @@ namespace QuantConnect.Algorithm.Framework.Execution
             /// <summary>
             /// Initialize a new instance of <see cref="SymbolData"/>
             /// </summary>
-            public SymbolData(QCAlgorithm algorithm, Security security)
+            public SymbolData(QCAlgorithm algorithm, QuantConnect.Securities.Security security)
             {
                 Security = security;
                 Consolidator = algorithm.ResolveConsolidator(security.Symbol, security.Resolution);

@@ -39,12 +39,12 @@ namespace QuantConnect.Orders
         /// <summary>
         /// Order ID.
         /// </summary>
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// Order id to process before processing this order.
         /// </summary>
-        public int ContingentId { get; set; }
+        public long ContingentId { get; set; }
 
         /// <summary>
         /// Brokerage Id for this order for when the brokerage splits orders into multiple pieces
@@ -217,12 +217,12 @@ namespace QuantConnect.Orders
         /// <summary>
         /// Broker order id
         /// </summary>
-        public int BrokerOrderId { get; set; }
+        public long BrokerOrderId { get; set; }
 
         /// <summary>
         /// ParentID for bracket orders
         /// </summary>
-        public int BrokerParentId { get; set; }
+        public long BrokerParentId { get; set; }
 
         /// <summary>
         /// Broker Client Id
@@ -232,7 +232,7 @@ namespace QuantConnect.Orders
         /// <summary>
         /// Broker External Id - for order executions originating outside of Lean
         /// </summary>
-        public int BrokerExternalId { get; set; }
+        public long BrokerExternalId { get; set; }
 
         /// <summary>
         /// Order Intention (BTO, STO, BTC, STC)
@@ -241,7 +241,7 @@ namespace QuantConnect.Orders
         /// <summary>
         /// ParentOrder ID for bracket order, 0 for opening orders
         /// </summary>
-        public int ParentOrder { get; set; }
+        public long ParentOrder { get; set; }
 
         /// <summary>
         /// One Cancels All Group ID
@@ -281,7 +281,7 @@ namespace QuantConnect.Orders
             GroupOrderManager = null;
 
             // extensions
-            ParentOrder = 0;
+            ParentOrder = 0l;
             Intent = OrderIntent.Unknown;
             OcaGroup = null;
             WhatIf = false;
@@ -300,7 +300,7 @@ namespace QuantConnect.Orders
         /// <param name="ocaGroup"></param>
         /// <param name="intent"></param>
         protected Order(Symbol symbol, decimal quantity, DateTime time, GroupOrderManager groupOrderManager, string tag = "",
-            IOrderProperties properties = null, int parentOrder = 0, string ocaGroup = null, OrderIntent intent = OrderIntent.Unknown)
+            IOrderProperties properties = null, long parentOrder = 0l, string ocaGroup = null, OrderIntent intent = OrderIntent.Unknown)
         {
             Time = time;
             PriceCurrency = string.Empty;
@@ -327,7 +327,7 @@ namespace QuantConnect.Orders
         /// <param name="time">Time the order was placed</param>
         /// <param name="tag">User defined data tag for this order</param>
         /// <param name="properties">The order properties for this order</param>
-        protected Order(Symbol symbol, decimal quantity, DateTime time, string tag = "", IOrderProperties properties = null,int parentOrder = 0,  string ocaGroup = null, OrderIntent intent = OrderIntent.Unknown)
+        protected Order(Symbol symbol, decimal quantity, DateTime time, string tag = "", IOrderProperties properties = null, long parentOrder = 0,  string ocaGroup = null, OrderIntent intent = OrderIntent.Unknown)
             : this(symbol, quantity, time, null, tag, properties, parentOrder, ocaGroup, intent)
         {
         }
@@ -482,7 +482,9 @@ namespace QuantConnect.Orders
             var order = CreateOrder(serializedOrder.OrderId, serializedOrder.Type, symbol, serializedOrder.Quantity,
                                         DateTime.SpecifyKind(createdTime, DateTimeKind.Utc),
                                         serializedOrder.Tag,
-                                        new OrderProperties { TimeInForce = timeInForce },
+                                        new OrderProperties { BrokerOrderId=serializedOrder.BrokerOrderId, ParentOrder=serializedOrder.BrokerParentId, 
+                                                    TimeInForce = timeInForce, Intent = serializedOrder.Intent, 
+                                                    OcaGroup = serializedOrder.OcaGroup },
                                         serializedOrder.LimitPrice ?? 0,
                                         serializedOrder.StopPrice ?? 0,
                                         serializedOrder.TriggerPrice ?? 0,
@@ -493,6 +495,8 @@ namespace QuantConnect.Orders
                 serializedOrder.SubmissionLastPrice);
 
             order.BrokerId = serializedOrder.BrokerId;
+            order.BrokerOrderId = serializedOrder.BrokerOrderId;
+            order.BrokerParentId = serializedOrder.BrokerParentId;
             order.ContingentId = serializedOrder.ContingentId;
             order.Price = serializedOrder.Price;
             order.PriceCurrency = serializedOrder.PriceCurrency;
@@ -528,8 +532,10 @@ namespace QuantConnect.Orders
                  request.Tag, request.OrderProperties, request.LimitPrice, request.StopPrice, request.TriggerPrice, request.GroupOrderManager);
         }
 
-        private static Order CreateOrder(int orderId, OrderType type, Symbol symbol, decimal quantity, DateTime time,
-            string tag, IOrderProperties properties, decimal limitPrice, decimal stopPrice, decimal triggerPrice, GroupOrderManager groupOrderManager)
+        private static Order CreateOrder(long orderId, OrderType type, Symbol symbol, decimal quantity, 
+            DateTime time, string tag, IOrderProperties properties, 
+            decimal limitPrice, decimal stopPrice, 
+            decimal triggerPrice, GroupOrderManager groupOrderManager)
         {
             Order order;
 

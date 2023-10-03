@@ -52,7 +52,7 @@ namespace QuantConnect.Statistics
 
         private readonly List<Trade> _closedTrades = new List<Trade>();
         private readonly Dictionary<Symbol, Position> _positions = new Dictionary<Symbol, Position>();
-        private readonly FixedSizeHashQueue<int> _ordersWithFeesAssigned = new FixedSizeHashQueue<int>(MaxOrderIdCacheSize);
+        private readonly FixedSizeHashQueue<long> _ordersWithFeesAssigned = new FixedSizeHashQueue<long>(MaxOrderIdCacheSize);
         private readonly FillGroupingMethod _groupingMethod;
         private readonly FillMatchingMethod _matchingMethod;
         private bool _liveMode;

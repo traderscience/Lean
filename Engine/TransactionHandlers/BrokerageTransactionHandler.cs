@@ -78,27 +78,27 @@ namespace QuantConnect.Lean.Engine.TransactionHandlers
         /// The _completeOrders dictionary holds all orders.
         /// Once the transaction thread has worked on them they get put here while witing for fill updates.
         /// </summary>
-        private readonly ConcurrentDictionary<int, Order> _completeOrders = new ConcurrentDictionary<int, Order>();
+        private readonly ConcurrentDictionary<long, Order> _completeOrders = new ConcurrentDictionary<long, Order>();
 
         /// <summary>
         /// The orders dictionary holds orders which are open. Status: New, Submitted, PartiallyFilled, None, CancelPending
         /// Once the transaction thread has worked on them they get put here while witing for fill updates.
         /// </summary>
-        private readonly ConcurrentDictionary<int, Order> _openOrders = new ConcurrentDictionary<int, Order>();
+        private readonly ConcurrentDictionary<long, Order> _openOrders = new ConcurrentDictionary<long, Order>();
 
         /// <summary>
         /// The _openOrderTickets dictionary holds open order tickets that the algorithm can use to reference a specific order. This
         /// includes invoking update and cancel commands. In the future, we can add more features to the ticket, such as events
         /// and async events (such as run this code when this order fills)
         /// </summary>
-        private readonly ConcurrentDictionary<int, OrderTicket> _openOrderTickets = new ConcurrentDictionary<int, OrderTicket>();
+        private readonly ConcurrentDictionary<long, OrderTicket> _openOrderTickets = new ConcurrentDictionary<long, OrderTicket>();
 
         /// <summary>
         /// The _completeOrderTickets dictionary holds all order tickets that the algorithm can use to reference a specific order. This
         /// includes invoking update and cancel commands. In the future, we can add more features to the ticket, such as events
         /// and async events (such as run this code when this order fills)
         /// </summary>
-        private readonly ConcurrentDictionary<int, OrderTicket> _completeOrderTickets = new ConcurrentDictionary<int, OrderTicket>();
+        private readonly ConcurrentDictionary<long, OrderTicket> _completeOrderTickets = new ConcurrentDictionary<long, OrderTicket>();
 
         /// <summary>
         /// The _cancelPendingOrders instance will help to keep track of CancelPending orders and their Status
@@ -117,7 +117,7 @@ namespace QuantConnect.Lean.Engine.TransactionHandlers
         /// <summary>
         /// Gets the permanent storage for all orders
         /// </summary>
-        public ConcurrentDictionary<int, Order> Orders
+        public ConcurrentDictionary<long, Order> Orders
         {
             get
             {
@@ -133,7 +133,7 @@ namespace QuantConnect.Lean.Engine.TransactionHandlers
         /// <summary>
         /// Gets the permanent storage for all order tickets
         /// </summary>
-        public ConcurrentDictionary<int, OrderTicket> OrderTickets
+        public ConcurrentDictionary<long, OrderTicket> OrderTickets
         {
             get
             {
@@ -506,7 +506,7 @@ namespace QuantConnect.Lean.Engine.TransactionHandlers
         /// </summary>
         /// <param name="orderId">The order's id</param>
         /// <returns>The order ticket with the specified id, or null if not found</returns>
-        public OrderTicket GetOrderTicket(int orderId)
+        public OrderTicket GetOrderTicket(long orderId)
         {
             OrderTicket ticket;
             _completeOrderTickets.TryGetValue(orderId, out ticket);
@@ -520,13 +520,13 @@ namespace QuantConnect.Lean.Engine.TransactionHandlers
         /// </summary>
         /// <param name="orderId">Order id to fetch</param>
         /// <returns>A clone of the order with the specified id, or null if no match is found</returns>
-        public Order GetOrderById(int orderId)
+        public Order GetOrderById(long orderId)
         {
             Order order = GetOrderByIdInternal(orderId);
             return order?.Clone();
         }
 
-        private Order GetOrderByIdInternal(int orderId)
+        private Order GetOrderByIdInternal(long orderId)
         {
             Order order;
             return _completeOrders.TryGetValue(orderId, out order) ? order : null;
@@ -549,7 +549,7 @@ namespace QuantConnect.Lean.Engine.TransactionHandlers
             return GetOrdersByBrokerageId(brokerageId, _completeOrders);
         }
 
-        private static List<Order> GetOrdersByBrokerageId(string brokerageId, ConcurrentDictionary<int, Order> orders)
+        private static List<Order> GetOrdersByBrokerageId(string brokerageId, ConcurrentDictionary<long, Order> orders)
         {
             return orders
                 .Where(x => x.Value.BrokerId.Contains(brokerageId))
@@ -1612,7 +1612,7 @@ namespace QuantConnect.Lean.Engine.TransactionHandlers
             }
         }
 
-        private Order TryGetOrder(int orderId)
+        private Order TryGetOrder(long orderId)
         {
             _completeOrders.TryGetValue(orderId, out var order);
             return order;

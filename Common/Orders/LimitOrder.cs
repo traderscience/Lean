@@ -57,7 +57,7 @@ namespace QuantConnect.Orders
         /// <param name="ocaGroup"></param>
         /// <param name="intent"></param>
         public LimitOrder(Symbol symbol, decimal quantity, decimal limitPrice, DateTime time, string tag = "", IOrderProperties properties = null, 
-                                int parentOrder = 0, string ocaGroup = null, OrderIntent intent = OrderIntent.Unknown)
+                                long parentOrder = 0, string ocaGroup = null, OrderIntent intent = OrderIntent.Unknown)
             : base(symbol, quantity, time, tag, properties, parentOrder, ocaGroup, intent)
         {
             LimitPrice = limitPrice;

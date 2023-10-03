@@ -28,6 +28,8 @@ using QuantConnect.Securities;
 //using System.Net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace QuantConnect.ToolBox.AlphaVantageDownloader
 {
@@ -40,6 +42,7 @@ namespace QuantConnect.ToolBox.AlphaVantageDownloader
         private readonly RestClient _avClient;
         private readonly string _tier = "free";
         private readonly RateGate _rateGate;
+        private int _rateLimit = 30;
         private bool _disposed;
         private static Uri _baseUrl = new Uri("https://www.alphavantage.co/");
         private string _apiKey;
@@ -53,19 +56,18 @@ namespace QuantConnect.ToolBox.AlphaVantageDownloader
         /// Construct AlphaVantageDataDownloader with default RestClient
         /// </summary>
         /// <param name="apiKey">API key</param>
-        public AlphaVantageDataDownloader(string apiKey, string tier="free") : 
+        public AlphaVantageDataDownloader(string apiKey, int rateLimit) : 
                 this(
                     new RestClient(new RestClientOptions()
                     { 
                         BaseUrl = new Uri("https://www.alphavantage.co"), 
-                        MaxTimeout = 15000,
+                        MaxTimeout = 60000,
                     })
                     { 
                         //Authenticator = new AlphaVantageAuthenticator(apiKey)
                     }, 
-                apiKey) 
+                apiKey, rateLimit) 
         {
-            _tier = tier;
         }
 
         /// <summary>
@@ -73,21 +75,13 @@ namespace QuantConnect.ToolBox.AlphaVantageDownloader
         /// </summary>
         /// <param name="restClient">The <see cref="RestClient"/> to use</param>
         /// <param name="apiKey">API key</param>
-        public AlphaVantageDataDownloader(RestClient restClient, string apiKey, string tier="free")
+        public AlphaVantageDataDownloader(RestClient restClient, string apiKey, int rateLimit)
         {
             _avClient = restClient;
             _apiKey = apiKey;
             _marketHoursDatabase = MarketHoursDatabase.FromDataFolder();
-            _tier = tier;
-            switch (tier.ToLowerInvariant())
-            {
-                case "free":
-                    _rateGate = new RateGate(5, TimeSpan.FromMinutes(1)); // Free API is limited to 5 requests/minute
-                    break;
-                default:
-                    _rateGate = new RateGate(100, TimeSpan.FromMinutes(1)); // Free API is limited to 5 requests/minute
-                    break;
-            }
+            _rateLimit = rateLimit;
+            _rateGate = new RateGate(rateLimit, TimeSpan.FromMinutes(1)); // API is rate limited
         }
 
         /// <summary>
@@ -167,8 +161,9 @@ namespace QuantConnect.ToolBox.AlphaVantageDownloader
         /// <returns></returns>
         private IEnumerable<TimeSeries> GetIntradayData(RestRequest request, DateTime startUtc, DateTime endUtc, Resolution resolution)
         {
-            request.AddParameter("function", "TIME_SERIES_INTRADAY_EXTENDED");
+            request.AddParameter("function", "TIME_SERIES_INTRADAY");
             request.AddParameter("adjusted", "false");
+            request.AddParameter("outputsize", "full");
             switch (resolution)
             {
                 case Resolution.Minute:
@@ -181,16 +176,19 @@ namespace QuantConnect.ToolBox.AlphaVantageDownloader
                     throw new ArgumentOutOfRangeException($"{resolution} resolution not supported by intraday API.");
             }
 
+            List<TimeSeries> allData = new List<TimeSeries>();   
+
             var slices = GetSlices(startUtc, endUtc);
             foreach (var slice in slices)
             {
-                request.AddOrUpdateParameter("slice", slice);
+                request.AddOrUpdateParameter("month", slice);
                 var data = GetTimeSeries(request);
-                foreach (var record in data)
-                {
-                    yield return record;
-                }
+                foreach (var item in data)
+                    yield return item;
+                //allData.AddRange(data);
             }
+            yield break;
+            //return allData;
         }
 
         /// <summary>
@@ -202,32 +200,50 @@ namespace QuantConnect.ToolBox.AlphaVantageDownloader
         {
             if (_rateGate.IsRateLimited)
             {
-                Log.Trace("Requests are limited to 5 per minute. Reduce the time between start and end times or simply wait, and this process will continue automatically.");
+                Log.Trace($"Requests are limited to {_rateLimit} per minute. Reduce the time between start and end times or simply wait, and this process will continue automatically.");
             }
 
             _rateGate.WaitToProceed();
             Log.Trace("Downloading /{0}?{1}", request.Resource, string.Join("&", request.Parameters));
             try
             {
-                var response = _avClient.ExecuteAsync(request).GetAwaiter().GetResult();
-                if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                int retries = 5;
+                RestResponse response = null;
+                while (retries-- > 0)
                 {
-                    Log.Error($"AlphaVantage: request failed: [{(int)response.StatusCode}] {response.StatusDescription}, Content: {response.Content}, ErrorMessage: {response.ErrorMessage}");
+                    response = _avClient.ExecuteAsync(request).GetAwaiter().GetResult();
+                    if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                    {
+                        Log.Error($"AlphaVantage: request failed: [{(int)response.StatusCode}] {response.StatusDescription}, Content: {response.Content}, ErrorMessage: {response.ErrorMessage}"); return new List<TimeSeries>();
+                        Task.Delay(1000).Wait();
+                        continue;
+                    }
+                    if (response.Content.Substring(0, 30).Contains("Error", StringComparison.OrdinalIgnoreCase))
+                    {
+                        Log.Error($"AlphaVantage: request failed (there may be no data for this period): {response.Content}");
+                        return new List<TimeSeries>();
+                    }
+                    break;
+                };
+                if (retries == 0)
+                {
                     return new List<TimeSeries>();
                 }
-                // Check access to this endpoint
-                if (response.Content.Contains("premium endpoint"))
-                {
-                    Log.Error($"AlphaVantage: request failed: [{(int)response.StatusCode}] {response.StatusDescription}, Content: {response.Content}, ErrorMessage: {response.ErrorMessage}");
-                    return new List<TimeSeries>();
-                }
+
                 using (var reader = new StringReader(response.Content))
                 {
                     using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                     {
-                        return csv.GetRecords<TimeSeries>()
-                                  .OrderBy(t => t.Time)
-                                  .ToList(); // Execute query before readers are disposed.
+                        try
+                        {
+                            return csv.GetRecords<TimeSeries>()
+                                      .OrderBy(t => t.Time)
+                                      .ToList(); // Execute query before readers are disposed.
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error($"AlphaVantage: request exception {ex.ToString()}");
+                        }
                     }
                 }
                 // Json alternate processing
@@ -249,7 +265,7 @@ namespace QuantConnect.ToolBox.AlphaVantageDownloader
         }
 
         /// <summary>
-        /// Get slice names for date range.
+        /// Get yyyy-mm slice names for date range.
         /// See https://www.alphavantage.co/documentation/#intraday-extended
         /// </summary>
         /// <param name="startUtc">Start date</param>
@@ -257,20 +273,14 @@ namespace QuantConnect.ToolBox.AlphaVantageDownloader
         /// <returns>Slice names</returns>
         private static IEnumerable<string> GetSlices(DateTime startUtc, DateTime endUtc)
         {
-            if ((DateTime.UtcNow - startUtc).TotalDays > 365 * 2)
-            {
-                throw new ArgumentOutOfRangeException(nameof(startUtc), "Intraday data is only available for the last 2 years.");
-            }
-
             var timeSpan = endUtc - startUtc;
             var months = (int)Math.Floor(timeSpan.TotalDays / 30);
-
-            for (var i = months; i >= 0; i--)
+            DateTime sliceDate = new DateTime(startUtc.Date.Year, startUtc.Date.Month, 1);
+            DateTime lastDate = endUtc > DateTime.UtcNow ? DateTime.UtcNow : endUtc;
+            for (DateTime date = sliceDate; date < lastDate; date = date.AddMonths(1))
             {
-                var year = i / 12 + 1;
-                var month = i % 12 + 1;
-                yield return $"year{year}month{month}";
-            } 
+                yield return $"{date.Year}-{date.Month:D2}";
+            }
         }
 
         /// <summary>

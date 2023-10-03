@@ -252,7 +252,7 @@ namespace QuantConnect.Report
 
             // Orders are guaranteed to start counting from 1. This ensures that we have
             // no collision at all with the start of a deployment
-            var previousOrderId = 0;
+            var previousOrderId = 0l;
             var currentDeployment = new List<Order>();
 
             // Make use of reference semantics to add new deployments to the list
@@ -321,6 +321,11 @@ namespace QuantConnect.Report
         /// <returns>PointInTimePortfolio</returns>
         private IEnumerable<PointInTimePortfolio> ProcessOrders(IEnumerable<Order> orders)
         {
+            bool suppressRepeatedErrors = true;
+            bool missingFillError = false;
+            int skippedOrderCount = 0;
+
+
             // Portfolio.ProcessFill(...) does not filter out invalid orders. We must do so ourselves
             foreach (var order in orders)
             {
@@ -336,7 +341,12 @@ namespace QuantConnect.Report
                 }
                 else if (order.LastFillTime == null)
                 {
-                    Log.Trace($"Order with ID: {order.Id} has been skipped because of null LastFillTime");
+                    if (!missingFillError)
+                    {
+                        Log.Trace($"Order with ID: {order.Id} has been skipped because of null LastFillTime");
+                        missingFillError = true;
+                    }
+                    skippedOrderCount++;
                     continue;
                 }
                 else
@@ -408,6 +418,7 @@ namespace QuantConnect.Report
                 // Create portfolio statistics and return back to the user
                 yield return new PointInTimePortfolio(order, Algorithm.Portfolio);
             }
+            Log.Trace($"Report:ProcessOrders: Skipped Orders due to missing fills: {skippedOrderCount}");
         }
     }
 }

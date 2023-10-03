@@ -819,7 +819,9 @@ namespace QuantConnect.Algorithm
             }
             catch (Exception err)
             {
-                Error("Error applying parameter values: " + err.Message);
+                var msg = $"SetParameters: Error applying parameter values: {err.Message}";
+                Error(msg);
+                throw new ArgumentException(msg);
             }
         }
 
@@ -2422,14 +2424,14 @@ namespace QuantConnect.Algorithm
         /// <returns>The new <see cref="Security"/></returns>
         /// <remarks>Generic type T must implement base data</remarks>
         [DocumentationAttribute(AddingData)]
-        public Security AddData<T>(string ticker, Resolution? resolution = null)
+        public Security AddData<T>(string ticker, Resolution? resolution = null, string columnName = "Value")
             where T : IBaseData, new()
         {
             //Add this new generic data as a tradeable security:
             // Defaults:extended market hours"      = true because we want events 24 hours,
             //          fillforward                 = false because only want to trigger when there's new custom data.
             //          leverage                    = 1 because no leverage on nonmarket data?
-            return AddData<T>(ticker, resolution, fillForward: false, leverage: 1m);
+            return AddData<T>(ticker, resolution, fillForward: false, leverage: 1m, columnName);
         }
 
         /// <summary>
@@ -2441,14 +2443,14 @@ namespace QuantConnect.Algorithm
         /// <returns>The new <see cref="Security"/></returns>
         /// <remarks>Generic type T must implement base data</remarks>
         [DocumentationAttribute(AddingData)]
-        public Security AddData<T>(Symbol underlying, Resolution? resolution = null)
+        public Security AddData<T>(Symbol underlying, Resolution? resolution = null, string columnName = "Value")
             where T : IBaseData, new()
         {
             //Add this new generic data as a tradeable security:
             // Defaults:extended market hours"      = true because we want events 24 hours,
             //          fillforward                 = false because only want to trigger when there's new custom data.
             //          leverage                    = 1 because no leverage on nonmarket data?
-            return AddData<T>(underlying, resolution, fillForward: false, leverage: 1m);
+            return AddData<T>(underlying, resolution, fillForward: false, leverage: 1m, columnName);
         }
 
 
@@ -2463,10 +2465,10 @@ namespace QuantConnect.Algorithm
         /// <returns>The new <see cref="Security"/></returns>
         /// <remarks>Generic type T must implement base data</remarks>
         [DocumentationAttribute(AddingData)]
-        public Security AddData<T>(string ticker, Resolution? resolution, bool fillForward, decimal leverage = 1.0m)
+        public Security AddData<T>(string ticker, Resolution? resolution, bool fillForward, decimal leverage = 1.0m, string columnName = "Value")
             where T : IBaseData, new()
         {
-            return AddData<T>(ticker, resolution, null, fillForward, leverage);
+            return AddData<T>(ticker, resolution, null, fillForward, leverage, columnName);
         }
 
         /// <summary>
@@ -2480,10 +2482,10 @@ namespace QuantConnect.Algorithm
         /// <returns>The new <see cref="Security"/></returns>
         /// <remarks>Generic type T must implement base data</remarks>
         [DocumentationAttribute(AddingData)]
-        public Security AddData<T>(Symbol underlying, Resolution? resolution, bool fillForward, decimal leverage = 1.0m)
+        public Security AddData<T>(Symbol underlying, Resolution? resolution, bool fillForward, decimal leverage = 1.0m, string columnName = "Value")
             where T : IBaseData, new()
         {
-            return AddData<T>(underlying, resolution, null, fillForward, leverage);
+            return AddData<T>(underlying, resolution, null, fillForward, leverage, columnName);
         }
 
         /// <summary>
@@ -2497,10 +2499,10 @@ namespace QuantConnect.Algorithm
         /// <returns>The new <see cref="Security"/></returns>
         /// <remarks>Generic type T must implement base data</remarks>
         [DocumentationAttribute(AddingData)]
-        public Security AddData<T>(string ticker, Resolution? resolution, DateTimeZone timeZone, bool fillForward = false, decimal leverage = 1.0m)
+        public Security AddData<T>(string ticker, Resolution? resolution, DateTimeZone timeZone, bool fillForward = false, decimal leverage = 1.0m, string columnName = "Value")
             where T : IBaseData, new()
         {
-            return AddData(typeof(T), ticker, resolution, timeZone, fillForward, leverage);
+            return AddData(typeof(T), ticker, resolution, timeZone, fillForward, leverage, columnName);
         }
 
         /// <summary>
@@ -2514,10 +2516,10 @@ namespace QuantConnect.Algorithm
         /// <returns>The new <see cref="Security"/></returns>
         /// <remarks>Generic type T must implement base data</remarks>
         [DocumentationAttribute(AddingData)]
-        public Security AddData<T>(Symbol underlying, Resolution? resolution, DateTimeZone timeZone, bool fillForward = false, decimal leverage = 1.0m)
+        public Security AddData<T>(Symbol underlying, Resolution? resolution, DateTimeZone timeZone, bool fillForward = false, decimal leverage = 1.0m, string columnName = "Value")
             where T : IBaseData, new()
         {
-            return AddData(typeof(T), underlying, resolution, timeZone, fillForward, leverage);
+            return AddData(typeof(T), underlying, resolution, timeZone, fillForward, leverage, columnName);
         }
 
         /// <summary>
@@ -2532,7 +2534,7 @@ namespace QuantConnect.Algorithm
         /// <param name="leverage">Custom leverage per security</param>
         /// <returns>The new <see cref="Security"/></returns>
         [DocumentationAttribute(AddingData)]
-        public Security AddData<T>(string ticker, SymbolProperties properties, SecurityExchangeHours exchangeHours, Resolution? resolution = null, bool fillForward = false, decimal leverage = 1.0m)
+        public Security AddData<T>(string ticker, SymbolProperties properties, SecurityExchangeHours exchangeHours, Resolution? resolution = null, bool fillForward = false, decimal leverage = 1.0m, string columnName = "Value")
             where T : IBaseData, new()
         {
             // Get the right key for storage of base type symbols
@@ -3174,6 +3176,14 @@ namespace QuantConnect.Algorithm
             {
                 _statisticsService = statisticsService;
             }
+        }
+
+        /// <summary>
+        /// Event triggered when an account holding is added, updated, or removed
+        /// </summary>
+        /// <param name="holdingEvent"></param>
+        public virtual void OnHoldingEvent(HoldingEvent holdingEvent)
+        {
         }
     }
 }

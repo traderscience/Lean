@@ -28,6 +28,8 @@ namespace QuantConnect
     /// </summary>
     public class Isolator
     {
+        private bool EnforceLimits = false;
+
         /// <summary>
         /// Algo cancellation controls - cancel source.
         /// </summary>
@@ -127,7 +129,7 @@ namespace QuantConnect
                 memoryUsed = Convert.ToInt64((emaPeriod-1)/emaPeriod * memoryUsed + (1/emaPeriod)*sample);
 
                 // if the rolling EMA > cap; or the spike is more than 2x the allocation.
-                if (memoryCap > 0 && (memoryUsed > memoryCap || sample > spikeLimit))
+                if (EnforceLimits && memoryCap > 0 && (memoryUsed > memoryCap || sample > spikeLimit))
                 {
                     message = Messages.Isolator.MemoryUsageMaxedOut(PrettyFormatRam(memoryCap), PrettyFormatRam((long)sample));
                     break;
@@ -153,10 +155,10 @@ namespace QuantConnect
 
                 // check to see if we're within other custom limits defined by the caller
                 isolatorLimitResult = withinCustomLimits();
-                if (!isolatorLimitResult.IsWithinCustomLimits)
+                if (EnforceLimits && !isolatorLimitResult.IsWithinCustomLimits)
                 {
-                    //message = isolatorLimitResult.ErrorMessage;
-                    //break;
+                    message = isolatorLimitResult.ErrorMessage;
+                    break;
                 }
 
                 if (task.Wait(utcNow.GetSecondUnevenWait(sleepIntervalMillis)))
@@ -173,7 +175,7 @@ namespace QuantConnect
                 Log.Trace($"Isolator.ExecuteWithTimeLimit(): {message}");
             }
 
-            if (!string.IsNullOrEmpty(message))
+            if (EnforceLimits && !string.IsNullOrEmpty(message))
             {
                 CancellationTokenSource.Cancel();
                 Log.Error($"Security.ExecuteWithTimeLimit(): {message}");

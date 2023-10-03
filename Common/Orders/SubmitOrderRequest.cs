@@ -178,7 +178,7 @@ namespace QuantConnect.Orders
         /// Sets the <see cref="OrderRequest.OrderId"/>
         /// </summary>
         /// <param name="orderId">The order id of the generated order</param>
-        internal void SetOrderId(int orderId)
+        internal void SetOrderId(long orderId)
         {
             OrderId = orderId;
         }

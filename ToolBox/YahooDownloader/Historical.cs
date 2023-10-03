@@ -1,4 +1,4 @@
-﻿/*
+/*
  * QUANTCONNECT.COM - Democratizing Finance, Empowering Individuals.
  * Lean Algorithmic Trading Engine v2.0. Copyright 2014 QuantConnect Corporation.
  *
@@ -16,6 +16,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
+using System.Text.RegularExpressions;
+using QuantConnect.Logging;
 
 namespace QuantConnect.ToolBox.YahooDownloader
 {
@@ -45,7 +47,7 @@ namespace QuantConnect.ToolBox.YahooDownloader
             }
             catch (Exception ex)
             {
-                Debug.Print(ex.Message);
+                Log.Error($"Yahoo:Historical: symbol:{symbol} error:{ex.ToString()}");
             }
 
             return historyPrices;
@@ -59,7 +61,7 @@ namespace QuantConnect.ToolBox.YahooDownloader
         /// <param name="start">Starting datetime</param>
         /// <param name="end">Ending datetime</param>
         /// <returns>Raw history price string</returns>
-        public static string GetRaw(string symbol, DateTime start, DateTime end, string eventCode)
+        public static string GetRaw(string symbol, DateTime start, DateTime end, string eventCode, bool refetch = false, int retries = 100)
         {
 
             string csvData = null;
@@ -67,13 +69,20 @@ namespace QuantConnect.ToolBox.YahooDownloader
             try
             {
                 //if no token found, refresh it
+                /*
                 if (string.IsNullOrEmpty(Token.Cookie) | string.IsNullOrEmpty(Token.Crumb))
                 {
-                    if (!Token.Refresh(symbol))
+                    if (retries > 0)  // RJE: added retries to prevent stackoverflow errors
                     {
-                        return GetRaw(symbol, start, end, eventCode);
+                        if (!Token.Refresh(symbol))  // TODO: this often causes a stackoverflow
+                        {
+                            return GetRaw(symbol, start, end, eventCode, refetch, --retries);
+                        }
                     }
+                    else
+                        throw new Exception("YahooDownloader:Historical:GetRaw: exception {ex.ToString()");
                 }
+                */
 
                 var url = $"https://query1.finance.yahoo.com/v7/finance/download/{symbol}" +
                    $"?period1={Math.Round(Time.DateTimeToUnixTimeStamp(start), 0).ToStringInvariant()}" +
@@ -83,7 +92,16 @@ namespace QuantConnect.ToolBox.YahooDownloader
                 using (var wc = new WebClient())
                 {
                     wc.Headers.Add(HttpRequestHeader.Cookie, Token.Cookie);
-                    csvData = wc.DownloadString(url);
+
+                    try
+                    {
+                        csvData = wc.DownloadString(url);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error($"YahooDownloader:Historical: exception {ex.ToString()}");
+                        return null;
+                    }
                 }
 
             }
@@ -94,17 +112,20 @@ namespace QuantConnect.ToolBox.YahooDownloader
                 //Re-fecthing token
                 if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
-                    Debug.Print(webEx.Message);
+                    Log.Error($"Yahoo:Historical:GetRaw: symbol:{symbol} error:{webEx.Message}");
                     Token.Reset();
-                    Debug.Print("Re-fetch");
-                    return GetRaw(symbol, start, end, eventCode);
+                    if (!refetch)
+                    {
+                        Log.Error($"Yahoo:Historical:GetRaw: attempting re-fetch");
+                        return GetRaw(symbol, start, end, eventCode, refetch = true);
+                    }
                 }
                 throw;
 
             }
             catch (Exception ex)
             {
-                Debug.Print(ex.Message);
+                Log.Error($"Yahoo:Historical:GetRaw: symbol:{symbol} exception:{ex.Message}");
             }
 
             return csvData;

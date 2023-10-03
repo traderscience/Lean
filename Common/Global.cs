@@ -462,7 +462,11 @@ namespace QuantConnect
         /// <summary>
         /// Monthly Resolution (6)
         /// </summary>
-        Monthly
+        Monthly,
+        /// <summary>
+        /// Quarterly Resolution (7)
+        /// </summary>
+        Quarterly
     }
 
     /// <summary>

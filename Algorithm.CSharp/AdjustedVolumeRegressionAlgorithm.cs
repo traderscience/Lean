@@ -54,8 +54,6 @@ namespace QuantConnect.Algorithm.CSharp
             mapFileProvider.Initialize(dataProvider);
             var factorFileProvider = new LocalDiskFactorFileProvider();
             factorFileProvider.Initialize(mapFileProvider, dataProvider);
-
-
             _factorFile = factorFileProvider.Get(_aapl) as CorporateFactorProvider;
         }
 

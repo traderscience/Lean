@@ -99,7 +99,9 @@ namespace QuantConnect.ToolBox
             var exchangeTimeZone = marketHoursDataBase.GetExchangeHours(symbol.ID.Market, symbol, symbol.SecurityType).TimeZone;
 
             var config = new SubscriptionDataConfig(dataType, symbol, resolution,
-                                                    dataTimeZone, exchangeTimeZone, tickType: tickType,
+                                                    dataTimeZone, exchangeTimeZone, 
+                                                    tickType: tickType,
+                                                    dataNormalizationMode:DataNormalizationMode.SplitAdjusted,
                                                     fillForward: false, extendedHours: true, isInternalFeed: true);
 
             _date = date;

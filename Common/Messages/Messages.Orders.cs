@@ -85,7 +85,7 @@ namespace QuantConnect
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static string Tag(Orders.LimitOrder order)
             {
-                return Invariant($"Limit Price: {order.LimitPrice:C}");
+                return Invariant($"Limit Price: {order.LimitPrice:F4}");
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]

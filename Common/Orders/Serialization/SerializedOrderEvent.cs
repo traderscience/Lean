@@ -40,13 +40,13 @@ namespace QuantConnect.Orders.Serialization
         /// Id of the order this event comes from.
         /// </summary>
         [JsonProperty("order-id")]
-        public int OrderId { get; set; }
+        public long OrderId { get; set; }
 
         /// <summary>
         /// The unique order event id for each order
         /// </summary>
         [JsonProperty("order-event-id")]
-        public int OrderEventId { get; set; }
+        public long OrderEventId { get; set; }
 
         /// <summary>
         /// Easy access to the order symbol associated with this event.

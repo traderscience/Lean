@@ -146,7 +146,7 @@ namespace QuantConnect.Algorithm
         /// <param name="leverage">Custom leverage per security</param>
         /// <returns>The new <see cref="Security"/></returns>
         [DocumentationAttribute(AddingData)]
-        public Security AddData(Type dataType, string ticker, Resolution? resolution, DateTimeZone timeZone, bool fillForward = false, decimal leverage = 1.0m)
+        public Security AddData(Type dataType, string ticker, Resolution? resolution, DateTimeZone timeZone, bool fillForward = false, decimal leverage = 1.0m, string columnName = "Value")
         {
             // NOTE: Invoking methods on BaseData w/out setting the symbol may provide unexpected behavior
             var baseInstance = dataType.GetBaseDataInstance();
@@ -155,7 +155,7 @@ namespace QuantConnect.Algorithm
                 var symbol = new Symbol(
                     SecurityIdentifier.GenerateBase(dataType, ticker, Market.USA, baseInstance.RequiresMapping()),
                     ticker);
-                return AddDataImpl(dataType, symbol, resolution, timeZone, fillForward, leverage);
+                return AddDataImpl(dataType, symbol, resolution, timeZone, fillForward, leverage, columnName);
             }
             // If we need a mappable ticker and we can't find one in the SymbolCache, throw
             Symbol underlying;
@@ -167,7 +167,7 @@ namespace QuantConnect.Algorithm
                                                     $"An example use case can be found in CustomDataAddDataRegressionAlgorithm");
             }
 
-            return AddData(dataType, underlying, resolution, timeZone, fillForward, leverage);
+            return AddData(dataType, underlying, resolution, timeZone, fillForward, leverage, columnName);
         }
 
         /// <summary>
@@ -255,7 +255,7 @@ namespace QuantConnect.Algorithm
         /// <param name="fillForward">When no data available on a tradebar, return the last data that was generated</param>
         /// <param name="leverage">Custom leverage per security</param>
         /// <returns>The new <see cref="Security"/></returns>
-        private Security AddDataImpl(Type dataType, Symbol symbol, Resolution? resolution, DateTimeZone timeZone, bool fillForward, decimal leverage)
+        private Security AddDataImpl(Type dataType, Symbol symbol, Resolution? resolution, DateTimeZone timeZone, bool fillForward, decimal leverage, string columnName = "Value")
         {
             var alias = symbol.ID.Symbol;
             SymbolCache.Set(alias, symbol);
@@ -273,7 +273,8 @@ namespace QuantConnect.Algorithm
                 resolution,
                 fillForward,
                 isCustomData: true,
-                extendedMarketHours: true);
+                extendedMarketHours: true,
+                columnName:columnName);
             var security = Securities.CreateSecurity(symbol, config, leverage, addToSymbolCache: false);
 
             return AddToUserDefinedUniverse(security, new List<SubscriptionDataConfig> { config });

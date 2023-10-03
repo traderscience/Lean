@@ -44,6 +44,8 @@ namespace QuantConnect
         /// Yahoo Finance
         Yahoo = 15,
         /// Zerodha
-        Zerodha = 16
+        Zerodha = 16,
+        /// Tiingo Price Data
+        Tiingo = 17
     }
 }

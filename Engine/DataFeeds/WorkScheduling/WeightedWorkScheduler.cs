@@ -19,6 +19,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace QuantConnect.Lean.Engine.DataFeeds.WorkScheduling
 {
@@ -50,6 +51,8 @@ namespace QuantConnect.Lean.Engine.DataFeeds.WorkScheduling
         private readonly AutoResetEvent _newWorkEvent;
         private Task _initializationTask;
         private readonly List<WeightedWorkQueue> _workerQueues;
+        private readonly List<Task> _workerTasks;
+        private readonly CancellationTokenSource _tokenSource;
 
         /// <summary>
         /// Singleton instance
@@ -61,6 +64,8 @@ namespace QuantConnect.Lean.Engine.DataFeeds.WorkScheduling
             _newWork = new ConcurrentQueue<WorkItem>();
             _newWorkEvent = new AutoResetEvent(false);
             _workerQueues = new List<WeightedWorkQueue>(WorkersCount);
+            _workerTasks = new List<Task>();
+            _tokenSource = new CancellationTokenSource();
 
             _initializationTask = Task.Run(() =>
             {
@@ -71,13 +76,21 @@ namespace QuantConnect.Lean.Engine.DataFeeds.WorkScheduling
                 {
                     var workQueue = new WeightedWorkQueue();
                     _workerQueues.Add(workQueue);
+                    /*
                     var thread = new Thread(() => workQueue.WorkerThread(_newWork, _newWorkEvent))
                     {
                         IsBackground = true,
                         Priority = workQueue.ThreadPriority,
                         Name = $"WeightedWorkThread{i}"
                     };
-                    thread.Start();
+                    */
+                    var task = Task.Run(() =>
+                        workQueue.WorkerThread(_newWork, _newWorkEvent, _tokenSource),
+                        _tokenSource.Token
+                    );
+                    _workerTasks.Add(task);
+                    //   thread.Start();
+                    //   _workerThreads.Add(thread);
                 }
             });
         }
@@ -109,6 +122,15 @@ namespace QuantConnect.Lean.Engine.DataFeeds.WorkScheduling
             {
                 _workerQueues[i].AddSingleCall(action);
             }
+        }
+
+        // Release all threads and cleanup
+        public void Dispose()
+        {
+            // cancel all threads
+            Logging.Log.Trace($"WeightedWorkScheduler: stopping");
+            _tokenSource.Cancel();
+            Task.Delay(250);
         }
     }
 }

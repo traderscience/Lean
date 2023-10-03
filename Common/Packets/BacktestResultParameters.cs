@@ -40,7 +40,7 @@ namespace QuantConnect.Packets
         /// Creates a new instance
         /// </summary>
         public BacktestResultParameters(IDictionary<string, Chart> charts,
-            IDictionary<int, Order> orders,
+            IDictionary<long, Order> orders,
             IDictionary<DateTime, decimal> profitLoss,
             IDictionary<string, string> statistics,
             IDictionary<string, string> runtimeStatistics,

@@ -54,31 +54,31 @@ namespace QuantConnect.Orders.Serialization
         /// Internal order id
         /// </summary>
         [JsonProperty("order-id")]
-        public int OrderId { get; set; }
+        public long OrderId { get; set; }
 
         /// <summary>
         /// Internal parent order id
         /// </summary>
         [JsonProperty("parent-order-id")]
-        public int ParentOrder { get; set; }
+        public long ParentOrder { get; set; }
 
         /// <summary>
         /// Order id at broker
         /// </summary>
         [JsonProperty("broker-order-id")]
-        public int BrokerOrderId { get; set; }
+        public long BrokerOrderId { get; set; }
 
         /// <summary>
         /// Order parent id at broker
         /// </summary>
         [JsonProperty("broker-parent-order-id")]
-        public int BrokerParentId { get; set; }
+        public long BrokerParentId { get; set; }
 
         /// <summary>
         /// Order id to process before processing this order.
         /// </summary>
         [JsonProperty("contingent-id")]
-        public int ContingentId { get; set; }
+        public long ContingentId { get; set; }
 
         /// <summary>
         /// Brokerage Id for this order for when the brokerage splits orders into multiple pieces
@@ -261,6 +261,8 @@ namespace QuantConnect.Orders.Serialization
             Status = order.Status;
             Tag = order.Tag;
             Direction = order.Direction;
+            Intent = order.Intent;
+            OcaGroup = order.OcaGroup;
 
             CreatedTime = Time.DateTimeToUnixTimeStamp(order.CreatedTime);
             if (order.LastFillTime.HasValue)

@@ -48,6 +48,15 @@ namespace QuantConnect.Interfaces
         long ParentOrder { get; set; }
 
         /// <summary>
+        /// Parent Id for Broker Order
+        /// </summary>
+        long BrokerParentOrderId { get; set; }  
+        /// <summary>
+        /// Order Id from Brokerage
+        /// </summary>
+        long BrokerOrderId { get; set; }
+
+        /// <summary>
         /// One Cancels All order group
         /// </summary>
         string OcaGroup { get; set; }

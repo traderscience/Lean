@@ -56,7 +56,7 @@ namespace QuantConnect.Brokerages
         /// <summary>
         /// A list of currently active orders
         /// </summary>
-        public ConcurrentDictionary<int, Orders.Order> CachedOrderIDs { get; set; }
+        public ConcurrentDictionary<long, Orders.Order> CachedOrderIDs { get; set; }
 
         /// <summary>
         /// The api secret
@@ -89,7 +89,7 @@ namespace QuantConnect.Brokerages
             }
             IsInitialized = true;
             JsonSettings = new JsonSerializerSettings { FloatParseHandling = FloatParseHandling.Decimal };
-            CachedOrderIDs = new ConcurrentDictionary<int, Orders.Order>();
+            CachedOrderIDs = new ConcurrentDictionary<long, Orders.Order>();
 
             WebSocket = websocket;
             WebSocket.Initialize(wssUrl);

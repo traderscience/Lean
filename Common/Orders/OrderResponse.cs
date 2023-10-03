@@ -26,7 +26,7 @@ namespace QuantConnect.Orders
         /// <summary>
         /// Gets the order id
         /// </summary>
-        public int OrderId
+        public long OrderId
         {
             get; private set;
         }
@@ -79,7 +79,7 @@ namespace QuantConnect.Orders
         /// <param name="orderId">The order id</param>
         /// <param name="errorCode">The error code of the response, specify <see cref="OrderResponseErrorCode.None"/> for no error</param>
         /// <param name="errorMessage">The error message, applies only if the <paramref name="errorCode"/> does not equal <see cref="OrderResponseErrorCode.None"/></param>
-        private OrderResponse(int orderId, OrderResponseErrorCode errorCode, string errorMessage)
+        private OrderResponse(long orderId, OrderResponseErrorCode errorCode, string errorMessage)
         {
             OrderId = orderId;
             ErrorCode = errorCode;

@@ -34,7 +34,7 @@ namespace QuantConnect.Orders
         /// <param name="orders">List of orders in the combo</param>
         /// <returns>False if any of the orders in the combo is not yet found in the order provider. True otherwise</returns>
         /// <remarks>If the target order is not a combo order, the resulting list will contain that single order alone</remarks>
-        public static bool TryGetGroupOrders(this Order order, Func<int, Order> orderProvider, out List<Order> orders)
+        public static bool TryGetGroupOrders(this Order order, Func<long, Order> orderProvider, out List<Order> orders)
         {
             orders = new List<Order> { order };
             if (order.GroupOrderManager != null)

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * QUANTCONNECT.COM - Democratizing Finance, Empowering Individuals.
  * Lean Algorithmic Trading Engine v2.0. Copyright 2014 QuantConnect Corporation.
  *
@@ -22,7 +22,7 @@ namespace QuantConnect.Lean.Engine.TransactionHandlers
     /// </summary>
     public class CancelPendingOrders
     {
-        private readonly ConcurrentDictionary<int, CancelPendingOrder> _cancelPendingOrders = new ConcurrentDictionary<int, CancelPendingOrder>();
+        private readonly ConcurrentDictionary<long, CancelPendingOrder> _cancelPendingOrders = new ConcurrentDictionary<long, CancelPendingOrder>();
 
         /// <summary>
         /// Amount of CancelPending Orders
@@ -34,7 +34,7 @@ namespace QuantConnect.Lean.Engine.TransactionHandlers
         /// </summary>
         /// <param name="orderId">The order id</param>
         /// <param name="status">The order Status, before the cancel request</param>
-        public void Set(int orderId, OrderStatus status)
+        public void Set(long orderId, OrderStatus status)
         {
             _cancelPendingOrders[orderId] = new CancelPendingOrder { Status = status };
         }
@@ -44,7 +44,7 @@ namespace QuantConnect.Lean.Engine.TransactionHandlers
         /// </summary>
         /// <param name="newStatus">The new status of the order. If its OrderStatus.Canceled or OrderStatus.Filled it will be removed</param>
         /// <param name="orderId">The id of the order</param>
-        public void UpdateOrRemove(int orderId, OrderStatus newStatus)
+        public void UpdateOrRemove(long orderId, OrderStatus newStatus)
         {
             CancelPendingOrder cancelPendingOrder;
             if (_cancelPendingOrders.TryGetValue(orderId, out cancelPendingOrder))
@@ -94,7 +94,7 @@ namespace QuantConnect.Lean.Engine.TransactionHandlers
             }
         }
 
-        private void RemoveOrderFromCollection(int orderId)
+        private void RemoveOrderFromCollection(long orderId)
         {
             CancelPendingOrder cancelPendingOrderTrash;
             _cancelPendingOrders.TryRemove(orderId, out cancelPendingOrderTrash);

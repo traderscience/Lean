@@ -736,7 +736,8 @@ namespace QuantConnect.Algorithm
             }
             catch (Exception err)
             {
-                Error("Error applying parameter values: " + err.Message);
+                Error("SetParametersL Error applying parameter values: " + err.Message);
+                throw new Exception(err);
             }
         }
 

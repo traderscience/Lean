@@ -33,7 +33,7 @@ namespace QuantConnect.Algorithm.CSharp
         private OrderTicket _gtcOrderTicket1, _gtcOrderTicket2;
         private OrderTicket _dayOrderTicket1, _dayOrderTicket2;
         private OrderTicket _gtdOrderTicket1, _gtdOrderTicket2;
-        private readonly Dictionary<int, OrderStatus> _expectedOrderStatuses = new Dictionary<int, OrderStatus>();
+        private readonly Dictionary<long, OrderStatus> _expectedOrderStatuses = new Dictionary<long, OrderStatus>();
 
         /// <summary>
         /// Initialise the data and resolution required, as well as the cash and start-end dates for your algorithm. All algorithms must initialized.
@@ -44,7 +44,7 @@ namespace QuantConnect.Algorithm.CSharp
             SetEndDate(2013, 10, 11);
             SetCash(100000);
 
-            // The default time in force setting for all orders is GoodTilCancelled (GTC),
+            // The default time in force setting for all orders is GoodTilCanceled (GTC),
             // uncomment this line to set a different time in force.
             // We currently only support GTC, DAY, GTD.
             // DefaultOrderProperties.TimeInForce = TimeInForce.Day;

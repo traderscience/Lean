@@ -635,7 +635,7 @@ namespace QuantConnect.AlgorithmFactory.Python.Wrappers
         /// <param name="symbolToLiquidate">Specific asset to liquidate, defaults to all.</param>
         /// <param name="tag">Custom tag to know who is calling this.</param>
         /// <returns>list of order ids</returns>
-        public List<int> Liquidate(Symbol symbolToLiquidate = null, string tag = "Liquidated") => _baseAlgorithm.Liquidate(symbolToLiquidate, tag);
+        public List<long> Liquidate(Symbol symbolToLiquidate = null, string tag = "Liquidated") => _baseAlgorithm.Liquidate(symbolToLiquidate, tag);
 
         /// <summary>
         /// Save entry to the Log

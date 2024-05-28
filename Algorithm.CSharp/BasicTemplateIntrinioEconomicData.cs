@@ -56,11 +56,11 @@ namespace QuantConnect.Algorithm.CSharp
             SetCash(startingCash: 100000); //Set Strategy Cash
 
             // Set your Intrinio user and password.
-            IntrinioConfig.SetUserAndPassword(_user, _password);
+            FredConfig.SetUserAndPassword(_user, _password);
 
             // Set Intrinio config to make 1 call each minute, default is 1 call each 5 seconds.
             // (1 call each minute is the free account limit for historical_data endpoint)
-            IntrinioConfig.SetTimeIntervalBetweenCalls(TimeSpan.FromMinutes(1));
+            FredConfig.SetTimeIntervalBetweenCalls(TimeSpan.FromMinutes(1));
 
 
             // Find more symbols here: http://quantconnect.com/data
@@ -70,8 +70,8 @@ namespace QuantConnect.Algorithm.CSharp
             _uso = AddEquity("USO", Resolution.Daily, leverage: 2m).Symbol;
             _bno = AddEquity("BNO", Resolution.Daily, leverage: 2m).Symbol;
 
-            AddData<IntrinioEconomicData>(IntrinioEconomicDataSources.Commodities.CrudeOilWTI, Resolution.Daily);
-            AddData<IntrinioEconomicData>(IntrinioEconomicDataSources.Commodities.CrudeOilBrent, Resolution.Daily);
+            AddData<FredEconomicData>(IntrinioEconomicDataSources.Commodities.CrudeOilWTI, Resolution.Daily);
+            AddData<FredEconomicData>(IntrinioEconomicDataSources.Commodities.CrudeOilBrent, Resolution.Daily);
             _spread = _brent.Minus(_wti);
 
             _emaWti = EMA(Securities[IntrinioEconomicDataSources.Commodities.CrudeOilWTI].Symbol, 10);
@@ -83,7 +83,7 @@ namespace QuantConnect.Algorithm.CSharp
         /// <param name="data">Slice object keyed by symbol containing the stock data</param>
         public override void OnData(Slice data)
         {
-            var customData = data.Get<IntrinioEconomicData>();
+            var customData = data.Get<FredEconomicData>();
             if (customData.Count == 0) return;
 
             foreach (var economicData in customData.Values)

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "QuantConnect.Report": {
+      "commandName": "Project",
+      "commandLineArgs": "--backtest-data-source-file=d:\\userdata\\lean\\0\\sessions\\temp16\\results\\MarketAlertsBaseAlgorithm.json --report-destination=c:\\tmp\\reports\\report16.html"
+    }
+  }
+}

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * QUANTCONNECT.COM - Democratizing Finance, Empowering Individuals.
  * Lean Algorithmic Trading Engine v2.0. Copyright 2014 QuantConnect Corporation.
  *
@@ -21,7 +21,7 @@ namespace QuantConnect.Data.Custom.Intrinio
     /// <summary>
     ///     Auxiliary class to access all Intrinio API data.
     /// </summary>
-    public static class IntrinioConfig
+    public static class FredConfig
     {
         /// <summary>
         /// </summary>

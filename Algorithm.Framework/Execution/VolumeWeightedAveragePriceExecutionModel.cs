@@ -25,6 +25,7 @@ using QuantConnect.Securities;
 using QuantConnect.Orders;
 using static QuantConnect.Messages;
 using QuantConnect.Algorithm.Framework.Alphas;
+using System.Net;
 
 namespace QuantConnect.Algorithm.Framework.Execution
 {
@@ -35,6 +36,7 @@ namespace QuantConnect.Algorithm.Framework.Execution
     {
         private readonly PortfolioTargetCollection _targetsCollection = new PortfolioTargetCollection();
         private readonly Dictionary<Symbol, SymbolData> _symbolData = new Dictionary<Symbol, SymbolData>();
+        private string _datefmt = "yyyy-MM-dd HH:mm:ss";
 
         /// <summary>
         /// Gets or sets the maximum order quantity as a percentage of the current bar's volume.
@@ -44,9 +46,57 @@ namespace QuantConnect.Algorithm.Framework.Execution
         public decimal MaximumOrderQuantityPercentVolume { get; set; } = 0.01m;
 
         /// <summary>
+        /// Wiggle room for determining a favorable entry price
+        /// </summary>
+        public decimal Wiggle = .005m;
+
+
+        /// <summary>
+        /// Resolution to use for VWAP calculations
+        /// </summary>
+        public Resolution? SecurityResolution { get; set; } = Resolution.Hour;
+
+        /// <summary>
         /// Determines if orders can be place in extended hours trading
         /// </summary>
         public bool ExtendedHours = false;
+
+        public decimal MinimumQuantity = 100;
+
+        public decimal LotSize = 100;
+
+        public bool AllowMarketOnOpenOrders = true;
+
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        public VolumeWeightedAveragePriceExecutionModel()
+        {
+            MaximumOrderQuantityPercentVolume = .01m;
+            ExtendedHours = false;
+            SecurityResolution = null;
+            MinimumQuantity = 100;
+            AllowMarketOnOpenOrders = true;
+            Wiggle = .005m;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="MaxPct"></param>
+        /// <param name="extendedHours"></param>
+        /// <param name="secResolution"></param>
+        public VolumeWeightedAveragePriceExecutionModel(decimal MaxPct = .01m, bool extendedHours = false, Resolution? secResolution = null, decimal MinimumQty=100m, decimal LotSize=100m,  bool AllowMarketOnOpenOrders = true, decimal Wiggle = .005m)
+        {
+            this.MaximumOrderQuantityPercentVolume = MaxPct;
+            this.ExtendedHours = extendedHours;
+            this.SecurityResolution = secResolution;
+            this.MinimumQuantity = MinimumQty;
+            this.LotSize = LotSize;
+            this.AllowMarketOnOpenOrders = AllowMarketOnOpenOrders;
+            this.Wiggle = Wiggle;
+        }
+
 
         /// <summary>
         /// Submit orders for the specified portfolio targets.
@@ -66,63 +116,60 @@ namespace QuantConnect.Algorithm.Framework.Execution
                 {
                     var symbol = target.Symbol;
 
-
                     // calculate remaining quantity to be ordered
                     var unorderedQuantity = OrderSizing.GetUnorderedQuantity(algorithm, target);
-                    if (unorderedQuantity == 0)
+
+                    // Check if quantity to order is < MinimumQuantity, or 0 
+                    if (unorderedQuantity == 0 || MinimumQuantity > 0 && Math.Abs(unorderedQuantity) < MinimumQuantity)
+                    {
                         continue;
+                    }
+
                     // fetch our symbol data containing our VWAP indicator
                     SymbolData data;
                     if (!_symbolData.TryGetValue(symbol, out data))
                     {
                         continue;
                     }
-                    var lastData = data.Security.GetLastData();
 
                     // If ExtendedHours is false, then we need to check if we are in extended hours
                     if (!ExtendedHours)
                     {
-                        var sec = algorithm.Securities[symbol];
-                        var regularHours = data.Security.Exchange.Hours.IsOpen(lastData.EndTime, false);
-                        var extendedHours = !regularHours && data.Security.Exchange.Hours.IsOpen(lastData.EndTime, true);
+                        var time = algorithm.Time;
+                        var regularHours = data.Security.Exchange.Hours.IsOpen(time, false);
+                        var extendedHours = !regularHours && data.Security.Exchange.Hours.IsOpen(time, true);
                         if (extendedHours)
                             continue;
                     }
 
+                    // Check if Market on Open Orders on Permitted
+                    if (!AllowMarketOnOpenOrders && !data.Security.Exchange.ExchangeOpen)
+                        continue;
+
                     // check order entry conditions
                     // TraderScience fix - check if target is 0 (eg trailing stop)
                     // if so, then we need to close the position immediately
+                    /*
                     if (target.Quantity == 0)
                     {
                         OrderIntent intent = OrderIntent.Undefined;
-                        intent = unorderedQuantity < 0 ? OrderIntent.STC : OrderIntent.BTC;
+                        var qtyHeld = data.Security.Holdings.Quantity;
+                        intent = qtyHeld > 0 ? OrderIntent.STC : OrderIntent.BTC;
                         var orderProps = new OrderProperties()
                         {
                             Intent = intent
                         };
-                        algorithm.MarketOrder(data.Security, unorderedQuantity,tag:"VWAP Closing Position (target=0)", orderProperties: orderProps);
-
+                        algorithm.MarketOrder(data.Security, -qtyHeld, tag: $"VWAP Closing Qty {qtyHeld} (target=0 specified)", orderProperties: orderProps);
                     }
                     else
-                    if (PriceIsFavorable(data, unorderedQuantity))
+                    */
+                    // if the target is flat, or price is favorable, then proceed with an order
+                    if (target.Quantity == 0 || PriceIsFavorable(data, unorderedQuantity) || )
                     {
                         // adjust order size to respect maximum order size based on a percentage of current volume
                         var quantity = OrderSizing.GetOrderSizeForPercentVolume(
                             data.Security, MaximumOrderQuantityPercentVolume, unorderedQuantity);
-                        quantity = Math.Round(quantity, 3);
-                        if (quantity == 0)
-                            continue;
-                        // Check if there is sufficient cash/margin to complete the order
-                        var orderMargin = data.Security.BuyingPowerModel.GetReservedBuyingPowerForPosition(
-                                                       new ReservedBuyingPowerForPositionParameters(data.Security)).AbsoluteUsedBuyingPower;
-                        orderMargin = Math.Round(orderMargin, 0);
 
-                        // Check if we can complete an order for this amount
-                        if (orderMargin != 0 && orderMargin > algorithm.Portfolio.MarginRemaining)
-                        {
-                            // If we can't, then we need to reduce the order size
-                            quantity = Math.Round(algorithm.Portfolio.MarginRemaining / orderMargin * quantity, 3);
-                        }
                         if (quantity != 0)
                         {
                             var currentQty = algorithm.Portfolio[data.Security.Symbol].Quantity;
@@ -141,13 +188,60 @@ namespace QuantConnect.Algorithm.Framework.Execution
                                 Intent = intent
                             };
 
-                            algorithm.MarketOrder(data.Security, quantity, tag:"VWAP Order", orderProperties: orderProps);
+                            // Run margin check for the proposed order
+                            var buyingPower = data.Security.BuyingPowerModel.GetBuyingPower(
+                                        new BuyingPowerParameters(
+                                                algorithm.Portfolio, data.Security, quantity > 0 ? OrderDirection.Buy : OrderDirection.Sell));
+                            var marginRequired = data.Security.BuyingPowerModel.GetInitialMarginRequirement(data.Security, Math.Abs(quantity));
+
+                            if (buyingPower.Value >= marginRequired)
+                            {
+                                quantity = RoundToLotSize(data, quantity);
+                                algorithm.MarketOrder(data.Security, quantity, tag: "VWAP Order", orderProperties: orderProps);
+                            }
+                            else
+                            {
+                                // try reducing the order quantity by using the available margin + 10%
+                                var old_quantity = quantity;
+                                quantity = Orders.OrderSizing.GetOrderSizeForMaximumValue(data.Security, buyingPower.Value * .9m, quantity);
+                                quantity = RoundToLotSize(data, quantity);
+                                if (MinimumQuantity > 0 && quantity < MinimumQuantity)
+                                    continue;
+                                if (algorithm.DebugMode)
+                                    algorithm.Error($"{algorithm.Time.ToString(_datefmt)} VWAP Execution Model: Buying Power:${buyingPower.Value:F0} insufficient for Qty:{old_quantity} {data.Security.Symbol}. Adjusted to:{quantity}");
+                                if (quantity != 0)
+                                    algorithm.MarketOrder(data.Security, quantity, tag: "VWAP Order (size adjusted)", orderProperties: orderProps);
+                            }
                         }
                     }
                 }
 
                 _targetsCollection.ClearFulfilled(algorithm);
             }
+        }
+
+        private decimal RoundToLotSize(SymbolData data, decimal quantity)
+        {
+            // Round quantity based on security type
+            switch (data.Security.Symbol.SecurityType)
+            {
+                case SecurityType.Equity:
+                    // round quantity to nearest smaller LotSize
+                    if (LotSize > 1)
+                        quantity = Math.Floor(quantity / LotSize) * LotSize;
+                    else
+                        quantity = Math.Round(quantity, 2);
+                    break;
+                case SecurityType.Future:
+                case SecurityType.Option:
+                    quantity = Math.Round(quantity, 0);
+                    break;
+                case SecurityType.Forex:
+                case SecurityType.Crypto:
+                    quantity = Math.Round(quantity, 4);
+                    break;
+            }
+            return quantity;
         }
 
         /// <summary>
@@ -161,7 +255,7 @@ namespace QuantConnect.Algorithm.Framework.Execution
             {
                 if (!_symbolData.ContainsKey(added.Symbol))
                 {
-                    _symbolData[added.Symbol] = new SymbolData(algorithm, added);
+                    _symbolData[added.Symbol] = new SymbolData(algorithm, added, SecurityResolution);
                 }
             }
 
@@ -194,16 +288,17 @@ namespace QuantConnect.Algorithm.Framework.Execution
         /// </summary>
         protected virtual bool PriceIsFavorable(SymbolData data, decimal unorderedQuantity)
         {
+            var diff = Wiggle * data.VWAP;
             if (unorderedQuantity > 0)
             {
-                if (data.Security.BidPrice < data.VWAP)
+                if (data.Security.BidPrice < data.VWAP + diff)
                 {
                     return true;
                 }
             }
             else
             {
-                if (data.Security.AskPrice > data.VWAP)
+                if (data.Security.AskPrice > data.VWAP - Wiggle)
                 {
                     return true;
                 }
@@ -235,14 +330,20 @@ namespace QuantConnect.Algorithm.Framework.Execution
             /// <summary>
             /// Initialize a new instance of <see cref="SymbolData"/>
             /// </summary>
-            public SymbolData(QCAlgorithm algorithm, QuantConnect.Securities.Security security)
+            public SymbolData(QCAlgorithm algorithm, QuantConnect.Securities.Security security, Resolution? secResolution)
             {
                 Security = security;
-                Consolidator = algorithm.ResolveConsolidator(security.Symbol, security.Resolution);
-                var name = algorithm.CreateIndicatorName(security.Symbol, "VWAP", security.Resolution);
-                VWAP = new IntradayVwap(name);
-
-                algorithm.RegisterIndicator(security.Symbol, VWAP, Consolidator, bd => (BaseData) bd);
+                try
+                {
+                    Consolidator = algorithm.ResolveConsolidator(security.Symbol, secResolution == null ? security.Resolution : secResolution);
+                    var name = algorithm.CreateIndicatorName(security.Symbol, "VWAPExecution", secResolution == null ? security.Resolution : secResolution);
+                    VWAP = new IntradayVwap(name);
+                    algorithm.RegisterIndicator(security.Symbol, VWAP, Consolidator, bd => (BaseData)bd);
+                }
+                catch (Exception ex)
+                {
+                    Logging.Log.Error($"Exception adding {security.Symbol.Value} for VWAP Execution Model ex={ex.ToString()}");
+                }
             }
         }
     }

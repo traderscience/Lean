@@ -1,4 +1,4 @@
-﻿/*
+/*
  * QUANTCONNECT.COM - Democratizing Finance, Empowering Individuals.
  * Lean Algorithmic Trading Engine v2.0. Copyright 2014 QuantConnect Corporation.
  *
@@ -75,7 +75,7 @@ namespace QuantConnect.Data.Custom.Intrinio
     ///     Access the massive repository of economic data from the Federal Reserve Economic Data system via the Intrinio API.
     /// </summary>
     /// <seealso cref="QuantConnect.Data.BaseData" />
-    public class IntrinioEconomicData : BaseData
+    public class FredEconomicData : BaseData
     {
         private static DateTime _lastApiCall = DateTime.MinValue;
         private static TimeSpan _msSinceLastCall = TimeSpan.MaxValue;
@@ -88,22 +88,22 @@ namespace QuantConnect.Data.Custom.Intrinio
         private bool _backtestingFirstTimeCallOrLiveMode = true;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="IntrinioEconomicData" /> class.
+        ///     Initializes a new instance of the <see cref="FredEconomicData" /> class.
         /// </summary>
-        public IntrinioEconomicData() : this(IntrinioDataTransformation.Level)
+        public FredEconomicData() : this(IntrinioDataTransformation.Level)
         {
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="IntrinioEconomicData" /> class.
+        ///     Initializes a new instance of the <see cref="FredEconomicData" /> class.
         /// </summary>
         /// <param name="dataTransformation">The item.</param>
-        public IntrinioEconomicData(IntrinioDataTransformation dataTransformation)
+        public FredEconomicData(IntrinioDataTransformation dataTransformation)
         {
             _dataTransformation = dataTransformation;
 
             // If the user and the password is not set then then throw error.
-            if (!IntrinioConfig.IsInitialized)
+            if (!FredConfig.IsInitialized)
             {
                 throw new
                     InvalidOperationException("Please set a valid Intrinio user and password using the 'IntrinioEconomicData.SetUserAndPassword' static method. " +
@@ -131,13 +131,13 @@ namespace QuantConnect.Data.Custom.Intrinio
             SubscriptionDataSource subscription;
 
             // We want to make just one call with all the data in backtesting mode.
-            // Also we want to make one call per second becasue of the API limit.
+            // Also we want to make one call per second because of the API limit.
             if (_backtestingFirstTimeCallOrLiveMode)
             {
                 // Force the engine to wait at least 1000 ms between API calls.
-                IntrinioConfig.RateGate.WaitToProceed();
+                FredConfig.RateGate.WaitToProceed();
 
-                // In backtesting mode, there is only one call at the beggining with all the data 
+                // In backtesting mode, there is only one call at the beginning with all the data 
                 _backtestingFirstTimeCallOrLiveMode = false || isLiveMode;
                 subscription = GetIntrinioSubscription(config, isLiveMode);
             }
@@ -167,7 +167,7 @@ namespace QuantConnect.Data.Custom.Intrinio
             if (!DateTime.TryParseExact(obs[0], "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None,
                                         out time)) return null;
             var value = obs[1].ToDecimal();
-            return new IntrinioEconomicData
+            return new FredEconomicData
             {
                 Symbol = config.Symbol,
                 Time = time,
@@ -214,11 +214,11 @@ namespace QuantConnect.Data.Custom.Intrinio
 
         private SubscriptionDataSource GetIntrinioSubscription(SubscriptionDataConfig config, bool isLiveMode)
         {
-            // In Live mode, we only want the last observation, in backtesitng we need the data in ascending order.
+            // In Live mode, we only want the last observation, in backtesting we need the data in ascending order.
             var order = isLiveMode ? "desc" : "asc";
             var item = GetStringForDataTransformation(_dataTransformation);
             var url = $"{_baseUrl}identifier={config.Symbol.Value}&item={item}&sort_order={order}";
-            var byteKey = Encoding.ASCII.GetBytes($"{IntrinioConfig.User}:{IntrinioConfig.Password}");
+            var byteKey = Encoding.ASCII.GetBytes($"{FredConfig.User}:{FredConfig.Password}");
             var authorizationHeaders = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("Authorization",

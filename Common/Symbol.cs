@@ -20,6 +20,7 @@ using Python.Runtime;
 using Newtonsoft.Json;
 using QuantConnect.Securities;
 using System.Linq;
+using System.Security.AccessControl;
 
 namespace QuantConnect
 {
@@ -902,14 +903,25 @@ namespace QuantConnect
                     return SymbolRepresentation.GenerateOptionTickerOSI(sym, securityIdentifier.OptionRight, securityIdentifier.StrikePrice, securityIdentifier.Date);
                 case SecurityType.Future:
                     sym = securityIdentifier.Symbol;
-                    if (securityIdentifier.Date == SecurityIdentifier.DefaultDate)
-                    {
-                        return $"/{sym}";
-                    }
-                    return SymbolRepresentation.GenerateFutureTicker(sym, securityIdentifier.Date);
+                    var withPrefix = SetContinuousFuturePrefix(securityIdentifier.Date, sym);
+                    return SymbolRepresentation.GenerateFutureTicker(withPrefix, securityIdentifier.Date);
                 default:
                     return null;
             }
+        }
+
+        public static string SetContinuousFuturePrefix(DateTime date, string sym)
+        {
+            // Remove forward slashes
+            string futureSym = sym;
+            if (date == SecurityIdentifier.DefaultDate)
+            {
+                futureSym = sym.Replace("/", String.Empty, StringComparison.InvariantCulture);
+                // Add @ symbol prefix, unless already present
+                if (!futureSym.StartsWith("@", StringComparison.InvariantCulture))
+                    futureSym = "@" + futureSym;
+            }
+            return futureSym;
         }
     }
 }

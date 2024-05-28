@@ -1,4 +1,4 @@
-﻿/*
+/*
  * QUANTCONNECT.COM - Democratizing Finance, Empowering Individuals.
  * Lean Algorithmic Trading Engine v2.0. Copyright 2014 QuantConnect Corporation.
  *
@@ -213,6 +213,7 @@ namespace QuantConnect.ToolBox.IQFeed
             var securityType = symbol.ID.SecurityType;
             return
                 (securityType == SecurityType.Equity && market == Market.USA) ||
+                (securityType == SecurityType.Index && market == Market.USA) ||
                 (securityType == SecurityType.Forex && market == Market.FXCM) ||
                 (securityType == SecurityType.Option && market == Market.USA) ||
                 (securityType == SecurityType.Future);

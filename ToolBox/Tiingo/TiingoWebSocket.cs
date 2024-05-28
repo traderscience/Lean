@@ -39,7 +39,7 @@ namespace QuantConnect.ToolBox.Tiingo
         private CancellationTokenSource _cts;
         private int SubscribeDelay = 1500;
         private Thread _clientMonitorThread;
-        private List<Symbol> _subscribedSymbols;
+        private List<Symbol> _subscribedSymbols = new List<Symbol>();
         public int OnMessageReceived { get; private set; }
         public int OnOpened { get; private set; }
 
@@ -61,12 +61,14 @@ namespace QuantConnect.ToolBox.Tiingo
                 default:
                     throw new ArgumentException("Invalid socket type");
             }
+            /*
             _subscribedSymbols = new List<Symbol>()
             {
                 Symbol.Create("SPY", SecurityType.Equity, Market.USA),  
                 Symbol.Create("EURUSD", SecurityType.Forex, Market.Oanda),
                 Symbol.Create("BTCUSD", SecurityType.Crypto, Market.Binance)
             };
+            */
 
             _threshold = threshold;
             _messageHandler = messageHandler;

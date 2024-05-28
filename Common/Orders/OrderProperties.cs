@@ -46,6 +46,12 @@ namespace QuantConnect.Orders
         /// <summary>
         /// OrderId at Broker
         /// </summary>
+
+        ///<summary>   
+        /// Unique numerical ID (assigned by user) for strategy that generated this order
+        /// 
+        public long StrategyId { get; set; }
+
         public long BrokerOrderId { get; set; }
         public string OcaGroup { get; set; }
         public OrderIntent Intent { get; set; }

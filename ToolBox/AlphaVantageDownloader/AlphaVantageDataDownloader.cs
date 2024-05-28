@@ -183,6 +183,8 @@ namespace QuantConnect.ToolBox.AlphaVantageDownloader
             {
                 request.AddOrUpdateParameter("month", slice);
                 var data = GetTimeSeries(request);
+                if (data == null)
+                    break;
                 foreach (var item in data)
                     yield return item;
                 //allData.AddRange(data);
@@ -218,10 +220,17 @@ namespace QuantConnect.ToolBox.AlphaVantageDownloader
                         Task.Delay(1000).Wait();
                         continue;
                     }
-                    if (response.Content.Substring(0, 30).Contains("Error", StringComparison.OrdinalIgnoreCase))
+                    var content = response.Content.Substring(0, 30);
+                    if (content.Contains("Error", StringComparison.OrdinalIgnoreCase))
                     {
                         Log.Error($"AlphaVantage: request failed (there may be no data for this period): {response.Content}");
                         return new List<TimeSeries>();
+                    }
+                    else
+                    if (content.Contains("Invalid", StringComparison.OrdinalIgnoreCase))
+                    {
+                        Log.Error($"AlphaVantage: invalid request for symbol: check symbol?: {response.Content}");
+                        return null;
                     }
                     break;
                 };

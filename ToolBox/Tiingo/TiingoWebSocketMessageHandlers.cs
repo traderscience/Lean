@@ -113,6 +113,7 @@ namespace QuantConnect.ToolBox.Tiingo
                         }
                         break;
                     default:
+                        QuantConnect.Logging.Log.Error($"Tiingo:IEX:WebSocket: unknown DataType: [{dataType}]");
                         break;
                 }
             }
@@ -152,7 +153,7 @@ namespace QuantConnect.ToolBox.Tiingo
             }
             else
             {
-                QuantConnect.Logging.Log.Error($"Tiingo:IEX:WebSocket: unknown message type: {messageType}");
+                QuantConnect.Logging.Log.Error($"Tiingo:IEX:WebSocket: unknown message type: [{messageType}]");
             }
         }
 
@@ -222,6 +223,7 @@ namespace QuantConnect.ToolBox.Tiingo
                         }
                         break;
                     default:
+                        QuantConnect.Logging.Log.Error($"Tiingo:Forex:WebSocket: unknown DataType: [{dataType}]");
                         break;
                 }
             }
@@ -265,7 +267,7 @@ namespace QuantConnect.ToolBox.Tiingo
             }
             else
             {
-                QuantConnect.Logging.Log.Error($"Tiingo:Forex:WebSocket: unknown message type: {messageType}");
+                QuantConnect.Logging.Log.Error($"Tiingo:Forex:WebSocket: unknown message type: [{messageType}]");
             }
         }
 
@@ -340,6 +342,7 @@ namespace QuantConnect.ToolBox.Tiingo
                         }
                         break;
                     default:
+                        QuantConnect.Logging.Log.Error($"Tiingo:Crypto:WebSocket: unknown DataType: [{dataType}]");
                         break;
                 }
             }
@@ -380,7 +383,7 @@ namespace QuantConnect.ToolBox.Tiingo
             }
             else
             {
-                QuantConnect.Logging.Log.Error($"Tiingo:Crypto:WebSocket: unknown message type: {messageType}");
+                QuantConnect.Logging.Log.Error($"Tiingo:Crypto:WebSocket: unknown message type: [{messageType}]");
             }
         }
 

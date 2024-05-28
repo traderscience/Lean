@@ -29,6 +29,7 @@ namespace QuantConnect
     public class Isolator
     {
         private bool EnforceLimits = false;
+        private int _logLevel = 1;
 
         /// <summary>
         /// Algo cancellation controls - cancel source.
@@ -142,13 +143,14 @@ namespace QuantConnect
                         Log.Error(Messages.Isolator.MemoryUsageOver80Percent(sample));
                     }
 
-                    Log.Trace("Isolator.ExecuteWithTimeLimit(): " +
-                        Messages.Isolator.MemoryUsageInfo(
-                            PrettyFormatRam(memoryUsed),
-                            PrettyFormatRam((long)sample),
-                            PrettyFormatRam(OS.ApplicationMemoryUsed * 1024 * 1024),
-                            isolatorLimitResult.CurrentTimeStepElapsed,
-                            (int)Math.Ceiling(OS.CpuUsage)));
+                    if (_logLevel > 1)
+                        Log.Trace("Isolator.ExecuteWithTimeLimit(): " +
+                            Messages.Isolator.MemoryUsageInfo(
+                                PrettyFormatRam(memoryUsed),
+                                PrettyFormatRam((long)sample),
+                                PrettyFormatRam(OS.ApplicationMemoryUsed * 1024 * 1024),
+                                isolatorLimitResult.CurrentTimeStepElapsed,
+                                (int)Math.Ceiling(OS.CpuUsage)));
 
                     memoryLogger = utcNow.AddMinutes(1);
                 }
@@ -172,7 +174,7 @@ namespace QuantConnect
             if (task.IsCompleted == false && string.IsNullOrEmpty(message))
             {
                 message = Messages.Isolator.MemoryUsageMonitorTaskTimedOut(timeSpan);
-                Log.Trace($"Isolator.ExecuteWithTimeLimit(): {message}");
+                Log.Error($"Isolator.ExecuteWithTimeLimit(): {message}");
             }
 
             if (EnforceLimits && !string.IsNullOrEmpty(message))

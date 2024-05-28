@@ -57,6 +57,11 @@ namespace QuantConnect.Interfaces
         long BrokerOrderId { get; set; }
 
         /// <summary>
+        /// Unique numerical ID (assigned by user) for strategy that generated this order
+        /// </summary>
+        long StrategyId { get; set; }
+
+        /// <summary>
         /// One Cancels All order group
         /// </summary>
         string OcaGroup { get; set; }

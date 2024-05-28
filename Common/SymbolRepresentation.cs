@@ -23,6 +23,7 @@ using QuantConnect.Securities.Option;
 using QuantConnect.Securities.Future;
 using QuantConnect.Securities.FutureOption;
 using static QuantConnect.StringExtensions;
+using System.Security.Principal;
 
 namespace QuantConnect
 {
@@ -250,6 +251,8 @@ namespace QuantConnect
         {
             var year = doubleDigitsYear ? expiration.Year % 100 : expiration.Year % 10;
             var month = expiration.Month;
+            if (expiration == SecurityIdentifier.DefaultDate)
+                return underlying;
 
             var contractMonthDelta = FuturesExpiryUtilityFunctions.GetDeltaBetweenContractMonthAndContractExpiry(underlying, expiration.Date);
             if (contractMonthDelta < 0)

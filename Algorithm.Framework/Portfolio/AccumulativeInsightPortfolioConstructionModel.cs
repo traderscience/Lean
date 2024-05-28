@@ -157,6 +157,7 @@ namespace QuantConnect.Algorithm.Framework.Portfolio
                 .ToList();
         }
 
+
         /// <summary>
         /// Determines the target percent for each insight
         /// </summary>

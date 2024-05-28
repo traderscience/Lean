@@ -45,6 +45,13 @@ namespace QuantConnect.Configuration
                                                      + "Example 1: --app=DDL\n"
                                                      + "Example 2: --app=NseMarketDataConverter\n"
                                                      + "Example 3: --app=RDG"),
+
+                // the location of the configuration to use
+                new CommandLineOption("config", CommandOptionType.SingleValue),
+
+                // Data Folder
+                new CommandLineOption("data-folder", CommandOptionType.SingleValue),
+
                 new CommandLineOption("tickers", CommandOptionType.MultipleValue, "[REQUIRED ALL downloaders (except QBDL)] "
                                                                                   + "--tickers=SPY,AAPL,etc"),
                 new CommandLineOption("resolution", CommandOptionType.SingleValue, "[REQUIRED ALL downloaders (except QBDL, CDL) and IVolatilityEquityConverter,"

@@ -46,6 +46,8 @@ namespace QuantConnect
         /// Zerodha
         Zerodha = 16,
         /// Tiingo Price Data
-        Tiingo = 17
+        Tiingo = 17,
+        /// FRED Federal Reserve
+        Fred = 18
     }
 }

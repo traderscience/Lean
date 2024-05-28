@@ -119,7 +119,14 @@ namespace QuantConnect.Algorithm.Framework.Execution
                 // initialize new securities
                 if (!_symbolData.ContainsKey(added.Symbol))
                 {
-                    _symbolData[added.Symbol] = new SymbolData(algorithm, added, _period, _resolution);
+                    try
+                    {
+                        _symbolData[added.Symbol] = new SymbolData(algorithm, added, _period, _resolution);
+                    }
+                    catch (Exception ex)
+                    {
+                        QuantConnect.Logging.Log.Trace($"StandardDeviationExecutionModel: can't add {added.Symbol.Value}");
+                    }
                 }
             }
 

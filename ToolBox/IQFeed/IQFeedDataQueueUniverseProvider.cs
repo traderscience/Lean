@@ -156,14 +156,21 @@ namespace QuantConnect.ToolBox.IQFeed
         public IEnumerable<Symbol> LookupSymbols(string lookupName, SecurityType securityType, bool includeExpired, string securityCurrency = null, string securityExchange = null)
         {
             Func<Symbol, string> lookupFunc;
+            securityType = SecurityTypeFromSymbol(lookupName, securityType);
 
             switch (securityType)
             {
+                case SecurityType.Equity:
+                    lookupFunc = symbol => symbol.ID.Symbol;
+                    break;
                 case SecurityType.Option:
                     // for option, futures contract we search the underlying
                     lookupFunc = symbol => symbol.HasUnderlying ? symbol.Underlying.Value : string.Empty;
                     break;
                 case SecurityType.Future:
+                    lookupFunc = symbol => symbol.ID.Symbol;
+                    break;
+                case SecurityType.Forex:
                     lookupFunc = symbol => symbol.ID.Symbol;
                     break;
                 default:
@@ -177,13 +184,18 @@ namespace QuantConnect.ToolBox.IQFeed
                                             (securityExchange == null || x.SecurityExchange == securityExchange))
                                          .ToList();
 
+            if (!result.Any())
+            {
+                return Enumerable.Empty<Symbol>();
+            }
+
             bool onDemandRequests = result.All(symbolData => !symbolData.IsDataLoaded());
 
             if (onDemandRequests)
             {
                 var exchanges = securityType == SecurityType.Future ?
                                     FuturesExchanges.Values.Reverse().ToArray() :
-                                    new string[] { };
+                                    Array.Empty<String>();
 
                 // sorting list of available contracts by exchange priority, taking the top 1
                 var symbolData =
@@ -207,6 +219,20 @@ namespace QuantConnect.ToolBox.IQFeed
             }
 
             return result.Select(x => x.Symbol);
+        }
+
+        private static List<String> CurrencyList = new List<string>() { "USD", "CAD", "JPY", "EUR", "GBP", "AUD", "NZL", "CNY", "RUB" };
+
+        public static SecurityType SecurityTypeFromSymbol(string symbol, SecurityType defaultSecType)
+        {
+            SecurityType secType = defaultSecType;
+            if (symbol.ToLowerInvariant().EndsWithInvariant(".xo") || symbol.ToLowerInvariant().EndsWithInvariant(".x"))
+                secType = SecurityType.Index;
+            else
+            if (symbol.Length == 6 && CurrencyList.Contains(symbol.Substring(0, 3)) &&
+                    CurrencyList.Contains(symbol.Substring(3, 3)))
+                    secType = SecurityType.Forex;
+            return secType;
         }
 
         /// <summary>
@@ -359,12 +385,15 @@ namespace QuantConnect.ToolBox.IQFeed
                         case "EQUITY":
 
                             // we load equities/indices in memory
+                            var secType = columns[columnSecurityType] == "INDEX" ? SecurityType.Index : SecurityType.Equity;    
                             symbolUniverse.Add(new SymbolData
                             {
-                                Symbol = Symbol.Create(columns[columnSymbol], SecurityType.Equity, Market.USA),
+                                Symbol = Symbol.Create(columns[columnSymbol], secType, Market.USA),
                                 SecurityCurrency = Currencies.USD,
                                 SecurityExchange = Market.USA,
-                                Ticker = columns[columnSymbol]
+                                Ticker = columns[columnSymbol],
+                                SIC = columns[columnSIC],
+                                NACIS = columns[columnNAICS]
                             });
                             break;
 
@@ -629,6 +658,8 @@ namespace QuantConnect.ToolBox.IQFeed
             public string SecurityExchange { get; set; }
 
             public Symbol Symbol { get; set; }
+            public string SIC { get; set; }
+            public string NACIS { get; set; }
 
             public long StartPosition { get; set; }
 

@@ -3850,11 +3850,93 @@ namespace QuantConnect
             return Math.Abs(a);
         }
 
-        // Observable Collection Extensions
+        /// <summary>
+        /// AddRange - ObservableCollection extension method to add a range of items to the collection  
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection"></param>
+        /// <param name="items"></param>
         public static void AddRange<T>(this ObservableCollection<T> collection, IEnumerable<T> items)
         {
-            foreach (var item in items)
-                collection.Add(item);
+            if (collection != null && items != null)
+            {
+                foreach (var item in items)
+                    collection.Add(item);
+            }
+        }
+
+        /// <summary>
+        /// RemoveRange - ObservableCollection extension method to remove a range of items from the collection
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection"></param>
+        /// <param name="items"></param>
+        public static void RemoveRange<T>(this ObservableCollection<T> collection, IEnumerable<T> items)
+        {
+            if (collection != null && items != null)
+            {
+                foreach (var item in items)
+                    collection.Remove(item);
+            }
+        }
+
+        public static void RemoveRange<T>(this ObservableCollection<T> collection, int start, int count)
+        {
+            if (collection.IsNullOrEmpty() || count <= 0 || start < 0 || start >= collection.Count)
+            {
+                return;
+            }
+            // remove the range of items from collection
+            for (int i=start; i < start+count; i++)
+            {
+                collection.RemoveAt(i);
+            }
+        }
+
+        /// <summary>
+        /// Sorts the collection using the specified comparison
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection"></param>
+        /// <param name="comparison"></param>
+        public static void Sort<T>(this ObservableCollection<T> collection, Comparison<T> comparison)
+        {
+
+            if (collection != null && collection.Any())
+            {
+                var sortableList = new List<T>(collection);
+                sortableList.Sort(comparison);
+                for (int i = 0; i < sortableList.Count; i++)
+                {
+                    collection.Move(collection.IndexOf(sortableList[i]), i);
+                }
+            }
+        }
+
+        /// <summary>
+        /// RemoveDuplicates - ObservableCollection extension method to remove duplicates from the collection
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection"></param>
+        public static void RemoveDuplicates<T>(this ObservableCollection<T> collection)
+        {
+            if (collection.IsNullOrEmpty())
+                return;
+            var seenItems = new HashSet<T>();
+            var itemsToRemove = new List<T>();
+
+            foreach (var item in collection)
+            {
+                if (!seenItems.Add(item)) // Add returns false if item was already in the set
+                {
+                    itemsToRemove.Add(item);
+                }
+            }
+
+            foreach (var item in itemsToRemove)
+            {
+                collection.Remove(item);
+            }
         }
     }
 }

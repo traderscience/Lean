@@ -255,12 +255,13 @@ namespace QuantConnect.Securities
 
         /// <summary>
         /// Get an enumerable of open <see cref="OrderTicket"/> for the specified symbol
+        /// 2023/10/12: Check to ensure the tickets are not in CancelPending status
         /// </summary>
         /// <param name="symbol">The symbol for which to return the order tickets</param>
         /// <returns>An enumerable of open <see cref="OrderTicket"/>.</returns>
         public IEnumerable<OrderTicket> GetOpenOrderTickets(Symbol symbol)
         {
-            return GetOpenOrderTickets(x => x.Symbol == symbol);
+            return GetOpenOrderTickets(x => x.Symbol == symbol && (x.Intent == OrderIntent.BTO || x.Intent == OrderIntent.STO) && x.Status != OrderStatus.CancelPending);
         }
 
         /// <summary>

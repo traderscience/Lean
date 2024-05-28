@@ -34,6 +34,7 @@ namespace QuantConnect.Lean.Engine.DataFeeds.Queues
     /// </summary>
     public class FakeDataQueue : IDataQueueHandler, IDataQueueUniverseProvider
     {
+        private int debugLevel = 0;
         private int _count;
         private readonly Random _random = new Random();
         private int _dataPointsPerSecondPerSymbol;
@@ -90,7 +91,8 @@ namespace QuantConnect.Lean.Engine.DataFeeds.Queues
             {
                 var elapsed = (DateTime.UtcNow - lastTime);
                 var ticksPerSecond = (_count - lastCount)/elapsed.TotalSeconds;
-                Log.Trace("TICKS PER SECOND:: " + ticksPerSecond.ToStringInvariant("000000.0") + " ITEMS IN QUEUE:: " + 0);
+                if (debugLevel > 0)
+                    Log.Trace("TICKS PER SECOND:: " + ticksPerSecond.ToStringInvariant("000000.0") + " ITEMS IN QUEUE:: " + 0);
                 lastCount = _count;
                 lastTime = DateTime.UtcNow;
                 PopulateQueue();

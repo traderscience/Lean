@@ -65,6 +65,15 @@ namespace QuantConnect.Orders
         /// <summary>
         /// One Cancels All order group
         /// </summary>
+
+        ///<summary>   
+        /// Unique numerical ID (assigned by user) for strategy that generated this order
+        /// 
+        public long StrategyId { get; set; }
+
+        /// <summary>
+        /// One Cancels All Group
+        /// </summary>
         public string OcaGroup { get; set; }
         /// <summary>
         /// Order Intent

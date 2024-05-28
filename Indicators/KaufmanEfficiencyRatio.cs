@@ -38,7 +38,7 @@ namespace QuantConnect.Indicators
         /// </summary>
         /// <param name="name">The name of this indicator</param>
         /// <param name="period">The period of the Efficiency Ratio (ER)</param>
-        public KaufmanEfficiencyRatio(string name, int period)
+        public KaufmanEfficiencyRatio(string name, int period=10)
             : base(name, period + 1)
         {
         }

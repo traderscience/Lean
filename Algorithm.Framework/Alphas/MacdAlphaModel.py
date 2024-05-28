@@ -95,6 +95,7 @@ class MacdAlphaModel(AlphaModel):
         for removed in changes.RemovedSecurities:
             symbol = removed.Symbol
 
+
             data = self.symbolData.pop(symbol, None)
             if data is not None:
                 # clean up our consolidator

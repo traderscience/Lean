@@ -58,6 +58,7 @@ namespace QuantConnect.Python
                 if (beginAllowThreads)
                 {
                     // required for multi-threading usage
+                    //var pyLock = Py.GIL();
                     PythonEngine.BeginAllowThreads();
                 }
 

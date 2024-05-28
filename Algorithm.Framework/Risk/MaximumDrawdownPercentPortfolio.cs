@@ -79,6 +79,7 @@ namespace QuantConnect.Algorithm.Framework.Risk
                     algorithm.Insights.Cancel(new[] { symbol });
 
                     // liquidate
+                    algorithm.Log($"MaximumDrawdownPercentPortfolio: pnl:{pnl:F3} exceeds limit:{_maximumDrawdownPercent:F3} Liquidating {symbol.Value}");
                     yield return new PortfolioTarget(symbol, 0);
                 }
             }

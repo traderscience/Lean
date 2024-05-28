@@ -168,7 +168,7 @@ namespace QuantConnect.AlgorithmFactory
 
             try
             {
-                PythonInitializer.Initialize();
+                PythonInitializer.Initialize(beginAllowThreads:false);
 
                 algorithmInstance = new AlgorithmPythonWrapper(moduleName);
 

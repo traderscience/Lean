@@ -30,10 +30,10 @@ namespace QuantConnect.Indicators
         /// Initializes a new instance of the <see cref="KaufmanAdaptiveMovingAverage"/> class using the specified name and period.
         /// </summary>
         /// <param name="name">The name of this indicator</param>
-        /// <param name="period">The period of the Efficiency Ratio (ER)</param>
+        /// <param name="period">The period of the Efficiency Ratio (ER) (standard is 10)</param>
         /// <param name="fastEmaPeriod">The period of the fast EMA used to calculate the Smoothing Constant (SC)</param>
         /// <param name="slowEmaPeriod">The period of the slow EMA used to calculate the Smoothing Constant (SC)</param>
-        public KaufmanAdaptiveMovingAverage(string name, int period, int fastEmaPeriod = 2, int slowEmaPeriod = 30)
+        public KaufmanAdaptiveMovingAverage(string name, int period=10, int fastEmaPeriod = 2, int slowEmaPeriod = 30)
             : base(name, period)
         {
             // Smoothing factor of the slow EMA

@@ -131,7 +131,7 @@ namespace QuantConnect.ToolBox.IQFeed
                                 return;
                             }
 
-                            var ticker = _symbolUniverse.GetBrokerageSymbol(subscribeSymbol);
+                            var ticker = _symbolUniverse?.GetBrokerageSymbol(subscribeSymbol);
 
                             if (!string.IsNullOrEmpty(ticker))
                             {
@@ -449,9 +449,8 @@ namespace QuantConnect.ToolBox.IQFeed
                 int dataQueueCount = Interlocked.Exchange(ref _dataQueueCount, 0);
                 if (ticksPerSecond > 1000 || dataQueueCount > 250)
                 {
-                    Log.Trace($"IQFeed.OnSecond(): Ticks/sec: {ticksPerSecond.ToStringInvariant("0000.00")} " +
-                        $"Engine.Ticks.Count: {dataQueueCount} CPU%: {OS.CpuUsage.ToStringInvariant("0.0") + "%"}"
-                    );
+                   // Log.Trace($"IQFeed.OnSecond(): Ticks/sec: {ticksPerSecond.ToStringInvariant("0000.00")} " +
+                   //   $"Engine.Ticks.Count: {dataQueueCount} CPU%: {OS.CpuUsage.ToStringInvariant("0.0") + "%"}");
                 }
 
                 count = 0;
@@ -495,6 +494,7 @@ namespace QuantConnect.ToolBox.IQFeed
             if (e.Last == 0) return;
 
             // only accept trade and B/A updates
+            var tradeTime = e.TradeTime;
             if (e.TypeOfUpdate != Level1SummaryUpdateEventArgs.UpdateType.ExtendedTrade
              && e.TypeOfUpdate != Level1SummaryUpdateEventArgs.UpdateType.Trade
              && e.TypeOfUpdate != Level1SummaryUpdateEventArgs.UpdateType.Bid

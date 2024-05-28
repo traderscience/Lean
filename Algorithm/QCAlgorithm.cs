@@ -2026,7 +2026,7 @@ namespace QuantConnect.Algorithm
             }
 
             Symbol canonicalSymbol;
-            var alias = "/" + ticker;
+            string alias = QuantConnect.Symbol.SetContinuousFuturePrefix(SecurityIdentifier.DefaultDate, ticker);
             if (!SymbolCache.TryGetSymbol(alias, out canonicalSymbol) ||
                 canonicalSymbol.ID.Market != market ||
                 canonicalSymbol.SecurityType != SecurityType.Future)

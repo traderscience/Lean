@@ -68,7 +68,7 @@ namespace QuantConnect.Orders.Serialization
         /// <summary>
         /// Status message of the order.
         /// </summary>
-        [JsonProperty("status"), JsonConverter(typeof(StringEnumConverter), true)]
+        [JsonProperty("status"), JsonConverter(typeof(StringEnumConverter), false)]
         public OrderStatus Status { get; set; }
 
         /// <summary>
@@ -104,8 +104,23 @@ namespace QuantConnect.Orders.Serialization
         /// <summary>
         /// Order direction.
         /// </summary>
-        [JsonProperty("direction"), JsonConverter(typeof(StringEnumConverter), true)]
+        [JsonProperty("direction"), JsonConverter(typeof(StringEnumConverter), false)]
         public OrderDirection Direction { get; set; }
+
+        /// <summary>
+        /// Order Intent
+        /// </summary>
+        [JsonProperty("intent"), JsonConverter(typeof(StringEnumConverter), false)]
+        public OrderIntent Intent { get; set; }
+
+        /// <summary>
+        /// Order OcaGroup (for bracket orders)
+        /// </summary>
+        public string OcaGroup { get; set; }
+        /// <summary>
+        /// Order properties (Intent, OcaId, etc.)
+        /// </summary>
+        public OrderProperties Properties { get; set; }
 
         /// <summary>
         /// Any message from the exchange.
@@ -171,6 +186,8 @@ namespace QuantConnect.Orders.Serialization
             FillPriceCurrency = orderEvent.FillPriceCurrency;
             FillQuantity = orderEvent.FillQuantity;
             Direction = orderEvent.Direction;
+            Intent = orderEvent.Intent;
+            OcaGroup = orderEvent.OcaGroup;
             Message = orderEvent.Message;
             IsAssignment = orderEvent.IsAssignment;
             IsInTheMoney = orderEvent.IsInTheMoney;

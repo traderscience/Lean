@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "QuantConnect.ToolBox": {
+      "commandName": "Project",
+      "commandLineArgs": "--config=\"C:\\ProgramData\\TraderScience\\StrategyXtenderML\\config.json\" --app=freddl --tickers=GDP --resolution=Daily --from-date=20240205-00:00:00 --to-date=20240205-00:00:00 --api-key=3982a4bd05dd75dd91f0ef890d273fe9"
+    }
+  }
+}

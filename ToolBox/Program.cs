@@ -21,6 +21,7 @@ using QuantConnect.ToolBox.CoarseUniverseGenerator;
 using QuantConnect.ToolBox.CoinApiDataConverter;
 using QuantConnect.ToolBox.CryptoiqDownloader;
 using QuantConnect.ToolBox.DukascopyDownloader;
+using QuantConnect.ToolBox.FredDownloader;
 using QuantConnect.ToolBox.IEX;
 using QuantConnect.ToolBox.IQFeedDownloader;
 using QuantConnect.ToolBox.IVolatilityEquityConverter;
@@ -42,6 +43,15 @@ namespace QuantConnect.ToolBox
     {
         public static void Main(string[] args)
         {
+            var optionsObject = args != null && args.Length > 0 ? ToolboxArgumentParser.ParseArguments(args) : null;
+            if (optionsObject == null)
+            {
+                PrintMessageAndExit();
+            }
+
+            // look for --config=pathname for a specific config file
+            Config.MergeCommandLineArgumentsWithConfiguration(optionsObject);
+
             Log.DebuggingEnabled = Config.GetBool("debug-mode");
             var destinationDir = Config.Get("results-destination-folder");
             if (!string.IsNullOrEmpty(destinationDir))
@@ -49,13 +59,8 @@ namespace QuantConnect.ToolBox
                 Directory.CreateDirectory(destinationDir);
                 Log.FilePath = Path.Combine(destinationDir, "log.txt");
             }
-            Log.LogHandler = Composer.Instance.GetExportedValueByTypeName<ILogHandler>(Config.Get("log-handler", "CompositeLogHandler"));
+            Log.LogHandler = Composer.Instance.GetExportedValueByTypeName<ILogHandler>("QuantConnect.Logging.ConsoleLogHandler");
 
-            var optionsObject = ToolboxArgumentParser.ParseArguments(args);
-            if (optionsObject.Count == 0)
-            {
-                PrintMessageAndExit();
-            }
 
             var dataProvider
                 = Composer.Instance.GetExportedValueByTypeName<IDataProvider>(Config.Get("data-provider", "DefaultDataProvider"));
@@ -79,6 +84,7 @@ namespace QuantConnect.ToolBox
                     ? Parse.DateTimeExact(optionsObject["to-date"].ToString(), "yyyyMMdd-HH:mm:ss")
                     : DateTime.UtcNow;
                 var apiKey = optionsObject.ContainsKey("api-key") ? optionsObject["api-key"].ToString() : "";
+
                 switch (targetApp)
                 {
                     case "cdl":
@@ -88,6 +94,9 @@ namespace QuantConnect.ToolBox
                     case "ddl":
                     case "dukascopydownloader":
                         DukascopyDownloaderProgram.DukascopyDownloader(tickers, resolution, fromDate, toDate);
+                        break;
+                    case "freddl":
+                        FredDownloaderProgram.FredDownloader(tickers, resolution, fromDate, toDate, apiKey);
                         break;
                     case "iexdl":
                     case "iexdownloader":

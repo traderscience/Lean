@@ -73,7 +73,8 @@ namespace QuantConnect
             Tuple.Create(TradeStation, 103),
             Tuple.Create(Collective2, 104),
             Tuple.Create(ZuluTrade, 105),
-            Tuple.Create(Quandl, 106)
+            Tuple.Create(Quandl, 106),
+            Tuple.Create(Fred, 107)
         };
 
         static Market()
@@ -264,9 +265,14 @@ namespace QuantConnect
         public const string TraderScience = "traderscience";
 
         /// <summary>
-        /// Quandl Bitfinex
+        /// Quandl 
         /// </summary>
         public const string Quandl = "quandl";
+
+        /// <summary>
+        /// FRED (Federal Reserve Economic Data)
+        /// </summary>
+        public const string Fred = "fred";
 
         /// <summary>
         /// Adds the specified market to the map of available markets with the specified identifier.

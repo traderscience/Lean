@@ -359,9 +359,9 @@ namespace QuantConnect.Brokerages.Backtesting
                             Algorithm.Error($"Order Error: id: {order.Id}, Transaction model failed to fill for order type: {order.Type} with error: {err.Message}");
                         }
                     }
-                    else if (order.Status == OrderStatus.CancelPending)
+                    else if (order.Status == OrderStatus.CancelPending || order.Status == OrderStatus.UpdateSubmitted)
                     {
-                        // the pending CancelOrderRequest will be handled during the next transaction handler run
+                        // the pending CancelOrderRequest and UpdateSubmitted will be handled during the next transaction handler run
                         continue;
                     }
                     else

@@ -137,7 +137,11 @@ namespace QuantConnect.Algorithm.Framework.Portfolio
                                                           where !Algorithm.Insights.HasActiveInsights(g.Key, algorithm.UtcTime) && !errorSymbols.Contains(g.Key)
                                                           select new PortfolioTarget(g.Key, 0);
 
-            targets.AddRange(expiredTargets);
+            if (expiredTargets.Any())
+            {
+                algorithm.Log($"{expiredTargets.Count()} expired targets to be processed.");
+                targets.AddRange(expiredTargets);
+            }
 
             return targets;
         }

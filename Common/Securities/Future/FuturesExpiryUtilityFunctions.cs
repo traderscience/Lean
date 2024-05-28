@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using static QuantConnect.StringExtensions;
 
 namespace QuantConnect.Securities.Future
@@ -25,28 +26,76 @@ namespace QuantConnect.Securities.Future
     /// </summary>
     public static class FuturesExpiryUtilityFunctions
     {
-        private static readonly Dictionary<DateTime, DateTime> _reverseDairyReportDates = FuturesExpiryFunctions.DairyReportDates
-            .ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
+        private static readonly Dictionary<DateTime, DateTime> _reverseDairyReportDates; 
 
-        private static readonly HashSet<string> _dairyUnderlying = new HashSet<string>
+        private static readonly HashSet<string> _dairyUnderlying;
+
+        private static readonly Dictionary<string, int> ExpiriesPriorMonth = new Dictionary<string, int>
         {
-            "CB",
-            "CSC",
-            "DC",
-            "DY",
-            "GDK",
-            "GNF"
+            { Futures.Energies.ArgusLLSvsWTIArgusTradeMonth, 1 },
+            { Futures.Energies.ArgusPropaneSaudiAramco, 1 },
+            { Futures.Energies.BrentCrude, 2 },
+            { Futures.Energies.BrentLastDayFinancial, 2 },
+            { Futures.Energies.CrudeOilWTI, 1 },
+            { Futures.Energies.MicroCrudeOilWTI, 1 },
+            { Futures.Energies.Gasoline, 1 },
+            { Futures.Energies.HeatingOil, 1 },
+            { Futures.Energies.MarsArgusVsWTITradeMonth, 1 },
+            { Futures.Energies.NaturalGas, 1 },
+            { Futures.Energies.NaturalGasHenryHubLastDayFinancial, 1 },
+            { Futures.Energies.NaturalGasHenryHubPenultimateFinancial, 1 },
+            { Futures.Energies.WTIHoustonArgusVsWTITradeMonth, 1 },
+            { Futures.Energies.WTIHoustonCrudeOil, 1 },
+            { Futures.Softs.Sugar11, 1 },
+            { Futures.Softs.Sugar11CME, 1 }
         };
 
-        /// <summary>
-        /// Method to retrieve n^th succeeding/preceding business day for a given day
-        /// </summary>
-        /// <param name="time">The current Time</param>
-        /// <param name="n">Number of business days succeeding current time. Use negative value for preceding business days</param>
-        /// <param name="useEquityHolidays">Use LEAN's <see cref="USHoliday"/> definitions as holidays to exclude</param>
-        /// <param name="holidayList">Enumerable of holidays to exclude. These should be sourced from the <see cref="MarketHoursDatabase"/></param>
-        /// <returns>The date-time after adding n business days</returns>
-        public static DateTime AddBusinessDays(DateTime time, int n, bool useEquityHolidays = true, IEnumerable<DateTime> holidayList = null)
+
+        static FuturesExpiryUtilityFunctions()
+        {
+            _reverseDairyReportDates = FuturesExpiryFunctions.DairyReportDates.ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
+
+            _dairyUnderlying =  new HashSet<string>
+            {
+                "CB",
+                "CSC",
+                "DC",
+                "DY",
+                "GDK",
+                "GNF"
+            };
+
+            ExpiriesPriorMonth = new Dictionary<string, int>
+            {
+                { Futures.Energies.ArgusLLSvsWTIArgusTradeMonth, 1 },
+                { Futures.Energies.ArgusPropaneSaudiAramco, 1 },
+                { Futures.Energies.BrentCrude, 2 },
+                { Futures.Energies.BrentLastDayFinancial, 2 },
+                { Futures.Energies.CrudeOilWTI, 1 },
+                { Futures.Energies.MicroCrudeOilWTI, 1 },
+                { Futures.Energies.Gasoline, 1 },
+                { Futures.Energies.HeatingOil, 1 },
+                { Futures.Energies.MarsArgusVsWTITradeMonth, 1 },
+                { Futures.Energies.NaturalGas, 1 },
+                { Futures.Energies.NaturalGasHenryHubLastDayFinancial, 1 },
+                { Futures.Energies.NaturalGasHenryHubPenultimateFinancial, 1 },
+                { Futures.Energies.WTIHoustonArgusVsWTITradeMonth, 1 },
+                { Futures.Energies.WTIHoustonCrudeOil, 1 },
+                { Futures.Softs.Sugar11, 1 },
+                { Futures.Softs.Sugar11CME, 1 }
+            };
+
+    }
+
+    /// <summary>
+    /// Method to retrieve n^th succeeding/preceding business day for a given day
+    /// </summary>
+    /// <param name="time">The current Time</param>
+    /// <param name="n">Number of business days succeeding current time. Use negative value for preceding business days</param>
+    /// <param name="useEquityHolidays">Use LEAN's <see cref="USHoliday"/> definitions as holidays to exclude</param>
+    /// <param name="holidayList">Enumerable of holidays to exclude. These should be sourced from the <see cref="MarketHoursDatabase"/></param>
+    /// <returns>The date-time after adding n business days</returns>
+    public static DateTime AddBusinessDays(DateTime time, int n, bool useEquityHolidays = true, IEnumerable<DateTime> holidayList = null)
         {
             var holidays = GetDatesFromDateTimeList(holidayList);
             if (useEquityHolidays)
@@ -350,7 +399,7 @@ namespace QuantConnect.Securities.Future
         public static int GetDeltaBetweenContractMonthAndContractExpiry(string underlying, DateTime? futureExpiryDate = null)
         {
             int value;
-            if (futureExpiryDate != null && _dairyUnderlying.Contains(underlying))
+            if (futureExpiryDate != null && futureExpiryDate != SecurityIdentifier.DefaultDate && _dairyUnderlying.Contains(underlying))
             {
                 // Dairy can expire in the month following the contract month.
                 var dairyReportDate = futureExpiryDate.Value.Date.AddDays(1);
@@ -402,25 +451,5 @@ namespace QuantConnect.Securities.Future
             // Calculate Good Friday
             return new DateTime(year, month, day).AddDays(-2);
         }
-
-        private static readonly Dictionary<string, int> ExpiriesPriorMonth = new Dictionary<string, int>
-        {
-            { Futures.Energies.ArgusLLSvsWTIArgusTradeMonth, 1 },
-            { Futures.Energies.ArgusPropaneSaudiAramco, 1 },
-            { Futures.Energies.BrentCrude, 2 },
-            { Futures.Energies.BrentLastDayFinancial, 2 },
-            { Futures.Energies.CrudeOilWTI, 1 },
-            { Futures.Energies.MicroCrudeOilWTI, 1 },
-            { Futures.Energies.Gasoline, 1 },
-            { Futures.Energies.HeatingOil, 1 },
-            { Futures.Energies.MarsArgusVsWTITradeMonth, 1 },
-            { Futures.Energies.NaturalGas, 1 },
-            { Futures.Energies.NaturalGasHenryHubLastDayFinancial, 1 },
-            { Futures.Energies.NaturalGasHenryHubPenultimateFinancial, 1 },
-            { Futures.Energies.WTIHoustonArgusVsWTITradeMonth, 1 },
-            { Futures.Energies.WTIHoustonCrudeOil, 1 },
-            { Futures.Softs.Sugar11, 1 },
-            { Futures.Softs.Sugar11CME, 1 }
-        };
     }
 }

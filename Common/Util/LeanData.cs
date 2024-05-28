@@ -606,12 +606,10 @@ namespace QuantConnect.Util
 
                 case SecurityType.Auxiliary:
                     string[] symParts = symbol.Value.Split('/');
-                    if (symParts.Length != 2)
-                    {
-                        throw new ArgumentException($"Invalid auxiliary symbol: {symbol.Value}");
-                    }   
                     // return the path for a Quandl dataset "quandl/FRED"
-                    return Path.Combine(directory, symParts[0]);
+                    if (symParts.Count() > 1)
+                        return Path.Combine(directory, symParts[0]);
+                    return directory;
 
                 case SecurityType.Commodity:
                 default:
@@ -775,11 +773,9 @@ namespace QuantConnect.Util
 
                 case SecurityType.Auxiliary:
                     string[] symParts = symbol.Value.Split('/');
-                    if (symParts.Length != 2)
-                    {
-                        throw new ArgumentException($"Invalid symbol format for auxiliary symbol: {symbol.Value}");
-                    }
-                    return $"{symParts[1].ToLowerInvariant()}.csv";
+                    if (symParts.Length == 2)
+                        return $"{symParts[1].ToLowerInvariant()}.csv";
+                    return $"{symParts[0].ToLowerInvariant()}.csv";
 
                 case SecurityType.Commodity:
                 default:
@@ -848,11 +844,9 @@ namespace QuantConnect.Util
 
                 case SecurityType.Auxiliary:
                     string[] symParts = symbol.Value.Split('/');    
-                    if (symParts.Length != 2)
-                    {
-                        throw new ArgumentException($"Invalid symbol format for auxiliary symbol: {symbol.Value}");
-                    }
-                    return $"{symParts[1].ToLowerInvariant()}.zip";
+                    if (symParts.Length == 2)
+                        return $"{symParts[1].ToLowerInvariant()}.zip";
+                    return $"{symParts[0].ToLowerInvariant()}.zip";
 
                 case SecurityType.Commodity:
                 default:

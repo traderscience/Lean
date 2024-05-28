@@ -20,6 +20,7 @@ using System.IO;
 using Newtonsoft.Json;
 using QuantConnect.Configuration;
 using QuantConnect.Logging;
+using QuantConnect.Orders;
 using QuantConnect.Packets;
 
 namespace QuantConnect.Report
@@ -48,10 +49,9 @@ namespace QuantConnect.Report
             Log.Trace($"QuantConnect.Report.Main(): Parsing source files...{backtestDataFile}, {liveDataFile}");
             var backtestSettings = new JsonSerializerSettings
             {
-                Converters = new List<JsonConverter> { new NullResultValueTypeJsonConverter<BacktestResult>() },
+                Converters = new List<JsonConverter> { new NullResultValueTypeJsonConverter<BacktestResult>(), new OrderJsonConverter() },
                 FloatParseHandling = FloatParseHandling.Decimal
             };
-
             var backtest = JsonConvert.DeserializeObject<BacktestResult>(File.ReadAllText(backtestDataFile), backtestSettings);
             LiveResult live = null;
 

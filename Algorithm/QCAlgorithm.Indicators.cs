@@ -2346,10 +2346,35 @@ namespace QuantConnect.Algorithm
                     selectorToUse = consolidated => (T)(object)new IndicatorDataPoint(consolidated.Symbol, consolidated.EndTime, consolidated.Value);
                 }
                 else
+                if (consolidator.OutputType == typeof(RenkoBar))
+                {
+                    // if the consolidator outputs RenkoBars, we can convert them to IndicatorDataPoints
+                    if (type == typeof(IndicatorDataPoint) && selector == null)
+                    {
+                        selectorToUse = consolidated => (T)(object)new IndicatorDataPoint(consolidated.Symbol, consolidated.EndTime, consolidated.Value);
+                    }
+                    else
+                    if (type == typeof(TradeBar) && selector == null)
+                    {
+                        // if no selector was provided and the indicator input is of 'TradeBar', common case, a selector with a direct cast will fail
+                        // so we use a smarter selector as in other API methods
+                        selectorToUse = consolidated =>
+                        {
+                            RenkoBar renko = (RenkoBar)consolidated;
+                            TimeSpan period = renko.EndTime.Subtract(renko.Time);
+                            return (T)(object)new TradeBar(renko.Time, renko.Symbol, renko.Open, renko.High, renko.Low, renko.Close, renko.Volume, period);
+                        };
+                    }
+                    else
+                    {
+                        throw new ArgumentException($"Type mismatch found between consolidator and indicator for symbol: {symbol}." +
+                                                                           $"Consolidator outputs type {consolidator.OutputType.Name} but indicator expects input type {type.Name}");
+                    }
+                }
+                else
                 {
                     throw new ArgumentException($"Type mismatch found between consolidator and indicator for symbol: {symbol}." +
-                                                $"Consolidator outputs type {consolidator.OutputType.Name} but indicator expects input type {type.Name}"
-                    );
+                                                $"Consolidator outputs type {consolidator.OutputType.Name} but indicator expects input type {type.Name}");
                 }
             }
 

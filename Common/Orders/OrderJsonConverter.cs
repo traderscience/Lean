@@ -83,7 +83,16 @@ namespace QuantConnect.Orders
         public static Order CreateOrderFromJObject(JObject jObject)
         {
             // create order instance based on order type field
-            var orderType = (OrderType)jObject["Type"].Value<int>();
+            OrderType orderType = OrderType.Market;
+            string typeColumn = "OrderType";
+            if (jObject.ContainsKey(typeColumn))
+                orderType = (OrderType)jObject["OrderType"].Value<int>();
+            else
+            if (jObject.ContainsKey("Type"))
+            {
+                orderType = (OrderType)jObject["Type"].Value<int>();
+                typeColumn = "Type";
+            }
             var order = CreateOrder(orderType, jObject);
 
             // populate common order properties
